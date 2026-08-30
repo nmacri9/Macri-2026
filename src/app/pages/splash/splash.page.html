@@ -1,0 +1,12 @@
+<ion-content class="splash-content" [fullscreen]="true" [scrollY]="false">
+  <div class="splash-container">
+    <img src="assets/icono.png" alt="Logo Cepa" class="splash-logo" />
+
+    <div class="equipo-wrapper">
+      <p class="equipo-label">Desarrollado por:</p>
+      <ul class="equipo-lista">
+        <li *ngFor="let nombre of nombresEquipo">{{ nombre }}</li>
+      </ul>
+    </div>
+  </div>
+</ion-content>

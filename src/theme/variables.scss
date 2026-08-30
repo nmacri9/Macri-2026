@@ -1,2 +1,25 @@
-// For information on how to create your own theme, please refer to:
-// https://ionicframework.com/docs/theming/
+:root {
+  /* Paleta colores Cepa */
+  --ion-color-bordo: #6B002B;
+  --ion-color-bordo-rgb: 107, 0, 43;
+  --ion-color-bordo-contrast: #ffffff;
+  --ion-color-bordo-contrast-rgb: 255, 255, 255;
+  --ion-color-bordo-shade: #5e0026;
+  --ion-color-bordo-tint: #7a1a40;
+
+  --ion-color-rosa: #A37684;
+  --ion-color-rosa-rgb: 163, 118, 132;
+  --ion-color-rosa-contrast: #ffffff;
+  --ion-color-rosa-contrast-rgb: 255, 255, 255;
+  --ion-color-rosa-shade: #8f6874;
+  --ion-color-rosa-tint: #ac8490;
+
+  --ion-color-crema: #FCF3E1;
+  --ion-color-crema-rgb: 252, 243, 225;
+  --ion-color-crema-contrast: #000000;
+  --ion-color-crema-contrast-rgb: 0, 0, 0;
+  --ion-color-crema-shade: #dfd6c6;
+  --ion-color-crema-tint: #fdf5e4;
+
+  --ion-color-blanco: #FAF9F7;
+}

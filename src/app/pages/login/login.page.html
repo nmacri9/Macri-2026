@@ -1,0 +1,58 @@
+<ion-content class="login-content">
+    <div class="login-container">
+    <div class="login-header">
+    <img src="assets/icono.png" alt="Logo Cepa" class="login-logo" />
+    <div class="login-divider"></div>
+  </div>
+
+    <h2 class="login-title">Bienvenido</h2>
+    <p class="login-subtitle">Ingresá tus datos para continuar</p>
+
+    <form class="login-form">
+      <ion-item lines="none" class="login-item">
+        <ion-icon name="mail-outline" slot="start"></ion-icon>
+        <ion-input
+          label="Correo electrónico"
+          labelPlacement="floating"
+          type="email"
+          placeholder="nombre@correo.com">
+        </ion-input>
+      </ion-item>
+
+      <ion-item lines="none" class="login-item">
+        <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+        <ion-input
+          label="Contraseña"
+          labelPlacement="floating"
+          type="password">
+        </ion-input>
+      </ion-item>
+
+      <p class="login-forgot">¿Olvidaste tu contraseña?</p>
+
+      <ion-button expand="block" class="login-submit">Ingresar</ion-button>
+    </form>
+
+    <div class="login-quick-divider">
+      <span></span>
+      <p>Ingreso rápido</p>
+      <span></span>
+    </div>
+
+    <div class="login-quick-access">
+      <ion-button fill="outline" class="quick-btn">
+        <ion-icon name="person-outline" slot="start"></ion-icon>
+        Cliente
+      </ion-button>
+      <ion-button fill="outline" class="quick-btn">
+        <ion-icon name="cafe-outline" slot="start"></ion-icon>
+        Mozo
+      </ion-button>
+      <ion-button fill="outline" class="quick-btn">
+        <ion-icon name="shield-outline" slot="start"></ion-icon>
+        Admin
+      </ion-button>
+    </div>
+
+  </div>
+</ion-content>

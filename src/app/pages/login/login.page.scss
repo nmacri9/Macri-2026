@@ -1,0 +1,142 @@
+.login-content {
+  --background: #FCF3E1;
+}
+
+.login-container {
+  padding: 4px 24px 32px; 
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+
+.login-header {
+  text-align: center;
+  margin-bottom: 8px; 
+}
+
+.login-logo {
+  display: block;
+  width: 85%;
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.login-divider {
+  width: 36px;
+  height: 2px;
+  background: #A37684;
+  opacity: 0.5;
+  margin: 12px auto 0; 
+}
+
+.login-title {
+  font-size: 20px;
+  font-family: 'EB Garamond', serif;
+  font-weight: 500;
+  color: #6B002B;
+  margin: 16px 0 4px; 
+}
+
+.login-subtitle {
+  font-size: 13px;
+  font-family: 'EB Garamond', serif;
+  color: #A37684;
+  margin: 0 0 18px; 
+}
+
+.login-item {
+  --background: #FFFFFF;
+  --border-radius: 12px;
+  --border-color: #e3d3c8;
+  --padding-start: 12px;
+  border: 1px solid #e3d3c8;
+  border-radius: 12px;
+  margin-bottom: 16px;
+
+  ion-icon {
+    color: #A37684;
+    font-size: 18px;
+    margin-right: 8px;
+  }
+}
+
+.login-forgot {
+  text-align: right;
+  font-size: 12px;
+  color: #A37684;
+  margin: 0 0 20px;
+}
+
+.login-submit {
+  --background: #6B002B;
+  --color: #FCF3E1;
+  --border-radius: 12px;
+  height: 44px;
+  font-weight: 500;
+  margin-bottom: 24px;
+}
+
+.login-quick-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+
+  span {
+    flex: 1;
+    height: 1px;
+    background: #e3d3c8;
+  }
+
+  p {
+    font-size: 10px;
+    color: #A37684;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    white-space: nowrap;
+    margin: 0;
+  }
+}
+
+.login-quick-access {
+  display: flex;
+  gap: 8px;
+
+  .quick-btn {
+    flex: 1;
+    --border-color: #6B002B;
+    --color: #6B002B;
+    --border-radius: 10px;
+    font-size: 11px;
+    height: 38px;
+  }
+}
+
+// Medidas de celu
+
+@media (max-width: 400px) {
+  .login-container {
+    padding: 4px 20px 24px;
+  }
+
+  .login-logo {
+    max-width: 180px; 
+  }
+
+  .login-header {
+    margin-bottom: 4px;
+  }
+
+  .login-item {
+    margin-bottom: 12px; 
+  }
+
+  .login-submit {
+    margin-bottom: 18px;
+  }
+
+  .quick-btn {
+    height: 44px; 
+    font-size: 12px;
+  }
+}

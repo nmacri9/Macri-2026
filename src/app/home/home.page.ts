@@ -6,7 +6,7 @@ import { SupabaseService } from '../services/supabase.service';
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
-  imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonButton],
+  imports: [IonHeader, IonToolbar, IonTitle, IonContent],
 })
 export class HomePage {
   constructor() {}

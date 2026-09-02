@@ -1,17 +1,30 @@
 <ion-content class="login-content">
-    <div class="login-container">
-    <div class="login-header">
-    <img src="assets/icono.png" alt="Logo Cepa" class="login-logo" />
-    <div class="login-divider"></div>
+  
+  <!-- // SPINNER EXIGIDO (Aparece cuando isLoading es true) -->
+  <div *ngIf="isLoading" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+    <img src="assets/icono.png" alt="Cargando..." class="login-logo spinner-animation" />
+    <p>Iniciando sesión...</p>
   </div>
+
+  <!-- CONTENEDOR PRINCIPAL (Se esconde mientras carga) -->
+  <div class="login-container" *ngIf="!isLoading">
+    <div class="login-header">
+      <img src="assets/icono.png" alt="Logo Cepa" class="login-logo" />
+      <div class="login-divider"></div>
+    </div>
 
     <h2 class="login-title">Bienvenido</h2>
     <p class="login-subtitle">Ingresá tus datos para continuar</p>
 
-    <form class="login-form">
+    <!-- 1. Enlace del Formulario y el evento Submit -->
+    <form class="login-form" [formGroup]="loginForm" (ngSubmit)="iniciarSesion()">
+      
       <ion-item lines="none" class="login-item">
         <ion-icon name="mail-outline" slot="start"></ion-icon>
+
+        <!-- 2. Enlace del control 'email' -->
         <ion-input
+          formControlName="email"
           label="Correo electrónico"
           labelPlacement="floating"
           type="email"
@@ -19,18 +32,35 @@
         </ion-input>
       </ion-item>
 
+      <!-- 3. Mensaje de error individual -->
+      <div *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.invalid">
+        <small style="color: var(--ion-color-danger); padding-left: 16px;">Correo inválido.</small>
+      </div>
+
       <ion-item lines="none" class="login-item">
         <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+        <!-- 2. Enlace del control 'clave' -->
         <ion-input
+          formControlName="clave"
           label="Contraseña"
           labelPlacement="floating"
           type="password">
         </ion-input>
       </ion-item>
+      <!-- 3. Mensaje de error individual -->
+      <div *ngIf="loginForm.get('clave')?.touched && loginForm.get('clave')?.invalid">
+        <small style="color: var(--ion-color-danger); padding-left: 16px;">Mínimo 6 caracteres.</small>
+      </div>
+
+      <!-- 3. Mensaje de error general (en lugar de Alert) -->
+      <ion-text color="danger" *ngIf="errorMessage" class="ion-text-center" style="display: block; margin-top: 10px;">
+        <p><strong>{{ errorMessage }}</strong></p>
+      </ion-text>
 
       <p class="login-forgot">¿Olvidaste tu contraseña?</p>
 
-      <ion-button expand="block" class="login-submit">Ingresar</ion-button>
+      <!-- 4. Boton tipo Submit -->
+      <ion-button type="submit" expand="block" class="login-submit">Ingresar</ion-button>
     </form>
 
     <div class="login-quick-divider">
@@ -39,18 +69,15 @@
       <span></span>
     </div>
 
-    <div class="login-quick-access">
-      <ion-button fill="outline" class="quick-btn">
+    <!-- 5. Ciclo ngFor para evitar botones fijos -->
+    <div class="login-quick-access" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;">
+      <ion-button 
+        *ngFor="let perfil of perfilesRapidos" 
+        (click)="cargarPerfil(perfil)"
+        fill="outline" 
+        class="quick-btn">
         <ion-icon name="person-outline" slot="start"></ion-icon>
-        Cliente
-      </ion-button>
-      <ion-button fill="outline" class="quick-btn">
-        <ion-icon name="cafe-outline" slot="start"></ion-icon>
-        Mozo
-      </ion-button>
-      <ion-button fill="outline" class="quick-btn">
-        <ion-icon name="shield-outline" slot="start"></ion-icon>
-        Admin
+        {{ perfil.rol }}
       </ion-button>
     </div>
 

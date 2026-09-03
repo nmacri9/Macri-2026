@@ -47,18 +47,27 @@
 .login-item {
   --background: #FFFFFF;
   --border-radius: 12px;
-  --border-color: #e3d3c8;
   --padding-start: 12px;
   border: 1px solid #e3d3c8;
-  color: #A37684;
   border-radius: 12px;
   margin-bottom: 16px;
+
+  /*Arreglo error de color inputs, Reemplazo el rojo de error interno de Ionic por el Malva Cepa */
+  --ion-color-danger: #A37684;
+  --ion-color-step-550: #A37684;
+  --highlight-color-invalid: transparent;
+
+  ion-input {
+    --color: #A37684; /* Color del texto normal */
+  }
 
   ion-icon {
     color: #A37684;
     font-size: 18px;
     margin-right: 8px;
+    transition: all 0.3s ease;
   }
+
 }
 
 .login-forgot {

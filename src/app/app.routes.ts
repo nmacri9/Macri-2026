@@ -18,6 +18,10 @@ export const routes: Routes = [
     path: 'login',
     loadComponent: () => import('./pages/login/login.page').then( m => m.LoginPage)
   },
+  { 
+    path: 'alta-plato',
+    loadComponent: () => import('./pages/alta-plato/alta-plato.page').then( m => m.AltaPlatoPage)
+  },
   {
     path: 'alta-bebida',
     loadComponent: () => import('./pages/alta-bebida/alta-bebida').then( m => m.AltaBebidaPage)

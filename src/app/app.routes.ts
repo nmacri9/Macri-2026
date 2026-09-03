@@ -17,5 +17,9 @@ export const routes: Routes = [
     path: 'login',
     loadComponent: () => import('./pages/login/login.page').then( m => m.LoginPage)
   },
+  {
+    path: 'alta-plato',
+    loadComponent: () => import('./pages/alta-plato/alta-plato.page').then( m => m.AltaPlatoPage)
+  },
 
 ];

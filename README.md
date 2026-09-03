@@ -26,7 +26,7 @@ Responsable: Nicolas Macri
 - Ícono generado y ajustado con Adobe Express / herramientas de IA.
 - Paleta de colores definida:
   - Bordó: `#6B002B`
-  - Malva: `#A37684`
+  - Marron oscuro: `##3A2B30`
   - Crema: `#FCF3E1`
   - Blanco hueso: `#FAF9F7`
 - Variables de color aplicadas globalmente en `src/theme/variables.scss`.

@@ -11,36 +11,36 @@
 
 .login-header {
   text-align: center;
-  margin-bottom: 8px; 
+  margin-bottom: 0px; 
 }
 
 .login-logo {
   display: block;
   width: 85%;
   max-width: 320px;
-  margin: 0 auto;
+  margin: -40px auto 0;
 }
 
 .login-divider {
   width: 36px;
   height: 2px;
-  background: #A37684;
+  background: #3a2b30;
   opacity: 0.5;
-  margin: 12px auto 0; 
+  margin: -35px auto 0; 
 }
 
 .login-title {
-  font-size: 20px;
+  font-size: 30px;
   font-family: 'EB Garamond', serif;
   font-weight: 500;
   color: #6B002B;
-  margin: 16px 0 4px; 
+  margin: 4px 0 4px; 
 }
 
 .login-subtitle {
-  font-size: 13px;
+  font-size: 20px;
   font-family: 'EB Garamond', serif;
-  color: #A37684;
+  color: #3a2b30;
   margin: 0 0 18px; 
 }
 
@@ -50,12 +50,12 @@
   --border-color: #e3d3c8;
   --padding-start: 12px;
   border: 1px solid #e3d3c8;
-  color: #A37684;
+  color: #3a2b30;
   border-radius: 12px;
   margin-bottom: 16px;
 
   ion-icon {
-    color: #A37684;
+    color: #3a2b30;
     font-size: 18px;
     margin-right: 8px;
   }
@@ -63,8 +63,9 @@
 
 .login-forgot {
   text-align: right;
-  font-size: 12px;
-  color: #A37684;
+  font-family: 'EB Garamond', serif;
+  font-size: 18px;
+  color: #3a2b30;
   margin: 0 0 20px;
 }
 
@@ -90,8 +91,9 @@
   }
 
   p {
-    font-size: 10px;
-    color: #A37684;
+    font-size: 16px;
+    font-family: 'EB Garamond', serif;
+    color: #3a2b30;
     text-transform: uppercase;
     letter-spacing: 1.5px;
     white-space: nowrap;

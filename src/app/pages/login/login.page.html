@@ -33,8 +33,8 @@
       </ion-item>
 
       <!-- 3. Mensaje de error individual -->
-      <div *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.invalid">
-        <small style="color: var(--ion-color-danger); padding-left: 16px;">Correo inválido.</small>
+      <div *ngIf="(loginForm.get('email')?.dirty || formEnviado) && loginForm.get('email')?.invalid">
+      <small style="color: var(--ion-color-danger); padding-left: 16px;">Correo inválido.</small>
       </div>
 
       <ion-item lines="none" class="login-item">
@@ -44,12 +44,14 @@
           formControlName="clave"
           label="Contraseña"
           labelPlacement="floating"
-          type="password">
+          type="password"
+          placeholder="Ingrese su contraseña">
+          
         </ion-input>
       </ion-item>
       <!-- 3. Mensaje de error individual -->
-      <div *ngIf="loginForm.get('clave')?.touched && loginForm.get('clave')?.invalid">
-        <small style="color: var(--ion-color-danger); padding-left: 16px;">Mínimo 6 caracteres.</small>
+      <div *ngIf="(loginForm.get('clave')?.dirty || formEnviado) && loginForm.get('clave')?.invalid">
+      <small style="color: var(--ion-color-danger); padding-left: 16px;">Mínimo 6 caracteres.</small>
       </div>
 
       <!-- 3. Mensaje de error general (en lugar de Alert) -->

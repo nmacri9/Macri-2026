@@ -20,14 +20,18 @@ export class LoginPage implements OnInit {
   loginForm!: FormGroup;
   isLoading = false;
   errorMessage = '';
+  formEnviado = false;
 
   // Array para los botones de ingreso rapido
   perfilesRapidos = [
     { rol: 'Dueño', email: 'dueno@cepa.com', clave: '123456' },
     { rol: 'Supervisor', email: 'supervisor@cepa.com', clave: '123456' },
+    { rol: 'Metre', email: 'metre@cepa.com', clave: '123456' },
     { rol: 'Mozo', email: 'mozo@cepa.com', clave: '123456' },
+    { rol: 'Cocinero', email: 'cocinero@cepa.com', clave: '123456' },
+    { rol: 'Cantinero', email: 'cantinero@cepa.com', clave: '123456' },
     { rol: 'Cliente Reg.', email: 'cliente@cepa.com', clave: '123456' },
-    { rol: 'Anonimo', email: '', clave: '' }
+    { rol: 'Anónimo', email: '', clave: '' }
   ];
 
   constructor(
@@ -64,10 +68,12 @@ export class LoginPage implements OnInit {
 
   // Funcion que se ejecuta al darle al boton principal de "Ingresar"
   async iniciarSesion() {
+    this.formEnviado = true;
+
     if (this.loginForm.invalid) {
       this.errorMessage = 'Formato de correo o clave inválidos.';
       await Haptics.impact({ style: ImpactStyle.Heavy }); // Hace vibrar el celular
-      this.loginForm.markAllAsTouched();
+      // this.loginForm.markAllAsTouched();
       return;
     }
 

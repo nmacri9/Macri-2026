@@ -33,7 +33,6 @@ import {
         IonTitle,
         IonContent,
         IonItem,
-        IonLabel,
         IonInput,
         IonButton,
         IonSpinner,
@@ -68,19 +67,25 @@ import {
         async seleccionarFoto(index: number, fuente: 'camera' | 'photos') {
         try {
             const image = await Camera.getPhoto({
-                quality: 80,
-                allowEditing: false,
-                resultType: CameraResultType.Uri,
-                source: fuente === 'camera' ? CameraSource.Camera : CameraSource.Photos
+            quality: 60,
+            allowEditing: false,
+            resultType: CameraResultType.Base64, // <-- Cambiamos a Base64
+            source: fuente === 'camera' ? CameraSource.Camera : CameraSource.Photos
             });
 
-            if (image.webPath) {
-                const response = await fetch(image.webPath);
-                const blob = await response.blob();
-                const file = new File([blob], `bebida_foto_${index + 1}.jpg`, { type: 'image/jpeg' });
+            if (image.base64String) {
+            // Convertir Base64 a File directamente (100% compatible Web y Mobile)
+            const byteCharacters = atob(image.base64String);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+            const blob = new Blob([byteArray], { type: `image/${image.format || 'jpeg'}` });
+            const file = new File([blob], `bebida_foto_${index + 1}.${image.format || 'jpg'}`, { type: `image/${image.format || 'jpeg'}` });
 
-                this.fotos[index] = file;
-                this.previews[index] = image.webPath;
+            this.fotos[index] = file;
+            this.previews[index] = `data:image/${image.format || 'jpeg'};base64,${image.base64String}`;
             }
         } catch (error) {
             console.log('Selección cancelada o fallo cámara', error);
@@ -117,7 +122,7 @@ import {
                 activo: true
             };
 
-            // Llamada al servicio con la nueva BD de São Paulo
+            
             await this.productosService.crearProductoConImagenes(nuevaBebida, fotosCompletas);
 
             this.mensajeExito = '¡Bebida registrada con éxito en la carta!';

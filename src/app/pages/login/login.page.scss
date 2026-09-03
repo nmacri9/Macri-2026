@@ -68,13 +68,13 @@
   border-radius: 12px;
   margin-bottom: 16px;
 
-  /*Arreglo error de color inputs, Reemplazo el rojo de error interno de Ionic por el Malva Cepa */
-  --ion-color-danger: #A37684;
-  --ion-color-step-550: #A37684;
+  /*Arreglo error de color inputs, Reemplazo el rojo de error interno de Ionic por el Marron oscuro Cepa */
+  --ion-color-danger: #3a2b30;
+  --ion-color-step-550: #3a2b30;
   --highlight-color-invalid: transparent;
 
   ion-input {
-    --color: #A37684; /* Color del texto normal */
+    --color: #3a2b30; /* Color del texto normal */
   }
 
   ion-icon {

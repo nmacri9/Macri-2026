@@ -83,9 +83,12 @@
             <ion-icon name="camera-outline"></ion-icon>
           </div>
 
-          <div *ngIf="foto.previewUrl" class="foto-edit-overlay">
-            <ion-icon name="create-outline"></ion-icon>
-          </div>
+          <button
+            *ngIf="foto.previewUrl"
+            class="foto-remove-btn"
+            (click)="quitarFoto(i, $event)">
+            <ion-icon name="close-outline"></ion-icon>
+          </button>
         </div>
       </div>
 

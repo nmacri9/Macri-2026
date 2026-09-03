@@ -1,9 +1,9 @@
 <ion-content class="login-content">
   
   <!-- // SPINNER EXIGIDO (Aparece cuando isLoading es true) -->
-  <div *ngIf="isLoading" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-    <img src="assets/icono.png" alt="Cargando..." class="login-logo spinner-animation" />
-    <p>Iniciando sesión...</p>
+  <div *ngIf="isLoading" class="loading-overlay">
+  <img src="assets/icono.png" alt="Cargando..." class="login-logo spinner-animation" />
+  <p class="loading-text">Iniciando sesión...</p>
   </div>
 
   <!-- CONTENEDOR PRINCIPAL (Se esconde mientras carga) -->

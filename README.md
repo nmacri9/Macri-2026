@@ -1,73 +1,78 @@
-# Cepa - Gastronomía & Reserva
+# 🍷 Cepa - Gastronomía & Reserva
 
-Trabajo Final Integrador (TFI) desarrollado con Angular + Ionic + Capacitor.
-
-## Organización del equipo
-
-Antes de comenzar el desarrollo, el equipo realizó una reunión virtual para dividir las tareas según los siguientes roles:
-
-- **Integrante 1:** Mateo — Backend, BD y Servicios (Supabase)  
-- **Integrante 2:** Nicolas — UI/UX y Componentes Visuales (Ionic)
-- **Integrante 3:** Matias — Formularios, Validaciones y Autenticación
-- **Integrante 4:** Jaled — Arquitectura, Ruteo y Seguridad (Angular)
+Trabajo Final Integrador (TFI) — Aplicación móvil desarrollada con Angular, Ionic y Capacitor.
 
 ---
 
-## Integrante 1 - Backend, BD y Servicios 
- Responsable: Mateo Garcia
+## 👥 Equipo y Ramas de Trabajo
 
-## Integrante 2 — UI/UX y Componentes Visuales (Ionic)
-
-Responsable: Nicolas Macri
-
-### Tareas realizadas
-
-**1. Diseño del ícono y paleta de colores**
-- Ícono generado y ajustado con Adobe Express / herramientas de IA.
-- Paleta de colores definida:
-  - Bordó: `#6B002B`
-  - Marron oscuro: `##3A2B30`
-  - Crema: `#FCF3E1`
-  - Blanco hueso: `#FAF9F7`
-- Variables de color aplicadas globalmente en `src/theme/variables.scss`.
-- Assets nativos (ícono y splash estático) generados con `@capacitor/assets` para Android.
-
-**2. Splash Screen**
-- Splash estático generado vía Capacitor (`icon.png`, `splash.png`).
-- Splash dinámico (Angular) en `src/app/pages/splash/`:
-  - Muestra el logo de la marca y los nombres del equipo.
-  - Animación de entrada (fade-in).
-  - Navegación automática a `/login` luego de 3 segundos.
-
-**3. Pantalla de Login**
-- Maquetado completo en `src/app/pages/login/` usando componentes nativos de Ionic (`ion-item`, `ion-input`, `ion-button`, `ion-icon`).
-- Campos de correo electrónico y contraseña con íconos.
-- Botón principal de "Ingresar".
-- Sección de accesos rápidos (Cliente / Mozo / Admin) con estilo diferenciado (outline).
-- Diseño responsive, validado en vista mobile (media queries para pantallas ≤400px).
-- Tipografía EB Garamond aplicada para mantener coherencia visual con el logo de marca.
-
-
-### Archivos modificados/creados
-- `src/theme/variables.scss`
-- `src/app/pages/splash/` (`.html`, `.ts`, `.scss`)
-- `src/app/pages/login/` (`.html`, `.ts`, `.scss`)
-- `src/assets/icono.png`, `src/assets/icon.png`
-- `resources/icon.png`, `resources/splash.png`
-- `src/index.html` (import de fuente EB Garamond)
+| Apellido y Nombre | Rama Principal (Branch) | Responsabilidad Core |
+| :--- | :--- | :--- |
+| **Garcia, Mateo**  | Backend y Base de Datos |
+| **Macri, Nicolas** | UI/UX y Vistas Frontend |
+| **Goncalves, Matias**  | Formularios y Autenticación |
+| **Breyaoui, Jaled**  | Arquitectura y Ruteo |
 
 ---
 
-## Integrante 3 — Formularios, Validaciones y Autenticación
+## 🚀 Seguimiento de Módulos y Objetivos
 
-Responsable: Matias
+### 👨‍💻 Macri, Nicolas
+* **Branch:** `nico-alta-platos`
+* **Período de tarea:** 27/08/2026 — 03/09/2026
+* **Observaciones / Reasignaciones:** Tareas completadas en tiempo y forma. *(No hubo necesidad de reasignar plazos ni módulos).*
+* **Módulos asignados:**
+  * [x] **UI/UX y Assets:** Diseño de ícono, definición de paleta de colores global (`variables.scss`) y generación de assets nativos (Capacitor).
+  * [x] **Splash Screen:** Integración estática y dinámica con animación de entrada (fade-in) y ruteo automático.
+  * [x] **Login:** Maquetado responsive validado para móviles, con botones de acceso rápido.
+  * [x] **Alta de Plato:** Contenedores adaptables para 3 fotos simultáneas sin scroll nativo, cumpliendo pautas UI de la cátedra.
 
-_(Completar: Formularios Reactivos, validaciones de correo/clave, botones de ingreso rápido conectados, integración con Supabase)_
+### 👨‍💻 Garcia, Mateo
+* **Branch:** `mateo-backend` *(Ajustar)*
+* **Período de tarea:** [DD/MM/AAAA] — [DD/MM/AAAA]
+* **Observaciones / Reasignaciones:** Ninguna por el momento. *(Si no se logra terminar la funcionalidad, detallar aquí la reprogramación o el nuevo integrante a cargo).*
+* **Módulos asignados:**
+  * [ ] Backend, Base de Datos y Servicios.
+  * [ ] Integración general con Supabase.
+
+### 👨‍💻 Goncalves, Matias
+* **Branch:** `matias-auth` *(Ajustar)*
+* **Período de tarea:** [DD/MM/AAAA] — [DD/MM/AAAA]
+* **Observaciones / Reasignaciones:** Ninguna por el momento.
+* **Módulos asignados:**
+  * [ ] Formularios Reactivos y validaciones (correo/clave).
+  * [ ] Lógica de Autenticación con Supabase.
+  * [ ] Conexión lógica de botones de ingreso rápido.
+
+### 👨‍💻 Breyaoui, Jaled
+* **Branch:** `jaled-arquitectura` *(Ajustar)*
+* **Período de tarea:** [DD/MM/AAAA] — [DD/MM/AAAA]
+* **Observaciones / Reasignaciones:** Ninguna por el momento.
+* **Módulos asignados:**
+  * [ ] Arquitectura general y sistema de ruteo (`app-routing`).
+  * [ ] Implementación de Guards y seguridad.
+  * [ ] Estructura de componentes compartidos.
 
 ---
 
-## Integrante 4 — Arquitectura, Ruteo y Seguridad
+## 📂 Archivos Modificados Destacados
+* `src/theme/variables.scss`
+* `src/app/app.routes.ts`
+* `src/app/pages/splash/`, `src/app/pages/login/`, `src/app/pages/alta-plato/`
+* `resources/icon.png`, `resources/splash.png`
 
-Responsable: Jaled
+---
 
-_(Completar: app-routing, Guards, estructura de carpetas y componentes compartidos)_
+## 📸 Índice de Imágenes del Proyecto
+
+> *A continuación se detallan todas las capturas correspondientes a íconos, pantallas de presentación, formularios y listados del proyecto.*
+
+| # | Componente / Pantalla | Enlace de visualización |
+| :-: | :--- | :--- |
+| **1** | Ícono de la aplicación | [Ver imagen](./ruta-a-imagen/icono.png) |
+| **2** | Splash Screen Estático | [Ver imagen](./ruta-a-imagen/splash-estatico.png) |
+| **3** | Splash Screen Dinámico | [Ver imagen](./ruta-a-imagen/splash-dinamico.png) |
+| **4** | Login: Pantalla principal | [Ver imagen](./ruta-a-imagen/login.png) |
+| **5** | Login: Accesos Rápidos | [Ver imagen](./ruta-a-imagen/login-accesos.png) |
+| **6** | Alta de Plato: Vista completa | [Ver imagen](./ruta-a-imagen/alta-plato.png) |
+| **7** | Alta de Plato: Validaciones | [Ver imagen](./ruta-a-imagen/alta-plato-errores.png) |

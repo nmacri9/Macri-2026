@@ -2,7 +2,7 @@
 
   <app-cepa-spinner *ngIf="cargando"></app-cepa-spinner>
 
-  <form [formGroup]="registroForm" (ngSubmit)="registrar()">
+  <form [formGroup]="registroForm" (ngSubmit)="registrar()" [hidden]="cargando">
 
 
     <!-- Hero: foto del empleado + escaneo de DNI como acciones contextuales -->
@@ -68,7 +68,7 @@
 
       <ion-item class="field" lines="none">
         <ion-icon name="briefcase-outline" slot="start"></ion-icon>
-        <ion-select formControlName="perfil" label="Perfil" labelPlacement="floating" [interfaceOptions]="{ cssClass: 'alerta-tema-login' }">
+        <ion-select formControlName="perfil" label="Perfil" labelPlacement="floating">
         <ion-select-option value="COCINERO">Cocinero</ion-select-option>
         <ion-select-option value="MOZO">Mozo</ion-select-option>
         <ion-select-option value="CANTINERO">Cantinero</ion-select-option>
@@ -80,6 +80,10 @@
     <!-- Manejo de errores general -->
     <div class="form-error" *ngIf="formEnviado && registroForm.invalid">
       <small>Por favor, revise los campos vacíos o incorrectos.</small>
+    </div>
+
+    <div class="form-error" *ngIf="errorSupabase">
+      <small>{{ errorSupabase }}</small>
     </div>
 
     <div class="submit-spacer"></div>

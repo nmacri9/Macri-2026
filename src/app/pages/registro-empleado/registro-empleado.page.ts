@@ -22,6 +22,7 @@ export class RegistroEmpleadoPage implements OnInit {
   registroForm!: FormGroup;
   fotoPreview: string | undefined;
   formEnviado = false;
+  errorSupabase: string | undefined;
 
 
   cargando = false;
@@ -89,7 +90,10 @@ export class RegistroEmpleadoPage implements OnInit {
   }
 
   async registrar() {
+    if (this.cargando) return;
+
     this.formEnviado = true;
+    this.errorSupabase = undefined;
 
     if (this.registroForm.invalid) {
       await Haptics.impact({ style: ImpactStyle.Heavy });
@@ -105,7 +109,15 @@ export class RegistroEmpleadoPage implements OnInit {
 
      const datosEmpleado = this.registroForm.value;
 
-     // 1. Crear el usuario en Supabase Auth (Tabla auth.users)
+      // Guardamos la sesión actual (la del admin/dueño que está haciendo el
+      // alta) porque signUp() más abajo va a autenticar el navegador como el
+      // EMPLEADO NUEVO, reemplazando la sesión actual. La restauramos al final.
+      const { data: sesionAdmin } = await this.supabase.getClient().auth.getSession();
+
+      // 1. Crear el usuario en Supabase Auth (Tabla auth.users)
+      // Requiere que "Confirm email" esté DESACTIVADO en Authentication > Settings,
+      // si no, signUp no da sesión activa y el insert de abajo choca con RLS,
+      // y además cuenta contra el rate limit de envío de mails.
       const { data: authData, error: authError } = await this.supabase.getClient().auth.signUp({
         email: datosEmpleado.email,
         password: datosEmpleado.clave,
@@ -133,6 +145,15 @@ export class RegistroEmpleadoPage implements OnInit {
 
       if (dbError) throw dbError;
 
+      // Restauramos la sesión del admin para que no quede logueado como el
+      // empleado que se acaba de crear.
+      if (sesionAdmin.session) {
+        await this.supabase.getClient().auth.setSession({
+          access_token: sesionAdmin.session.access_token,
+          refresh_token: sesionAdmin.session.refresh_token,
+        });
+      }
+
       console.log('Empleado guardado exitosamente en Supabase');
       
       // Limpieza del formulario tras guardar con éxito
@@ -140,8 +161,12 @@ export class RegistroEmpleadoPage implements OnInit {
       this.formEnviado = false;
       this.fotoPreview = undefined;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error al guardar en Supabase:', error);
+      // Ahora el error real se muestra en pantalla, no solo en la consola
+      this.errorSupabase = error?.message
+        ? `No se pudo guardar: ${error.message}`
+        : 'No se pudo guardar el empleado. Intente nuevamente.';
       // Vibración de feedback si la base de datos falla
       await Haptics.impact({ style: ImpactStyle.Heavy });
     } finally {

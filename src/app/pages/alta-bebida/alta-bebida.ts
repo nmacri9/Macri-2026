@@ -19,6 +19,10 @@ import {
     IonIcon,
     IonTextarea
 } from '@ionic/angular'
+import { addIcons } from 'ionicons';
+import { cameraOutline, imagesOutline, wineOutline, documentTextOutline, timeOutline, cashOutline, beerOutline } from 'ionicons/icons';
+
+
 
 @Component({
     selector: 'app-alta-bebida',
@@ -52,7 +56,17 @@ import {
         constructor(
         private fb: FormBuilder,
         private productosService: ProductosService
-        ) {}
+        ) {
+        addIcons({
+        'camera-outline': cameraOutline,
+        'images-outline': imagesOutline,
+        'wine-outline': wineOutline,
+        'document-text-outline': documentTextOutline,
+        'time-outline': timeOutline,
+        'cash-outline': cashOutline,
+        'beer-outline': beerOutline
+        });
+    }
 
         ngOnInit() {
         this.formBebida = this.fb.group({

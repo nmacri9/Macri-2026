@@ -1,6 +1,9 @@
 <ion-content class="ion-padding">
 
+  <app-cepa-spinner *ngIf="cargando"></app-cepa-spinner>
+
   <form [formGroup]="registroForm" (ngSubmit)="registrar()">
+
 
     <!-- Hero: foto del empleado + escaneo de DNI como acciones contextuales -->
     <div class="avatar-hero">
@@ -65,12 +68,12 @@
 
       <ion-item class="field" lines="none">
         <ion-icon name="briefcase-outline" slot="start"></ion-icon>
-        <ion-select formControlName="perfil" label="Perfil" labelPlacement="floating">
-          <ion-select-option value="COCINERO">Cocinero</ion-select-option>
-          <ion-select-option value="MOZO">Mozo</ion-select-option>
-          <ion-select-option value="CANTINERO">Cantinero</ion-select-option>
-          <ion-select-option value="METRE">Metre</ion-select-option>
-        </ion-select>
+        <ion-select formControlName="perfil" label="Perfil" labelPlacement="floating" [interfaceOptions]="{ cssClass: 'alerta-tema-login' }">
+        <ion-select-option value="COCINERO">Cocinero</ion-select-option>
+        <ion-select-option value="MOZO">Mozo</ion-select-option>
+        <ion-select-option value="CANTINERO">Cantinero</ion-select-option>
+        <ion-select-option value="METRE">Metre</ion-select-option>
+</ion-select>
       </ion-item>
     </section>
 
@@ -83,7 +86,14 @@
   </form>
 
   <div class="submit-bar">
-    <ion-button class="btn-submit" type="button" expand="block" (click)="registrar()">Guardar Empleado</ion-button>
+    <ion-button 
+    class="btn-submit" 
+    type="button" 
+    expand="block" 
+    (click)="registrar()" 
+    [disabled]="cargando">
+      {{ cargando ? 'Guardando...' : 'Guardar Empleado' }}
+    </ion-button>
   </div>
 
 </ion-content>

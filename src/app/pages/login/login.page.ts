@@ -7,6 +7,8 @@ import { addIcons } from 'ionicons';
 import { mailOutline, lockClosedOutline, personOutline, cafeOutline, shieldOutline } from 'ionicons/icons';
 import { Haptics, ImpactStyle } from '@capacitor/haptics'; // Requisito de vibracion
 import { AuthService } from '../../services/auth.service';
+import { CepaSpinnerComponent } from '../../shared/components/cepa-spinner/cepa-spinner.component';
+
 
 @Component({
   selector: 'app-login',
@@ -14,7 +16,7 @@ import { AuthService } from '../../services/auth.service';
   styleUrls: ['./login.page.scss'],
   standalone: true,
   // IMPORTANTE: Agrego ReactiveFormsModule aca para que funcione el formulario
-  imports: [IonContent, IonItem, IonInput, IonButton, IonIcon, IonText, CommonModule, ReactiveFormsModule]
+  imports: [IonContent, IonItem, IonInput, IonButton, IonIcon, IonText, CommonModule, ReactiveFormsModule, CepaSpinnerComponent]
 })
 export class LoginPage implements OnInit {
   loginForm!: FormGroup;
@@ -85,7 +87,7 @@ export class LoginPage implements OnInit {
       this.isLoading = true; // Activa el spinner visual
       this.cdr.detectChanges();
       
-      
+      await new Promise(resolve => setTimeout(resolve, 1500));
       const usuarioLogueado = await this.authservice.login(email, clave); 
       
       // Si pasa la línea anterior sin errores, el login fue exitoso

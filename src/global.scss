@@ -35,3 +35,47 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import '@ionic/angular/css/palettes/dark.system.css';
+
+
+
+/* ============================================
+   TEMA ALERTA LOGIN (Va en global.scss)
+   ============================================ */
+.alerta-tema-login {
+  --background: #FCF3E1; 
+}
+
+/* 1. Color del Título ("Perfil") */
+.alerta-tema-login .alert-title {
+  color: #6B002B !important;
+  font-family: 'EB Garamond', serif; /* Opcional: para que coincida con tus otros títulos */
+  font-size: 22px;
+}
+
+/* 2. Color de los botones ("CANCEL", "OK") */
+.alerta-tema-login .alert-button {
+  color: #6B002B !important; 
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+}
+
+/* Color del texto de las opciones desmarcadas */
+.alerta-tema-login .alert-radio-label {
+  color: #A37684 !important;
+}
+
+/* Color del borde del circulito desmarcado */
+.alerta-tema-login .alert-radio-icon {
+  border-color: #A37684 !important;
+}
+
+/* Color del texto de la opción seleccionada */
+.alerta-tema-login [aria-checked="true"] .alert-radio-label {
+  color: #6B002B !important;
+  font-weight: bold;
+}
+
+/* Color del centro del circulito marcado */
+.alerta-tema-login .alert-radio-inner {
+  background-color: #6B002B !important;
+}

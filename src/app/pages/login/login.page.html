@@ -1,10 +1,8 @@
 <ion-content class="login-content">
   
   <!-- // SPINNER EXIGIDO (Aparece cuando isLoading es true) -->
-  <div *ngIf="isLoading" class="loading-overlay">
-  <img src="assets/icono.png" alt="Cargando..." class="login-logo spinner-animation" />
-  <p class="loading-text">Iniciando sesión...</p>
-  </div>
+  
+  <app-cepa-spinner *ngIf="isLoading" [texto]="'Iniciando sesión...'"></app-cepa-spinner>
 
   <!-- CONTENEDOR PRINCIPAL (Se esconde mientras carga) -->
   <div class="login-container" *ngIf="!isLoading">

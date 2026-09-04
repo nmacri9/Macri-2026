@@ -1,0 +1,99 @@
+<ion-content class="ion-padding">
+
+  <app-cepa-spinner *ngIf="cargando"></app-cepa-spinner>
+
+  <form [formGroup]="registroForm" (ngSubmit)="registrar()">
+
+
+    <!-- Hero: foto del empleado + escaneo de DNI como acciones contextuales -->
+    <div class="avatar-hero">
+      <button type="button" class="avatar-ring" (click)="tomarFoto()">
+        <img *ngIf="fotoPreview" [src]="fotoPreview" class="avatar-img" alt="Foto empleado">
+        <ion-icon *ngIf="!fotoPreview" name="camera-outline" class="avatar-placeholder"></ion-icon>
+        <span class="avatar-badge">
+          <ion-icon name="camera"></ion-icon>
+        </span>
+      </button>
+
+      <small class="avatar-error" *ngIf="(registroForm.get('foto')?.dirty || formEnviado) && registroForm.get('foto')?.invalid">
+        La foto es obligatoria.
+      </small>
+
+      <h2 class="page-title">Alta de Empleado</h2>
+
+      <ion-button type="button" fill="clear" size="small" class="scan-link" (click)="escanearDNI()">
+        <ion-icon name="qr-code-outline" slot="start"></ion-icon>
+        Escanear DNI
+      </ion-button>
+    </div>
+
+    <!-- Campos autocompletables por DNI -->
+    <section class="form-section">
+      <h3 class="section-label">Datos personales</h3>
+
+      <ion-item class="field" lines="none">
+        <ion-icon name="person-outline" slot="start"></ion-icon>
+        <ion-input formControlName="nombres" label="Nombres" labelPlacement="floating" type="text"></ion-input>
+      </ion-item>
+
+      <ion-item class="field" lines="none">
+        <ion-icon name="person-outline" slot="start"></ion-icon>
+        <ion-input formControlName="apellidos" label="Apellidos" labelPlacement="floating" type="text"></ion-input>
+      </ion-item>
+
+      <ion-item class="field" lines="none">
+        <ion-icon name="card-outline" slot="start"></ion-icon>
+        <ion-input formControlName="dni" label="DNI" labelPlacement="floating" type="tel"></ion-input>
+      </ion-item>
+
+      <ion-item class="field" lines="none">
+        <ion-icon name="document-text-outline" slot="start"></ion-icon>
+        <ion-input formControlName="cuil" label="CUIL" labelPlacement="floating" type="tel"></ion-input>
+      </ion-item>
+    </section>
+
+    <!-- Campos manuales -->
+    <section class="form-section">
+      <h3 class="section-label">Acceso al sistema</h3>
+
+      <ion-item class="field" lines="none">
+        <ion-icon name="mail-outline" slot="start"></ion-icon>
+        <ion-input formControlName="email" label="Correo Electrónico" labelPlacement="floating" type="email"></ion-input>
+      </ion-item>
+
+      <ion-item class="field" lines="none">
+        <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+        <ion-input formControlName="clave" label="Contraseña temporal" labelPlacement="floating" type="password"></ion-input>
+      </ion-item>
+
+      <ion-item class="field" lines="none">
+        <ion-icon name="briefcase-outline" slot="start"></ion-icon>
+        <ion-select formControlName="perfil" label="Perfil" labelPlacement="floating" [interfaceOptions]="{ cssClass: 'alerta-tema-login' }">
+        <ion-select-option value="COCINERO">Cocinero</ion-select-option>
+        <ion-select-option value="MOZO">Mozo</ion-select-option>
+        <ion-select-option value="CANTINERO">Cantinero</ion-select-option>
+        <ion-select-option value="METRE">Metre</ion-select-option>
+</ion-select>
+      </ion-item>
+    </section>
+
+    <!-- Manejo de errores general -->
+    <div class="form-error" *ngIf="formEnviado && registroForm.invalid">
+      <small>Por favor, revise los campos vacíos o incorrectos.</small>
+    </div>
+
+    <div class="submit-spacer"></div>
+  </form>
+
+  <div class="submit-bar">
+    <ion-button 
+    class="btn-submit" 
+    type="button" 
+    expand="block" 
+    (click)="registrar()" 
+    [disabled]="cargando">
+      {{ cargando ? 'Guardando...' : 'Guardar Empleado' }}
+    </ion-button>
+  </div>
+
+</ion-content>

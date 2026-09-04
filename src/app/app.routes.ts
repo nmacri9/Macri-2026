@@ -9,7 +9,8 @@ export const routes: Routes = [
     path: '',
     redirectTo: 'home',
     pathMatch: 'full',
-  },  {
+  },
+  {
     path: 'splash',
     loadComponent: () => import('./pages/splash/splash.page').then( m => m.SplashPage)
   },
@@ -20,6 +21,14 @@ export const routes: Routes = [
   {
     path: 'registro-empleado',
     loadComponent: () => import('./pages/registro-empleado/registro-empleado.page').then( m => m.RegistroEmpleadoPage)
+  },
+  { 
+    path: 'alta-plato',
+    loadComponent: () => import('./pages/alta-plato/alta-plato.page').then( m => m.AltaPlatoPage)
+  },
+  {
+    path: 'alta-bebida',
+    loadComponent: () => import('./pages/alta-bebida/alta-bebida').then( m => m.AltaBebidaPage)
   },
 
 ];

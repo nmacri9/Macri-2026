@@ -1,3 +1,18 @@
+.loading-overlay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.loading-text {
+  color: #6B002B; // bordó
+  font-size: 20px;
+  margin-top: 12px;
+}
+
+
 .login-content {
   --background: #FCF3E1;
 }
@@ -13,37 +28,37 @@
 
 .login-header {
   text-align: center;
-  margin-bottom: 8px; 
+  margin-bottom: 0px; 
 }
 
 .login-logo {
   display: block;
   width: 85%;
   max-width: 320px;
-  margin: 0 auto;
+  margin: -40px auto 0;
 }
 
 .login-divider {
   width: 36px;
   height: 2px;
-  background: #A37684;
+  background: #3a2b30;
   opacity: 0.5;
-  margin: 12px auto 0; 
+  margin: -35px auto 0; 
 }
 
 
 .login-title {
-  font-size: 20px;
+  font-size: 30px;
   font-family: 'EB Garamond', serif;
   font-weight: 500;
   color: #6B002B;
-  margin: 16px 0 4px; 
+  margin: 4px 0 4px; 
 }
 
 .login-subtitle {
-  font-size: 13px;
+  font-size: 20px;
   font-family: 'EB Garamond', serif;
-  color: #A37684;
+  color: #3a2b30;
   margin: 0 0 18px; 
 }
 
@@ -52,20 +67,21 @@
   --border-radius: 12px;
   --padding-start: 12px;
   border: 1px solid #e3d3c8;
+  color: #3a2b30;
   border-radius: 12px;
   margin-bottom: 16px;
 
-  /*Arreglo error de color inputs, Reemplazo el rojo de error interno de Ionic por el Malva Cepa */
-  --ion-color-danger: #A37684;
-  --ion-color-step-550: #A37684;
+  /*Arreglo error de color inputs, Reemplazo el rojo de error interno de Ionic por el Marron oscuro Cepa */
+  --ion-color-danger: #3a2b30;
+  --ion-color-step-550: #3a2b30;
   --highlight-color-invalid: transparent;
 
   ion-input {
-    --color: #A37684; /* Color del texto normal */
+    --color: #3a2b30; /* Color del texto normal */
   }
 
   ion-icon {
-    color: #A37684;
+    color: #3a2b30;
     font-size: 18px;
     margin-right: 8px;
     transition: all 0.3s ease;
@@ -75,8 +91,9 @@
 
 .login-forgot {
   text-align: right;
-  font-size: 12px;
-  color: #A37684;
+  font-family: 'EB Garamond', serif;
+  font-size: 18px;
+  color: #3a2b30;
   margin: 0 0 20px;
 }
 
@@ -102,8 +119,9 @@
   }
 
   p {
-    font-size: 10px;
-    color: #A37684;
+    font-size: 16px;
+    font-family: 'EB Garamond', serif;
+    color: #3a2b30;
     text-transform: uppercase;
     letter-spacing: 1.5px;
     white-space: nowrap;

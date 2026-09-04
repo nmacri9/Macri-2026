@@ -1,17 +1,27 @@
 import { Injectable } from '@angular/core';
 import { SupabaseService } from './supabase.service';
 
+export type RolUsuario = 
+    | 'DUENO' 
+    | 'SUPERVISOR' 
+    | 'COCINERO' 
+    | 'CANTINERO' 
+    | 'MOZO' 
+    | 'METRE' 
+    | 'CLIENTE_REGISTRADO' 
+    | 'CLIENTE_ANONIMO';
+
 @Injectable({
     providedIn: 'root'
 })
 export class AuthService {
-
     private supabase;
 
     constructor(private supabaseService: SupabaseService) {
     this.supabase = this.supabaseService.getClient();
     }
 
+  // Registro de cliente registrado
     async registrarCliente(
     email: string,
     password: string,
@@ -20,7 +30,6 @@ export class AuthService {
     dni?: string,
     cuil?: string
     ) {
-
     const { data, error } = await this.supabase.auth.signUp({
         email,
         password,
@@ -30,81 +39,49 @@ export class AuthService {
             apellidos,
             dni,
             cuil,
-            perfil_id: 7
+            rol: 'CLIENTE_REGISTRADO',
+            estado: 'PENDIENTE'
         }
         }
     });
 
-    if (error) {
-        throw error;
-    }
-
+    if (error) throw error;
     return data;
     }
 
     async login(email: string, password: string) {
-
-    const { data, error } =
-        await this.supabase.auth.signInWithPassword({
+    const { data, error } = await this.supabase.auth.signInWithPassword({
         email,
         password
-        });
+    });
 
-    if (error) {
-        throw error;
-    }
-
+    if (error) throw error;
     return data;
     }
 
     async logout() {
-
     const { error } = await this.supabase.auth.signOut();
-
-    if (error) {
-        throw error;
-    }
+    if (error) throw error;
     }
 
     async obtenerUsuarioActual() {
-
-    const { data, error } =
-        await this.supabase.auth.getUser();
-
-    if (error) {
-        return null;
-    }
-
+    const { data, error } = await this.supabase.auth.getUser();
+    if (error) return null;
     return data.user;
     }
 
+  // Obtener perfil directamente de la tabla 'usuarios'
     async obtenerPerfil() {
-
     const usuario = await this.obtenerUsuarioActual();
-
-    if (!usuario) {
-        return null;
-    }
+    if (!usuario) return null;
 
     const { data, error } = await this.supabase
         .from('usuarios')
-        .select(`
-        *,
-        perfiles (
-            id,
-            nombre,
-            descripcion
-        )
-        `)
+        .select('*')
         .eq('id', usuario.id)
         .single();
 
-    if (error) {
-        throw error;
-    }
-
+    if (error) throw error;
     return data;
     }
-
-
 }

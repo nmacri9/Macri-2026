@@ -1,15 +1,12 @@
-    <ion-header class="ion-no-border">
-    <ion-toolbar style="--background: #FCF3E1;">
-        <ion-title style="color: #6B002B; font-family: 'EB Garamond', serif;">Carga de Bebidas</ion-title>
-    </ion-toolbar>
-    </ion-header>
+    <app-cepa-header [titulo]="'Alta de Bebidas'"></app-cepa-header>
+
 
     <ion-content class="alta-content">
     <!-- Spinner / Indicador de Carga Excluyente -->
-    <div *ngIf="cargando" class="spinner-container">
-        <ion-spinner name="crescent" style="color: #6B002B;"></ion-spinner>
-        <p>Cargando bebida en la carta...</p>
-    </div>
+    <app-cepa-spinner 
+        *ngIf="cargando" 
+        [texto]="'Cargando bebida en la carta...'">
+    </app-cepa-spinner>
 
     <div class="alta-container" *ngIf="!cargando">
         
@@ -22,6 +19,7 @@
         <form [formGroup]="formBebida" (ngSubmit)="guardar()">
         
         <!-- Nombre de la bebida -->
+        
         <ion-item class="alta-item" lines="none">
             <ion-icon name="wine-outline" slot="start"></ion-icon>
             <ion-input 

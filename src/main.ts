@@ -4,6 +4,7 @@ import { RouteReuseStrategy, provideRouter, withComponentInputBinding, withPrelo
 import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular';
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
+import { SplashScreen } from '@capacitor/splash-screen';
 import '@angular/compiler';
 
 bootstrapApplication(AppComponent, {
@@ -12,6 +13,8 @@ bootstrapApplication(AppComponent, {
     provideIonicAngular(),
     provideRouter(routes, withPreloading(PreloadAllModules), withComponentInputBinding()),
   ],
+}).then(() => {
+  SplashScreen.hide();
 });
 
 defineCustomElements(window);

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
@@ -6,17 +6,17 @@ import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { ProductosService } from '../../services/productos.service';
 import { Producto } from '../../interfaces/producto';
 import {
-  IonHeader,
-  IonToolbar,
-  IonTitle,
   IonContent,
   IonItem,
   IonInput,
   IonButton,
-  IonSpinner,
   IonIcon,
   IonTextarea
 } from '@ionic/angular';
+import { addIcons } from 'ionicons';
+import { cameraOutline, imagesOutline, restaurantOutline, documentTextOutline, timeOutline, cashOutline } from 'ionicons/icons';
+import { CepaSpinnerComponent } from '../../shared/components/cepa-spinner/cepa-spinner.component';
+import { CepaHeaderComponent } from '../../shared/components/cepa-header/cepa-header.component';
 
 @Component({
   selector: 'app-alta-plato',
@@ -26,16 +26,14 @@ import {
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    IonHeader,
-    IonToolbar,
-    IonTitle,
     IonContent,
     IonItem,
     IonInput,
+    IonTextarea,
     IonButton,
-    IonSpinner,
     IonIcon,
-    IonTextarea
+    CepaSpinnerComponent,
+    CepaHeaderComponent
   ]
 })
 export class AltaPlatoPage implements OnInit {
@@ -49,8 +47,18 @@ export class AltaPlatoPage implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private productosService: ProductosService
-  ) {}
+    private productosService: ProductosService,
+    private cdr: ChangeDetectorRef
+  ) {
+    addIcons({
+      'camera-outline': cameraOutline,
+      'images-outline': imagesOutline,
+      'restaurant-outline': restaurantOutline,
+      'document-text-outline': documentTextOutline,
+      'time-outline': timeOutline,
+      'cash-outline': cashOutline
+    });
+  }
 
   ngOnInit() {
     this.platoForm = this.fb.group({
@@ -82,6 +90,7 @@ export class AltaPlatoPage implements OnInit {
 
         this.fotos[index] = file;
         this.previews[index] = `data:image/${image.format || 'jpeg'};base64,${image.base64String}`;
+        this.cdr.detectChanges();
       }
     } catch (error) {
       console.log('Selección cancelada o fallo cámara', error);
@@ -105,6 +114,7 @@ export class AltaPlatoPage implements OnInit {
     }
 
     this.cargando = true;
+    this.cdr.detectChanges();
 
     try {
       const nuevoPlato: Producto = {
@@ -128,6 +138,7 @@ export class AltaPlatoPage implements OnInit {
       await this.notificarError(err.message || 'Ocurrió un error al guardar el plato.');
     } finally {
       this.cargando = false;
+      this.cdr.detectChanges();
     }
   }
 

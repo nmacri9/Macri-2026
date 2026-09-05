@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
@@ -47,6 +47,7 @@ import { CepaHeaderComponent } from '../../shared/components/cepa-header/cepa-he
         mensajeExito: string = '';
 
         constructor(
+        private cdr: ChangeDetectorRef,
         private fb: FormBuilder,
         private productosService: ProductosService
         ) {
@@ -136,6 +137,9 @@ import { CepaHeaderComponent } from '../../shared/components/cepa-header/cepa-he
             
             // Resetear Formulario
             this.formBebida.reset();
+            this.formBebida.markAsPristine();
+            this.formBebida.markAsUntouched();
+
             this.fotos = [null, null, null];
             this.previews = [null, null, null];
 
@@ -143,6 +147,7 @@ import { CepaHeaderComponent } from '../../shared/components/cepa-header/cepa-he
             await this.notificarError(err.message || 'Ocurrió un error al guardar la bebida.');
         } finally {
             this.cargando = false;
+            this.cdr.detectChanges();
         }
         }
 

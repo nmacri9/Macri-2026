@@ -1,179 +1,138 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { IonContent, IonItem, IonInput, IonTextarea, IonButton, IonIcon, IonNote } from '@ionic/angular';
-import { addIcons } from 'ionicons';
-import { cameraOutline, closeOutline } from 'ionicons/icons';
-import { Haptics, NotificationType } from '@capacitor/haptics';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-import { SupabaseService } from '../../services/supabase.service';
-import { Router } from '@angular/router';
-
-interface FotoSlot {
-  previewUrl: string | null;
-  file: File | null;
-}
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { ProductosService } from '../../services/productos.service';
+import { Producto } from '../../interfaces/producto';
+import {
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+  IonItem,
+  IonInput,
+  IonButton,
+  IonSpinner,
+  IonIcon,
+  IonTextarea
+} from '@ionic/angular';
 
 @Component({
   selector: 'app-alta-plato',
   templateUrl: './alta-plato.page.html',
   styleUrls: ['./alta-plato.page.scss'],
-  imports: [IonContent, IonItem, IonInput, IonTextarea, IonButton, IonIcon, IonNote, CommonModule, ReactiveFormsModule]
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonItem,
+    IonInput,
+    IonButton,
+    IonSpinner,
+    IonIcon,
+    IonTextarea
+  ]
 })
-export class AltaPlatoPage {
+export class AltaPlatoPage implements OnInit {
+  platoForm!: FormGroup;
 
-  platoForm: FormGroup;
-
-  fotos: FotoSlot[] = [
-    { previewUrl: null, file: null },
-    { previewUrl: null, file: null },
-    { previewUrl: null, file: null }
-  ];
-
-  guardando = false;
-  errorGeneral: string | null = null;
+  fotos: (File | null)[] = [null, null, null];
+  previews: (string | null)[] = [null, null, null];
+  cargando: boolean = false;
+  mensajeError: string = '';
+  mensajeExito: string = '';
 
   constructor(
     private fb: FormBuilder,
-    private supabaseService: SupabaseService,
-    private router: Router
-  ) {
-    addIcons({ cameraOutline, closeOutline });
+    private productosService: ProductosService
+  ) {}
 
+  ngOnInit() {
     this.platoForm = this.fb.group({
-      nombre: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(30)]],
-      descripcion: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(300)]],
-      tiempoElaboracion: ['', [Validators.required, Validators.min(1), Validators.max(600), Validators.pattern(/^[0-9]+$/)]],
-      precio: ['', [Validators.required, Validators.min(1), Validators.pattern(/^[0-9]+(\.[0-9]{1,2})?$/)]]
+      nombre: ['', [Validators.required, Validators.minLength(2)]],
+      descripcion: ['', [Validators.required, Validators.minLength(5)]],
+      tiempo_elaboracion: ['', [Validators.required, Validators.min(1)]],
+      precio: ['', [Validators.required, Validators.min(1)]]
     });
   }
 
-  async seleccionarFoto(index: number) {
+  async seleccionarFoto(index: number, fuente: 'camera' | 'photos') {
     try {
-      const imagen = await Camera.getPhoto({
-        quality: 80,
+      const image = await Camera.getPhoto({
+        quality: 60,
         allowEditing: false,
-        resultType: CameraResultType.DataUrl,
-        source: CameraSource.Prompt,
-        promptLabelHeader: 'Foto del plato',
-        promptLabelPhoto: 'Elegir de galería',
-        promptLabelPicture: 'Tomar foto'
+        resultType: CameraResultType.Base64,
+        source: fuente === 'camera' ? CameraSource.Camera : CameraSource.Photos
       });
 
-      if (imagen.dataUrl) {
-        const file = this.dataUrlAFile(imagen.dataUrl, `foto-plato-${index}.jpg`);
-        this.fotos[index] = { previewUrl: imagen.dataUrl, file };
+      if (image.base64String) {
+        const byteCharacters = atob(image.base64String);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: `image/${image.format || 'jpeg'}` });
+        const file = new File([blob], `plato_foto_${index + 1}.${image.format || 'jpg'}`, { type: `image/${image.format || 'jpeg'}` });
+
+        this.fotos[index] = file;
+        this.previews[index] = `data:image/${image.format || 'jpeg'};base64,${image.base64String}`;
       }
     } catch (error) {
-      console.log('Selección de foto cancelada o error:', error);
+      console.log('Selección cancelada o fallo cámara', error);
     }
   }
 
-  quitarFoto(index: number, event: Event) {
-    event.stopPropagation();
-    this.fotos[index] = { previewUrl: null, file: null };
-  }
-
-  private dataUrlAFile(dataUrl: string, nombreArchivo: string): File {
-    const partes = dataUrl.split(',');
-    const mimeMatch = partes[0].match(/:(.*?);/);
-    const mime = mimeMatch ? mimeMatch[1] : 'image/jpeg';
-    const binario = atob(partes[1]);
-    let n = binario.length;
-    const bytes = new Uint8Array(n);
-    while (n--) {
-      bytes[n] = binario.charCodeAt(n);
-    }
-    return new File([bytes], nombreArchivo, { type: mime });
-  }
-
-  async onSubmit() {
-    this.errorGeneral = null;
+  async guardar() {
+    this.mensajeError = '';
+    this.mensajeExito = '';
 
     if (this.platoForm.invalid) {
       this.platoForm.markAllAsTouched();
-      await Haptics.notification({ type: NotificationType.Error });
+      await this.notificarError('Por favor complete todos los campos requeridos con valores válidos.');
       return;
     }
 
-    const fotosCompletas = this.fotos.every(f => f.file !== null);
-    if (!fotosCompletas) {
-      this.errorGeneral = 'Debés cargar las 3 fotos del plato.';
-      await Haptics.notification({ type: NotificationType.Error });
+    const fotosCompletas = this.fotos.filter(f => f !== null) as File[];
+    if (fotosCompletas.length !== 3) {
+      await this.notificarError('Debe ingresar obligatoriamente las 3 fotografías requeridas.');
       return;
     }
 
-    this.guardando = true;
-    const supabase = this.supabaseService.getClient();
+    this.cargando = true;
 
     try {
-      const nombreValor = this.nombre.value.trim();
+      const nuevoPlato: Producto = {
+        nombre: this.platoForm.value.nombre,
+        descripcion: this.platoForm.value.descripcion,
+        tipo: 'PLATO',
+        precio: Number(this.platoForm.value.precio),
+        tiempo_elaboracion: Number(this.platoForm.value.tiempo_elaboracion),
+        activo: true
+      };
 
-      // 1. Verificar que no exista ya un plato con ese nombre
-      const { data: existente, error: errorBusqueda } = await supabase
-        .from('productos')
-        .select('id')
-        .eq('nombre', nombreValor)
-        .eq('tipo', 'PLATO')
-        .maybeSingle();
+      await this.productosService.crearProductoConImagenes(nuevoPlato, fotosCompletas);
 
-      if (errorBusqueda) throw errorBusqueda;
+      this.mensajeExito = '¡Plato registrado con éxito en el menú!';
 
-      if (existente) {
-        this.errorGeneral = 'Ya existe un plato con ese nombre en el menú.';
-        await Haptics.notification({ type: NotificationType.Error });
-        this.guardando = false;
-        return;
-      }
+      this.platoForm.reset();
+      this.fotos = [null, null, null];
+      this.previews = [null, null, null];
 
-      // 2. Subir las 3 fotos y juntar sus URLs públicas
-      const urls: string[] = [];
-      for (let i = 0; i < this.fotos.length; i++) {
-        const file = this.fotos[i].file!;
-        const path = `plato/${nombreValor.replace(/\s+/g, '-')}-${i + 1}-${Date.now()}.jpg`;
-
-        const { error: errorUpload } = await supabase.storage
-          .from('productos')
-          .upload(path, file);
-
-        if (errorUpload) throw errorUpload;
-
-        const { data: urlData } = supabase.storage
-          .from('productos')
-          .getPublicUrl(path);
-
-        urls.push(urlData.publicUrl);
-      }
-
-      // 3. Insertar el producto con el array de imágenes ya incluido
-      const { error: errorInsert } = await supabase
-        .from('productos')
-        .insert({
-          nombre: nombreValor,
-          descripcion: this.descripcion.value.trim(),
-          tipo: 'PLATO',
-          precio: parseFloat(this.precio.value),
-          tiempo_elaboracion: parseInt(this.tiempoElaboracion.value, 10),
-          imagenes: urls
-        });
-
-      if (errorInsert) throw errorInsert;
-
-      await Haptics.notification({ type: NotificationType.Success });
-      this.router.navigate(['/home']);
-
-    } catch (error: any) {
-      console.error('Error al guardar el plato:', error);
-      this.errorGeneral = 'Ocurrió un error al guardar el plato. Intentá de nuevo.';
-      await Haptics.notification({ type: NotificationType.Error });
+    } catch (err: any) {
+      await this.notificarError(err.message || 'Ocurrió un error al guardar el plato.');
     } finally {
-      this.guardando = false;
+      this.cargando = false;
     }
   }
 
-  get nombre() { return this.platoForm.get('nombre')!; }
-  get descripcion() { return this.platoForm.get('descripcion')!; }
-  get tiempoElaboracion() { return this.platoForm.get('tiempoElaboracion')!; }
-  get precio() { return this.platoForm.get('precio')!; }
-
+  private async notificarError(mensaje: string) {
+    this.mensajeError = mensaje;
+    await Haptics.impact({ style: ImpactStyle.Heavy });
+  }
 }

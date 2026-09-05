@@ -43,6 +43,29 @@
    ============================================ */
 .alerta-tema-login {
   --background: #FCF3E1; 
+  --color: #3A2A2E;
+  --backdrop-opacity: 0.35;
+}
+
+.alerta-tema-login .alert-wrapper {
+  background: #FCF3E1 !important;
+  border: 1px solid #E3D3C8;
+  border-radius: 16px;
+  box-shadow: 0 18px 42px rgba(58, 42, 46, 0.28);
+}
+
+.alerta-tema-login .alert-head {
+  border-bottom: 1px solid #E3D3C8;
+  padding-bottom: 14px;
+}
+
+.alerta-tema-login .alert-radio-group {
+  border-bottom: 1px solid #E3D3C8;
+}
+
+.alerta-tema-login .alert-message,
+.alerta-tema-login .alert-radio-label {
+  color: #3A2A2E !important;
 }
 
 /* 1. Color del Título ("Perfil") */

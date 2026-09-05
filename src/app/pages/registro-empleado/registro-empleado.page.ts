@@ -46,7 +46,25 @@ export class RegistroEmpleadoPage implements OnInit {
 
   async escanearDNI() {
     try {
-      await BarcodeScanner.requestPermissions();
+      // 1. Verificamos e instalamos el módulo de Google Play (Crítico en Android)
+      const { available } = await BarcodeScanner.isGoogleBarcodeScannerModuleAvailable();
+      if (!available) {
+        this.errorSupabase = 'Instalando módulo de escáner... aguarde.';
+        this.cdr.detectChanges();
+        await BarcodeScanner.installGoogleBarcodeScannerModule();
+      }
+
+      // 2. Pedimos permisos y validamos explícitamente
+      const permissions = await BarcodeScanner.requestPermissions();
+      if (permissions.camera !== 'granted' && permissions.camera !== 'limited') {
+        throw new Error('Permiso de cámara denegado por el usuario.');
+      }
+
+      // Limpiamos mensajes previos antes de abrir la cámara
+      this.errorSupabase = undefined; 
+      this.cdr.detectChanges();
+
+      // 3. Ejecutamos el escáner
       const result = await BarcodeScanner.scan();
       
       const rawData = result.barcodes[0].rawValue;
@@ -64,8 +82,12 @@ export class RegistroEmpleadoPage implements OnInit {
       } else {
         throw new Error('Formato de DNI inválido');
       }
-    } catch (error) {
+    } catch (error: any) {
       await Haptics.impact({ style: ImpactStyle.Heavy });
+      
+      // 4. Imprimimos el error DIRECTAMENTE en el HTML para que sea imposible no verlo
+      this.errorSupabase = 'Error Escáner: ' + (error.message || 'Fallo desconocido');
+      this.cdr.detectChanges();
       console.error('Error escaner DNI:', error);
     }
   }

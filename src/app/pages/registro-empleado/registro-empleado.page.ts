@@ -83,7 +83,7 @@ export class RegistroEmpleadoPage implements OnInit {
       this.registroForm.patchValue({ foto: this.fotoPreview });
       this.cdr.detectChanges();
     } catch (error: any) {
-      // Ahora sí vas a ver por qué falla si tocas el botón
+     
       alert('Hubo un error al abrir la cámara: ' + error.message);
       console.error('Error cámara:', error);
     }
@@ -107,46 +107,25 @@ export class RegistroEmpleadoPage implements OnInit {
       // Retraso artificial de 1.5 segundos para mantener la experiencia visual
       await new Promise(resolve => setTimeout(resolve, 1500));
 
-     const datosEmpleado = this.registroForm.value;
-
-      // Guardamos la sesión actual (la del admin/dueño que está haciendo el
-      // alta) porque signUp() más abajo va a autenticar el navegador como el
-      // EMPLEADO NUEVO, reemplazando la sesión actual. La restauramos al final.
+      const datosEmpleado = this.registroForm.value;
       const { data: sesionAdmin } = await this.supabase.getClient().auth.getSession();
-
-      // 1. Crear el usuario en Supabase Auth (Tabla auth.users)
-      // Requiere que "Confirm email" esté DESACTIVADO en Authentication > Settings,
-      // si no, signUp no da sesión activa y el insert de abajo choca con RLS,
-      // y además cuenta contra el rate limit de envío de mails.
       const { data: authData, error: authError } = await this.supabase.getClient().auth.signUp({
         email: datosEmpleado.email,
         password: datosEmpleado.clave,
-      });
-
-      if (authError) throw authError;
-      if (!authData.user) throw new Error('No se generó el ID de usuario en Auth.');
-
-      // 2. Insertar el perfil en la tabla public.usuarios con el ID de Auth
-      const { error: dbError } = await this.supabase.getClient()
-        .from('usuarios')
-        .insert([
-          {
-            id: authData.user.id,             
+        options: {
+          data: {
             nombres: datosEmpleado.nombres,
             apellidos: datosEmpleado.apellidos,
             dni: datosEmpleado.dni,
             cuil: datosEmpleado.cuil,
-            email: datosEmpleado.email,
-            rol: datosEmpleado.perfil.toUpperCase(), 
-            foto_url: datosEmpleado.foto,     
-            estado: 'ACTIVO'                  
+            foto_url: datosEmpleado.foto,
+            rol: datosEmpleado.perfil.toUpperCase()
           }
-        ]);
+        }
+      });
 
-      if (dbError) throw dbError;
-
-      // Restauramos la sesión del admin para que no quede logueado como el
-      // empleado que se acaba de crear.
+      if (authError) throw authError;
+      if (!authData.user) throw new Error('No se generó el ID de usuario en Auth.');
       if (sesionAdmin.session) {
         await this.supabase.getClient().auth.setSession({
           access_token: sesionAdmin.session.access_token,
@@ -154,16 +133,14 @@ export class RegistroEmpleadoPage implements OnInit {
         });
       }
 
-      console.log('Empleado guardado exitosamente en Supabase');
+      console.log('Empleado guardado exitosamente por el Trigger');
       
-      // Limpieza del formulario tras guardar con éxito
       this.registroForm.reset();
       this.formEnviado = false;
       this.fotoPreview = undefined;
 
     } catch (error: any) {
       console.error('Error al guardar en Supabase:', error);
-      // Ahora el error real se muestra en pantalla, no solo en la consola
       this.errorSupabase = error?.message
         ? `No se pudo guardar: ${error.message}`
         : 'No se pudo guardar el empleado. Intente nuevamente.';

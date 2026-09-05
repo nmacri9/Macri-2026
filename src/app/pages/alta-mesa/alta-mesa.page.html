@@ -1,0 +1,88 @@
+<ion-content class="ion-padding">
+  <form [formGroup]="mesaForm" (ngSubmit)="guardar()">
+    <div class="avatar-hero">
+      <button type="button" class="avatar-ring" (click)="seleccionarFoto()">
+        <img *ngIf="fotoPreview" [src]="fotoPreview" class="avatar-img" alt="Foto de la mesa">
+        <ion-icon *ngIf="!fotoPreview" name="camera-outline" class="avatar-placeholder"></ion-icon>
+        <span class="avatar-badge">
+          <ion-icon name="camera-outline"></ion-icon>
+        </span>
+      </button>
+
+      <small class="avatar-error" *ngIf="formEnviado && !fotoPreview">La foto es obligatoria.</small>
+      <h2 class="page-title">Alta de Mesa</h2>
+    </div>
+
+    <section class="form-section">
+      <h3 class="section-label">Datos de la mesa</h3>
+
+      <ion-item class="field" lines="none">
+        <ion-icon name="grid-outline" slot="start"></ion-icon>
+        <ion-input formControlName="numero" label="Número de mesa" labelPlacement="floating" type="text" inputmode="numeric"></ion-input>
+      </ion-item>
+      <small class="field-error" *ngIf="numero.invalid && (numero.touched || formEnviado)">
+        <span *ngIf="numero.errors?.['required']">El número es obligatorio.</span>
+        <span *ngIf="numero.errors?.['pattern']">Ingresá solamente números.</span>
+      </small>
+
+      <ion-item class="field" lines="none">
+        <ion-icon name="people-outline" slot="start"></ion-icon>
+        <ion-input formControlName="comensales" label="Cantidad de comensales" labelPlacement="floating" type="text" inputmode="numeric"></ion-input>
+      </ion-item>
+      <small class="field-error" *ngIf="comensales.invalid && (comensales.touched || formEnviado)">
+        Ingresá solamente números.
+      </small>
+
+      <ion-item class="field" lines="none">
+        <ion-icon name="list-outline" slot="start"></ion-icon>
+        <ion-select formControlName="tipo" label="Tipo de mesa" labelPlacement="floating" placeholder="Seleccioná el tipo de mesa" [interfaceOptions]="{ cssClass: 'alerta-tema-login' }">
+          <ion-select-option value="VIP">VIP</ion-select-option>
+          <ion-select-option value="ESTANDAR">Estándar</ion-select-option>
+          <ion-select-option value="MOVILIDAD_REDUCIDA">Movilidad reducida</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <small class="field-error" *ngIf="tipo.invalid && (tipo.touched || formEnviado)">Elegí un tipo de mesa.</small>
+    </section>
+
+    <section class="form-section">
+      <h3 class="section-label">Disponibilidad inicial</h3>
+      <ion-item class="field" lines="none">
+        <ion-icon name="list-outline" slot="start"></ion-icon>
+        <ion-select formControlName="disponibilidad" label="Estado de la mesa" labelPlacement="floating" placeholder="Seleccioná la disponibilidad" [interfaceOptions]="{ cssClass: 'alerta-tema-login' }">
+          <ion-select-option value="VACIA">Vacía</ion-select-option>
+          <ion-select-option value="OCUPADA">Ocupada</ion-select-option>
+          <ion-select-option value="RESERVADA">Reservada</ion-select-option>
+        </ion-select>
+      </ion-item>
+    </section>
+
+    <div class="form-error" *ngIf="errorGeneral || (formEnviado && mesaForm.invalid)">
+      <small>{{ errorGeneral || 'Por favor, revise los campos vacíos o incorrectos.' }}</small>
+    </div>
+
+    <div class="submit-spacer"></div>
+  </form>
+
+  <div class="submit-bar">
+    <ion-button class="btn-submit" type="button" expand="block" (click)="guardar()" [disabled]="guardando">
+      {{ guardando ? 'Guardando...' : 'Guardar Mesa' }}
+    </ion-button>
+  </div>
+
+  <section class="mesas-section" *ngIf="mesas.length > 0">
+    <h3 class="section-label">Mesas registradas</h3>
+    <article class="mesa-card" *ngFor="let mesa of mesas">
+      <img [src]="mesa.foto" [alt]="'Foto de la mesa ' + mesa.numero" class="mesa-photo">
+      <div class="mesa-data">
+        <strong>Mesa {{ mesa.numero }}</strong>
+        <small>{{ mesa.comensales }} comensales · {{ mesa.tipo === 'ESTANDAR' ? 'Estándar' : mesa.tipo === 'MOVILIDAD_REDUCIDA' ? 'Movilidad reducida' : 'VIP' }}</small>
+        <ion-select aria-label="Cambiar disponibilidad" [value]="mesa.disponibilidad" [interfaceOptions]="{ cssClass: 'alerta-tema-login' }" (ionChange)="cambiarDisponibilidad(mesa, $event.detail.value)">
+          <ion-select-option value="VACIA">Vacía</ion-select-option>
+          <ion-select-option value="OCUPADA">Ocupada</ion-select-option>
+          <ion-select-option value="RESERVADA">Reservada</ion-select-option>
+        </ion-select>
+      </div>
+    </article>
+  </section>
+
+</ion-content>

@@ -8,14 +8,14 @@ export type RolUsuario =
     | 'CANTINERO' 
     | 'MOZO' 
     | 'METRE' 
-    | 'CLIENTE_REGISTRADO' 
-    | 'CLIENTE_ANONIMO';
+    | 'CLIENTE_REGISTRADO';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AuthService {
     private supabase;
+    private usuarioActual: any = null;
 
     constructor(private supabaseService: SupabaseService) {
     this.supabase = this.supabaseService.getClient();
@@ -56,17 +56,22 @@ export class AuthService {
     });
 
     if (error) throw error;
+    this.usuarioActual = data.user;
     return data;
     }
 
     async logout() {
     const { error } = await this.supabase.auth.signOut();
     if (error) throw error;
+    this.usuarioActual = null;
     }
 
     async obtenerUsuarioActual() {
+    if (this.usuarioActual) return this.usuarioActual;
+
     const { data, error } = await this.supabase.auth.getUser();
     if (error) return null;
+    this.usuarioActual = data.user;
     return data.user;
     }
 
@@ -79,9 +84,17 @@ export class AuthService {
         .from('usuarios')
         .select('*')
         .eq('id', usuario.id)
-        .single();
+        .maybeSingle();
 
     if (error) throw error;
+
+    if (!data) {
+        console.warn(
+            'El usuario autenticado no tiene perfil en public.usuarios:',
+            { authUserId: usuario.id, email: usuario.email }
+        );
+    }
+
     return data;
     }
 }

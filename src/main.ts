@@ -4,6 +4,7 @@ import { RouteReuseStrategy, provideRouter, withComponentInputBinding, withPrelo
 import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular';
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
+import '@angular/compiler';
 
 bootstrapApplication(AppComponent, {
   providers: [

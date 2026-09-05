@@ -11,7 +11,7 @@ Trabajo Final Integrador (TFI) — Aplicación móvil desarrollada con Angular, 
 | **Garcia, Mateo**  | Backend y Base de Datos |
 | **Macri, Nicolas** | UI/UX y Vistas Frontend |
 | **Goncalves, Matias**  | Formularios y Autenticación |
-| **Breyaoui, Jaled**  | Arquitectura y Ruteo |
+| **Breyaui, Jaled**  | Arquitectura y Ruteo |
 
 ---
 
@@ -44,7 +44,7 @@ Trabajo Final Integrador (TFI) — Aplicación móvil desarrollada con Angular, 
   * [ ] Lógica de Autenticación con Supabase.
   * [ ] Conexión lógica de botones de ingreso rápido.
 
-### 👨‍💻 Breyaoui, Jaled
+### 👨‍💻 Breyaui, Jaled
 * **Branch:** `jaled-arquitectura` *(Ajustar)*
 * **Período de tarea:** [DD/MM/AAAA] — [DD/MM/AAAA]
 * **Observaciones / Reasignaciones:** Ninguna por el momento.

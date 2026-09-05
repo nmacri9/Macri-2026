@@ -22,6 +22,7 @@ export class RegistroEmpleadoPage implements OnInit {
   registroForm!: FormGroup;
   fotoPreview: string | undefined;
   formEnviado = false;
+  errorSupabase: string | undefined;
 
 
   cargando = false;
@@ -82,14 +83,17 @@ export class RegistroEmpleadoPage implements OnInit {
       this.registroForm.patchValue({ foto: this.fotoPreview });
       this.cdr.detectChanges();
     } catch (error: any) {
-      // Ahora sí vas a ver por qué falla si tocas el botón
+     
       alert('Hubo un error al abrir la cámara: ' + error.message);
       console.error('Error cámara:', error);
     }
   }
 
   async registrar() {
+    if (this.cargando) return;
+
     this.formEnviado = true;
+    this.errorSupabase = undefined;
 
     if (this.registroForm.invalid) {
       await Haptics.impact({ style: ImpactStyle.Heavy });
@@ -103,45 +107,43 @@ export class RegistroEmpleadoPage implements OnInit {
       // Retraso artificial de 1.5 segundos para mantener la experiencia visual
       await new Promise(resolve => setTimeout(resolve, 1500));
 
-     const datosEmpleado = this.registroForm.value;
-
-     // 1. Crear el usuario en Supabase Auth (Tabla auth.users)
+      const datosEmpleado = this.registroForm.value;
+      const { data: sesionAdmin } = await this.supabase.getClient().auth.getSession();
       const { data: authData, error: authError } = await this.supabase.getClient().auth.signUp({
         email: datosEmpleado.email,
         password: datosEmpleado.clave,
-      });
-
-      if (authError) throw authError;
-      if (!authData.user) throw new Error('No se generó el ID de usuario en Auth.');
-
-      // 2. Insertar el perfil en la tabla public.usuarios con el ID de Auth
-      const { error: dbError } = await this.supabase.getClient()
-        .from('usuarios')
-        .insert([
-          {
-            id: authData.user.id,             
+        options: {
+          data: {
             nombres: datosEmpleado.nombres,
             apellidos: datosEmpleado.apellidos,
             dni: datosEmpleado.dni,
             cuil: datosEmpleado.cuil,
-            email: datosEmpleado.email,
-            rol: datosEmpleado.perfil.toUpperCase(), 
-            foto_url: datosEmpleado.foto,     
-            estado: 'ACTIVO'                  
+            foto_url: datosEmpleado.foto,
+            rol: datosEmpleado.perfil.toUpperCase()
           }
-        ]);
+        }
+      });
 
-      if (dbError) throw dbError;
+      if (authError) throw authError;
+      if (!authData.user) throw new Error('No se generó el ID de usuario en Auth.');
+      if (sesionAdmin.session) {
+        await this.supabase.getClient().auth.setSession({
+          access_token: sesionAdmin.session.access_token,
+          refresh_token: sesionAdmin.session.refresh_token,
+        });
+      }
 
-      console.log('Empleado guardado exitosamente en Supabase');
+      console.log('Empleado guardado exitosamente por el Trigger');
       
-      // Limpieza del formulario tras guardar con éxito
       this.registroForm.reset();
       this.formEnviado = false;
       this.fotoPreview = undefined;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error al guardar en Supabase:', error);
+      this.errorSupabase = error?.message
+        ? `No se pudo guardar: ${error.message}`
+        : 'No se pudo guardar el empleado. Intente nuevamente.';
       // Vibración de feedback si la base de datos falla
       await Haptics.impact({ style: ImpactStyle.Heavy });
     } finally {

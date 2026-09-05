@@ -7,22 +7,17 @@ import { Producto } from '../../interfaces/producto';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { 
-    IonHeader, 
-    IonToolbar, 
-    IonTitle, 
     IonContent, 
     IonItem, 
-    IonLabel, 
     IonInput, 
     IonButton,
-    IonSpinner,
     IonIcon,
-    IonTextarea
+    IonTextarea,
 } from '@ionic/angular'
 import { addIcons } from 'ionicons';
 import { cameraOutline, imagesOutline, wineOutline, documentTextOutline, timeOutline, cashOutline, beerOutline } from 'ionicons/icons';
-
-
+import { CepaSpinnerComponent } from '../../shared/components/cepa-spinner/cepa-spinner.component'; // Ajustá la ruta según la estructura exacta de tu proyecto
+import { CepaHeaderComponent } from '../../shared/components/cepa-header/cepa-header.component';
 
 @Component({
     selector: 'app-alta-bebida',
@@ -30,20 +25,18 @@ import { cameraOutline, imagesOutline, wineOutline, documentTextOutline, timeOut
     styleUrls: ['./alta-bebida.scss'],
     standalone: true,
     imports: [
-        CommonModule,         
-        ReactiveFormsModule,  
-        IonHeader,
-        IonToolbar,
-        IonTitle,
-        IonContent,
-        IonItem,
-        IonInput,
-        IonButton,
-        IonSpinner,
-        IonIcon, 
-        IonTextarea
-        ]
-    })
+    CommonModule,         
+    ReactiveFormsModule,  
+    IonContent,
+    IonItem,
+    IonInput,
+    IonTextarea,
+    IonButton,
+    IonIcon,
+    CepaSpinnerComponent,
+    CepaHeaderComponent,
+    ]
+})
     export class AltaBebidaPage implements OnInit {
         formBebida!: FormGroup;
         // Guardamos 3 espacios para fotos

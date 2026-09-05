@@ -1,0 +1,23 @@
+.cepa-header-container {
+    box-shadow: 0 2px 8px rgba(107, 0, 43, 0.08);
+    }
+
+.cepa-toolbar {
+    --background: #6B002B !important;
+    --color:  #FCF3E1!important;
+    --border-color: transparent;
+    padding: 0 4px;
+
+.cepa-menu-btn {
+        --color: #FCF3E1 !important;
+        color: #FCF3E1 !important;
+    }
+
+.cepa-title {
+        color: #FCF3E1 !important;
+        font-family: 'EB Garamond', serif;
+        font-size: 1.3rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+}

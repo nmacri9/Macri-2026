@@ -4,5 +4,11 @@
         <ion-menu-button class="cepa-menu-btn"></ion-menu-button>
     </ion-buttons>
         <ion-title class="cepa-title">{{ titulo }}</ion-title>
+
+        <ion-buttons slot="end">
+        <ion-button class="cepa-logout-btn" (click)="cerrarSesion()">
+            <ion-icon slot="icon-only" name="log-out-outline"></ion-icon>
+        </ion-button>
+        </ion-buttons>
         </ion-toolbar>
 </ion-header>

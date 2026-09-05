@@ -1,15 +1,8 @@
-<ion-header class="ion-no-border">
-  <ion-toolbar style="--background: #FCF3E1;">
-    <ion-title style="color: #6B002B; font-family: 'EB Garamond', serif;">Carga de Platos</ion-title>
-  </ion-toolbar>
-</ion-header>
+<app-cepa-header titulo="Carga de Platos"></app-cepa-header>
 
 <ion-content class="alta-content">
-  <!-- Spinner / Indicador de Carga Excluyente -->
-  <div *ngIf="cargando" class="spinner-container">
-    <ion-spinner name="crescent" style="color: #6B002B;"></ion-spinner>
-    <p>Cargando plato en el menú...</p>
-  </div>
+
+  <app-cepa-spinner *ngIf="cargando" texto="Cargando plato en el menú..."></app-cepa-spinner>
 
   <div class="alta-container" *ngIf="!cargando">
 
@@ -21,7 +14,6 @@
 
     <form [formGroup]="platoForm" (ngSubmit)="guardar()">
 
-      <!-- Nombre del plato -->
       <ion-item class="alta-item" lines="none">
         <ion-icon name="restaurant-outline" slot="start"></ion-icon>
         <ion-input
@@ -34,7 +26,6 @@
         El nombre es obligatorio.
       </div>
 
-      <!-- Descripción -->
       <ion-item class="alta-item" lines="none">
         <ion-icon name="document-text-outline" slot="start"></ion-icon>
         <ion-textarea
@@ -47,7 +38,6 @@
         Ingrese una descripción válida.
       </div>
 
-      <!-- Tiempo de elaboración -->
       <ion-item class="alta-item" lines="none">
         <ion-icon name="time-outline" slot="start"></ion-icon>
         <ion-input
@@ -60,7 +50,6 @@
         Ingrese un tiempo válido en minutos.
       </div>
 
-      <!-- Precio -->
       <ion-item class="alta-item" lines="none">
         <ion-icon name="cash-outline" slot="start"></ion-icon>
         <ion-input
@@ -73,7 +62,6 @@
         Ingrese un precio válido.
       </div>
 
-      <!-- Sección de Fotos -->
       <p class="alta-section-label">Fotografías (3 requeridas)</p>
 
       <div class="fotos-grid">
@@ -94,7 +82,6 @@
         </div>
       </div>
 
-      <!-- Banners de Notificación inline (Sin alert) -->
       <div class="banner-error" *ngIf="mensajeError">
         {{ mensajeError }}
       </div>
@@ -103,7 +90,6 @@
         {{ mensajeExito }}
       </div>
 
-      <!-- Botón Submit -->
       <ion-button expand="block" type="submit" class="alta-submit">
         Registrar Plato
       </ion-button>

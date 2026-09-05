@@ -93,12 +93,11 @@ Se implementó de manera integral el módulo de carga de bebidas para la carta, 
 | # | Componente / Pantalla | Enlace de visualización |
 | :-: | :--- | :--- |
 | **1** | Ícono de la aplicación | [Ver imagen](./resources/icon.png) |
-| **2** | Splash Screen Estático | [Ver imagen](./ruta-a-imagen/splash-estatico.png) |
-| **3** | Splash Screen Dinámico | [Ver imagen](./ruta-a-imagen/splash-dinamico.png) |
-| **4** | Login: Pantalla principal | [Ver imagen](./ruta-a-imagen/login.png) |
-| **4** | Foto de prueba: Pantalla principal | [Ver imagen](./capturas/fotoprueba.webp) |
-| **6** | Alta de Mesa: Vista | [Ver imagen](./ruta-a-imagen/alta-mesa.png) |
-| **7** | Alta de Plato: Vista | [Ver imagen](./ruta-a-imagen/alta-plato-.png) |
-| **8** | Alta de Bebida: Vista | [Ver imagen](./ruta-a-imagen/alta-bebida.png) |
-| **9** | Alta de Empleado: Vista | [Ver imagen](./ruta-a-imagen/alta-empleado.png) |
+| **2** | Spinner Dinámico | [Ver imagen](./resources/spinner.jpeg) |
+| **3** | Login: Pantalla principal | [Ver imagen](./resources/login.jpeg) |
+| **4** | Pantalla principal | [Ver imagen](./resources/pantalla-principal.jpeg) |
+| **5** | Alta de Mesa: Vista | [Ver imagen](./resources/alta-mesa.jpeg) |
+| **6** | Alta de Plato: Vista | [Ver imagen](./resources/alta-plato.jpeg) |
+| **7** | Alta de Bebida: Vista | [Ver imagen](./resources/alta-bebidas.jpeg) |
+| **8** | Alta de Empleado: Vista | [Ver imagen](./resources/alta-empleado.jpeg) |
 

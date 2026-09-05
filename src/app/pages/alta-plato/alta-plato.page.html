@@ -1,100 +1,113 @@
-<ion-content class="alta-plato-content">
-  <div class="alta-plato-container">
+<ion-header class="ion-no-border">
+  <ion-toolbar style="--background: #FCF3E1;">
+    <ion-title style="color: #6B002B; font-family: 'EB Garamond', serif;">Carga de Platos</ion-title>
+  </ion-toolbar>
+</ion-header>
 
-    <h2 class="page-title">Nuevo plato</h2>
-    <p class="page-subtitle">Completá los datos para agregarlo al menú</p>
+<ion-content class="alta-content">
+  <!-- Spinner / Indicador de Carga Excluyente -->
+  <div *ngIf="cargando" class="spinner-container">
+    <ion-spinner name="crescent" style="color: #6B002B;"></ion-spinner>
+    <p>Cargando plato en el menú...</p>
+  </div>
 
-    <form [formGroup]="platoForm" (ngSubmit)="onSubmit()">
+  <div class="alta-container" *ngIf="!cargando">
 
-      <ion-item lines="none" class="form-item">
+    <div class="alta-header">
+      <h2 class="alta-title">Alta de Plato</h2>
+      <p class="alta-subtitle">Perfil Cocinero</p>
+      <div class="alta-divider"></div>
+    </div>
+
+    <form [formGroup]="platoForm" (ngSubmit)="guardar()">
+
+      <!-- Nombre del plato -->
+      <ion-item class="alta-item" lines="none">
+        <ion-icon name="restaurant-outline" slot="start"></ion-icon>
         <ion-input
-          label="Nombre del plato"
-          labelPlacement="floating"
-          formControlName="nombre">
+          formControlName="nombre"
+          type="text"
+          placeholder="Nombre del plato">
         </ion-input>
       </ion-item>
-      <ion-note color="danger" class="error-note" *ngIf="nombre.invalid && nombre.touched">
-        <span *ngIf="nombre.errors?.['required']">El nombre es obligatorio.</span>
-        <span *ngIf="nombre.errors?.['minlength']">Debe tener al menos 3 caracteres.</span>
-        <span *ngIf="nombre.errors?.['maxlength']">No puede superar los 60 caracteres.</span>
-      </ion-note>
+      <div class="error-text" *ngIf="platoForm.get('nombre')?.touched && platoForm.get('nombre')?.invalid">
+        El nombre es obligatorio.
+      </div>
 
-      <ion-item lines="none" class="form-item">
+      <!-- Descripción -->
+      <ion-item class="alta-item" lines="none">
+        <ion-icon name="document-text-outline" slot="start"></ion-icon>
         <ion-textarea
-          label="Descripción"
-          labelPlacement="floating"
           formControlName="descripcion"
-          autoGrow="true">
+          rows="2"
+          placeholder="Descripción">
         </ion-textarea>
       </ion-item>
-      <ion-note color="danger" class="error-note" *ngIf="descripcion.invalid && descripcion.touched">
-        <span *ngIf="descripcion.errors?.['required']">La descripción es obligatoria.</span>
-        <span *ngIf="descripcion.errors?.['minlength']">Debe tener al menos 10 caracteres.</span>
-        <span *ngIf="descripcion.errors?.['maxlength']">No puede superar los 300 caracteres.</span>
-      </ion-note>
-
-      <div class="form-row">
-        <div class="form-col">
-          <ion-item lines="none" class="form-item form-item-half">
-            <ion-input
-              label="Tiempo (min)"
-              labelPlacement="floating"
-              type="number"
-              min="1"
-              formControlName="tiempoElaboracion">
-            </ion-input>
-          </ion-item>
-          <ion-note color="danger" class="error-note" *ngIf="tiempoElaboracion.invalid && tiempoElaboracion.touched">
-            <span *ngIf="tiempoElaboracion.errors?.['required']">Obligatorio.</span>
-            <span *ngIf="tiempoElaboracion.errors?.['min']">Mínimo 1 minuto.</span>
-            <span *ngIf="tiempoElaboracion.errors?.['max']">Máximo 600 minutos.</span>
-            <span *ngIf="tiempoElaboracion.errors?.['pattern']">Solo números enteros.</span>
-          </ion-note>
-        </div>
-
-        <div class="form-col">
-          <ion-item lines="none" class="form-item form-item-half">
-            <ion-input
-              label="Precio"
-              labelPlacement="floating"
-              type="number"
-              min="1"
-              formControlName="precio">
-            </ion-input>
-          </ion-item>
-          <ion-note color="danger" class="error-note" *ngIf="precio.invalid && precio.touched">
-            <span *ngIf="precio.errors?.['required']">Obligatorio.</span>
-            <span *ngIf="precio.errors?.['min']">Debe ser mayor a 0.</span>
-            <span *ngIf="precio.errors?.['pattern']">Formato inválido (máx. 2 decimales).</span>
-          </ion-note>
-        </div>
+      <div class="error-text" *ngIf="platoForm.get('descripcion')?.touched && platoForm.get('descripcion')?.invalid">
+        Ingrese una descripción válida.
       </div>
 
-      <p class="fotos-label">Fotos del plato</p>
-      <div class="fotos-container">
-        <div
-          class="foto-slot"
-          *ngFor="let foto of fotos; let i = index"
-          (click)="seleccionarFoto(i)">
+      <!-- Tiempo de elaboración -->
+      <ion-item class="alta-item" lines="none">
+        <ion-icon name="time-outline" slot="start"></ion-icon>
+        <ion-input
+          formControlName="tiempo_elaboracion"
+          type="number"
+          placeholder="Tiempo de elaboración (minutos)">
+        </ion-input>
+      </ion-item>
+      <div class="error-text" *ngIf="platoForm.get('tiempo_elaboracion')?.touched && platoForm.get('tiempo_elaboracion')?.invalid">
+        Ingrese un tiempo válido en minutos.
+      </div>
 
-          <img *ngIf="foto.previewUrl" [src]="foto.previewUrl" class="foto-preview" />
+      <!-- Precio -->
+      <ion-item class="alta-item" lines="none">
+        <ion-icon name="cash-outline" slot="start"></ion-icon>
+        <ion-input
+          formControlName="precio"
+          type="number"
+          placeholder="Precio ($)">
+        </ion-input>
+      </ion-item>
+      <div class="error-text" *ngIf="platoForm.get('precio')?.touched && platoForm.get('precio')?.invalid">
+        Ingrese un precio válido.
+      </div>
 
-          <div *ngIf="!foto.previewUrl" class="foto-placeholder">
-            <ion-icon name="camera-outline"></ion-icon>
+      <!-- Sección de Fotos -->
+      <p class="alta-section-label">Fotografías (3 requeridas)</p>
+
+      <div class="fotos-grid">
+        <div class="foto-card" *ngFor="let slot of [0, 1, 2]; let i = index">
+          <div class="foto-box">
+            <img *ngIf="previews[i]" [src]="previews[i]" alt="Foto {{ i + 1 }}" />
+            <span *ngIf="!previews[i]">Foto {{ i + 1 }}</span>
           </div>
 
-          <button
-            *ngIf="foto.previewUrl"
-            class="foto-remove-btn"
-            (click)="quitarFoto(i, $event)">
-            <ion-icon name="close-outline"></ion-icon>
-          </button>
+          <div class="foto-actions">
+            <ion-button size="small" fill="outline" class="foto-btn" (click)="seleccionarFoto(i, 'camera')">
+              <ion-icon name="camera-outline"></ion-icon>
+            </ion-button>
+            <ion-button size="small" fill="outline" class="foto-btn" (click)="seleccionarFoto(i, 'photos')">
+              <ion-icon name="images-outline"></ion-icon>
+            </ion-button>
+          </div>
         </div>
       </div>
 
-      <ion-button expand="block" type="submit" class="submit-btn">Guardar plato</ion-button>
+      <!-- Banners de Notificación inline (Sin alert) -->
+      <div class="banner-error" *ngIf="mensajeError">
+        {{ mensajeError }}
+      </div>
+
+      <div class="banner-exito" *ngIf="mensajeExito">
+        {{ mensajeExito }}
+      </div>
+
+      <!-- Botón Submit -->
+      <ion-button expand="block" type="submit" class="alta-submit">
+        Registrar Plato
+      </ion-button>
 
     </form>
-
   </div>
 </ion-content>

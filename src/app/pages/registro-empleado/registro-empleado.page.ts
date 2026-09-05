@@ -146,8 +146,11 @@ export class RegistroEmpleadoPage implements OnInit {
         : 'No se pudo guardar el empleado. Intente nuevamente.';
       // Vibración de feedback si la base de datos falla
       await Haptics.impact({ style: ImpactStyle.Heavy });
+      alert('Fallo nativo: ' + JSON.stringify(error));
+      console.error('Error escaner DNI:', error);
     } finally {
       // Oculto el spinner siempre al terminar, ya sea con éxito o error
+      
       this.cargando = false;
       this.cdr.detectChanges();
     }

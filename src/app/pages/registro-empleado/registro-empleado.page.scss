@@ -157,6 +157,27 @@ avatar + título
     font-size: 15px;
   }
 
+  // ion-select no soporta la custom property --color para el valor elegido,
+  // por eso el texto quedaba invisible ("en blanco") después de seleccionar un rol.
+  // Hay que ir directo a las partes internas del shadow DOM.
+  ion-select {
+    &::part(text) {
+      color: var(--color-ink);
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+    }
+
+    &::part(placeholder) {
+      color: var(--color-mauve);
+      opacity: 1;
+    }
+
+    &::part(label) {
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+    }
+  }
+
   ion-icon {
     color: var(--color-mauve);
     font-size: 19px;
@@ -181,7 +202,7 @@ avatar + título
   margin: 4px 4px 15px;
 
   small {
-    font-family: 'Inter', sans-serif;
+    font-family: 'EB Garamond', serif;
     color: var(--color-error);
     font-weight: 600;
     font-size: 15px;

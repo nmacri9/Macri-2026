@@ -92,7 +92,7 @@ Se implementó de manera integral el módulo de carga de bebidas para la carta, 
 
 | # | Componente / Pantalla | Enlace de visualización |
 | :-: | :--- | :--- |
-| **1** | Ícono de la aplicación | [Ver imagen](./ruta-a-imagen/icono.png) |
+| **1** | Ícono de la aplicación | [Ver imagen](./resources/icon.png) |
 | **2** | Splash Screen Estático | [Ver imagen](./ruta-a-imagen/splash-estatico.png) |
 | **3** | Splash Screen Dinámico | [Ver imagen](./ruta-a-imagen/splash-dinamico.png) |
 | **4** | Login: Pantalla principal | [Ver imagen](./ruta-a-imagen/login.png) |

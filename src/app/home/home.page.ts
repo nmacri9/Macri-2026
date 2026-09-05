@@ -11,6 +11,7 @@ import {
   wineOutline
 } from 'ionicons/icons';
 import { AuthService } from '../services/auth.service';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-home',
@@ -22,7 +23,7 @@ export class HomePage {
   nombreUsuario = 'Usuario';
   rolUsuario = 'Rol no disponible';
 
-  constructor(private authService: AuthService) {
+  constructor(private cdr: ChangeDetectorRef,private authService: AuthService) {
     addIcons({
       arrowForwardOutline,
       gridOutline,
@@ -48,6 +49,8 @@ export class HomePage {
       this.nombreUsuario = usuario.email || 'Usuario';
       this.rolUsuario = this.formatearRol(usuario.user_metadata?.['rol']);
 
+      this.cdr.detectChanges();
+
       const perfil = await this.authService.obtenerPerfil();
 
       if (!perfil) {
@@ -60,6 +63,8 @@ export class HomePage {
 
       this.nombreUsuario = nombreCompleto || perfil.email || this.nombreUsuario;
       this.rolUsuario = this.formatearRol(perfil.rol);
+      this.cdr.detectChanges();
+
     } catch (error) {
       console.error('No se pudo cargar el perfil del usuario:', error);
     }

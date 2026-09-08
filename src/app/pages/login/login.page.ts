@@ -8,7 +8,7 @@ import { mailOutline, lockClosedOutline, personOutline, cafeOutline, shieldOutli
 import { Haptics, ImpactStyle } from '@capacitor/haptics'; // Requisito de vibracion
 import { AuthService } from '../../services/auth.service';
 import { CepaSpinnerComponent } from '../../shared/components/cepa-spinner/cepa-spinner.component';
-
+import { AccesoRapidoComponent } from '../../shared/components/acceso-rapido/acceso-rapido.component';
 
 @Component({
   selector: 'app-login',
@@ -16,7 +16,7 @@ import { CepaSpinnerComponent } from '../../shared/components/cepa-spinner/cepa-
   styleUrls: ['./login.page.scss'],
   standalone: true,
   // IMPORTANTE: Agrego ReactiveFormsModule aca para que funcione el formulario
-  imports: [IonContent, IonItem, IonInput, IonButton, IonIcon, IonText, CommonModule, ReactiveFormsModule, CepaSpinnerComponent]
+  imports: [IonContent, IonItem, IonInput, IonButton, IonIcon, IonText, CommonModule, ReactiveFormsModule, CepaSpinnerComponent, AccesoRapidoComponent]
 })
 export class LoginPage implements OnInit {
   loginForm!: FormGroup;
@@ -24,17 +24,6 @@ export class LoginPage implements OnInit {
   errorMessage = '';
   formEnviado = false;
 
-  // Array para los botones de ingreso rapido
-  perfilesRapidos = [
-    { rol: 'Dueño', email: 'dueno@cepa.com', clave: '123456' },
-    { rol: 'Supervisor', email: 'supervisor@cepa.com', clave: '123456' },
-    { rol: 'Metre', email: 'metre@cepa.com', clave: '123456' },
-    { rol: 'Mozo', email: 'mozo@cepa.com', clave: '123456' },
-    { rol: 'Cocinero', email: 'cocinero@cepa.com', clave: '123456' },
-    { rol: 'Cantinero', email: 'cantinero@cepa.com', clave: '123456' },
-    { rol: 'Cliente Reg.', email: 'cliente@cepa.com', clave: '123456' },
-    { rol: 'Anónimo', email: '', clave: '' }
-  ];
 
   constructor(
     private fb: FormBuilder, 

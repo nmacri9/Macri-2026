@@ -1,0 +1,66 @@
+.login-quick-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0 14px;
+  
+  span { 
+    flex: 1; 
+    height: 1px; 
+    background: #C8B29E; 
+  }
+  
+  p { 
+    font-size: 16px; 
+    font-family: 'EB Garamond', serif; 
+    color: #E6D5C3; 
+    text-transform: uppercase; 
+    letter-spacing: 1.5px; 
+    margin: 0; 
+  }
+}
+
+.btn-acceso-rapido {
+  
+  --background: #C8B29E; 
+  --color: #091610; 
+  --border-radius: 12px; 
+  height: 44px; 
+  font-weight: 600; 
+  margin-bottom: 20px;
+}
+
+// Estilos del Modal
+.modal-toolbar { 
+  --background: #1B3B2D; 
+  --color: #E6D5C3; 
+}
+
+.modal-content {
+  --background: #132A20; 
+
+  .perfil-item {
+    --background: #1B3B2D; 
+    --border-color: #132A20; 
+    margin: 4px 8px;
+    border-radius: 8px;
+
+    .rol-title { 
+      font-size: 18px; 
+      font-weight: bold; 
+      color: #E6D5C3; 
+    }
+    
+    .rol-email { 
+      font-size: 14px; 
+      color: #C8B29E; 
+      margin-top: 4px;
+    }
+    
+    ion-avatar { 
+      border: 2px solid #C8B29E; 
+      padding: 2px; 
+      background: #132A20;
+    }
+  }
+}

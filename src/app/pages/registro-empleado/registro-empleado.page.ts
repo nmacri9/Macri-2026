@@ -9,6 +9,8 @@ import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
 import { SupabaseService } from '../../services/supabase.service';
 import { CepaSpinnerComponent } from '../../shared/components/cepa-spinner/cepa-spinner.component';
+import { ModalController, ToastController } from '@ionic/angular';
+import { ConfirmModalComponent } from '../../shared/confirm-modal/confirm-modal.component';
 
 
 @Component({
@@ -27,8 +29,21 @@ export class RegistroEmpleadoPage implements OnInit {
 
   cargando = false;
 
-  constructor(private fb: FormBuilder, private cdr: ChangeDetectorRef,private supabase: SupabaseService) {
-    addIcons({cameraOutline,camera,qrCodeOutline,personOutline,cardOutline,documentTextOutline,mailOutline,lockClosedOutline,briefcaseOutline});
+  constructor(private fb: FormBuilder, 
+    private cdr: ChangeDetectorRef,
+    private supabase: SupabaseService,
+    private modalCtrl: ModalController,
+    private toastCtrl: ToastController) 
+    {
+    addIcons({cameraOutline,
+      camera,
+      qrCodeOutline,
+      personOutline,
+      cardOutline,
+      documentTextOutline,
+      mailOutline,
+      lockClosedOutline,
+      briefcaseOutline});
   }
 
   ngOnInit() {
@@ -46,7 +61,7 @@ export class RegistroEmpleadoPage implements OnInit {
 
   async escanearDNI() {
     try {
-      // 1. Verificamos e instalamos el módulo de Google Play (Crítico en Android)
+      // 1. Verificamos e instalamos el módulo de Google Play 
       const { available } = await BarcodeScanner.isGoogleBarcodeScannerModuleAvailable();
       if (!available) {
         this.errorSupabase = 'Instalando módulo de escáner... aguarde.';
@@ -54,17 +69,17 @@ export class RegistroEmpleadoPage implements OnInit {
         await BarcodeScanner.installGoogleBarcodeScannerModule();
       }
 
-      // 2. Pedimos permisos y validamos explícitamente
+      // 2. Pedimos permisos y validamos explicitamente
       const permissions = await BarcodeScanner.requestPermissions();
       if (permissions.camera !== 'granted' && permissions.camera !== 'limited') {
         throw new Error('Permiso de cámara denegado por el usuario.');
       }
 
-      // Limpiamos mensajes previos antes de abrir la cámara
+      // Limpiamos mensajes previos antes de abrir la camara
       this.errorSupabase = undefined; 
       this.cdr.detectChanges();
 
-      // 3. Ejecutamos el escáner
+      // 3. Ejecuto el escaner
       const result = await BarcodeScanner.scan();
       
       const rawData = result.barcodes[0].rawValue;
@@ -85,7 +100,7 @@ export class RegistroEmpleadoPage implements OnInit {
     } catch (error: any) {
       await Haptics.impact({ style: ImpactStyle.Heavy });
       
-      // 4. Imprimimos el error DIRECTAMENTE en el HTML para que sea imposible no verlo
+      // 4. Imprimimos el error directamente en el HTML para que sea imposible no verlo
       this.errorSupabase = 'Error Escáner: ' + (error.message || 'Fallo desconocido');
       this.cdr.detectChanges();
       console.error('Error escaner DNI:', error);
@@ -109,6 +124,39 @@ export class RegistroEmpleadoPage implements OnInit {
       alert('Hubo un error al abrir la cámara: ' + error.message);
       console.error('Error cámara:', error);
     }
+  }
+
+  async confirmarAlta() {
+    
+    this.formEnviado = true;
+    this.registroForm.markAllAsTouched();
+    if (this.registroForm.invalid) {
+      return; 
+    }
+    const modal = await this.modalCtrl.create({
+      component: ConfirmModalComponent,
+      componentProps: { mensaje: '¿Desea dar de alta a este empleado?' },
+      cssClass: 'modal-alerta'
+    });
+
+    await modal.present();
+    const { data } = await modal.onDidDismiss();
+
+    if (data) {
+      this.registrar(); 
+    }
+  }
+
+
+  async mostrarMensajeExito() {
+    const toast = await this.toastCtrl.create({
+      message: '¡Empleado cargado con éxito!',
+      duration: 2500, 
+      position: 'middle',
+      cssClass: 'toast-exito', 
+      icon: 'checkmark-circle-outline' 
+    });
+    await toast.present();
   }
 
   async registrar() {
@@ -160,6 +208,7 @@ export class RegistroEmpleadoPage implements OnInit {
       this.registroForm.reset();
       this.formEnviado = false;
       this.fotoPreview = undefined;
+      this.mostrarMensajeExito();
 
     } catch (error: any) {
       console.error('Error al guardar en Supabase:', error);

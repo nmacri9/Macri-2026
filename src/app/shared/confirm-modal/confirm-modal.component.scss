@@ -1,0 +1,82 @@
+.modal-card {
+  background-color: #1B3B2D; 
+  color: #E6D5C3; 
+  border: 1px solid #C8B29E; 
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  
+
+  max-width: 320px;
+  width: 100%;
+  margin: 0 auto; 
+  
+  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+h3 {
+  color: #E6D5C3;
+  text-align: center;
+  font-weight: bold;
+  margin-top: 0;
+}
+
+p {
+  text-align: center;
+  font-size: 1.1rem;
+  margin-bottom: 24px;
+}
+
+.botones-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 35px; 
+  margin-top: 10px; 
+}
+
+
+.btn-cancelar {
+  --background: #A83232; 
+  --color: #E6D5C3; 
+  --border-radius: 8px;
+  font-weight: bold;
+  margin: 0;
+  flex: 1;
+}
+
+// Botón de confirmar
+.btn-confirmar {
+  --background: #418756; 
+  --color: #E6D5C3; 
+  --border-radius: 8px;
+  font-weight: bold;
+  margin: 0;
+  flex: 1;
+}
+
+@keyframes popIn {
+  0% { opacity: 0; transform: scale(0.8); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+
+.btn-cancelar::part(native), 
+.btn-confirmar::part(native) {
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.2s ease;
+}
+
+
+.btn-cancelar:hover::part(native), 
+.btn-confirmar:hover::part(native) {
+  transform: scale(1.05);
+  filter: brightness(1.15);
+}
+
+
+.btn-cancelar:active::part(native),
+.btn-cancelar.ion-activated::part(native),
+.btn-confirmar:active::part(native),
+.btn-confirmar.ion-activated::part(native) {
+  transform: scale(0.92);
+  filter: brightness(0.9);
+}

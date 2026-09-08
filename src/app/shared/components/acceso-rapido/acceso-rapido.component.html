@@ -1,0 +1,37 @@
+<div class="login-quick-divider">
+  <span></span>
+  <p>Ingreso rápido</p>
+  <span></span>
+</div>
+
+<ion-button expand="block" fill="outline" class="btn-acceso-rapido" (click)="setOpen(true)">
+  <ion-icon name="flash-outline" slot="start"></ion-icon>
+  Mostrar Perfiles
+</ion-button>
+
+<ion-modal [isOpen]="isModalOpen" (didDismiss)="setOpen(false)" [initialBreakpoint]="0.85" [breakpoints]="[0, 0.85, 1]">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar class="modal-toolbar">
+        <ion-title>Seleccionar Perfil</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="setOpen(false)">Cerrar</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="modal-content">
+      <ion-list lines="full">
+        <ion-item button *ngFor="let perfil of perfiles" (click)="seleccionar(perfil)" class="perfil-item">
+          <ion-avatar slot="start">
+            <img [src]="perfil.foto" onerror="this.src='https://ionicframework.com/docs/img/demos/avatar.svg'" />
+          </ion-avatar>
+          <ion-label>
+            <h2 class="rol-title">{{ perfil.rol }}</h2>
+            <p *ngIf="perfil.email" class="rol-email">{{ perfil.email }}</p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ng-template>
+</ion-modal>

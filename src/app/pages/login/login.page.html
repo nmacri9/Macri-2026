@@ -63,23 +63,7 @@
       <ion-button type="submit" expand="block" class="login-submit">Ingresar</ion-button>
     </form>
 
-    <div class="login-quick-divider">
-      <span></span>
-      <p>Ingreso rápido</p>
-      <span></span>
-    </div>
-
-    <!-- 5. Ciclo ngFor para evitar botones fijos -->
-    <div class="login-quick-access" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;">
-      <ion-button 
-        *ngFor="let perfil of perfilesRapidos" 
-        (click)="cargarPerfil(perfil)"
-        fill="outline" 
-        class="quick-btn">
-        <ion-icon name="person-outline" slot="start"></ion-icon>
-        {{ perfil.rol }}
-      </ion-button>
-    </div>
+    <app-acceso-rapido (perfilSeleccionado)="cargarPerfil($event)"></app-acceso-rapido>
 
   </div>
 </ion-content>

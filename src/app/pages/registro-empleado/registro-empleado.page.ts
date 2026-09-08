@@ -11,6 +11,7 @@ import { SupabaseService } from '../../services/supabase.service';
 import { CepaSpinnerComponent } from '../../shared/components/cepa-spinner/cepa-spinner.component';
 import { ModalController, ToastController } from '@ionic/angular';
 import { ConfirmModalComponent } from '../../shared/confirm-modal/confirm-modal.component';
+import { CepaHeaderComponent } from '../../shared/components/cepa-header/cepa-header.component';
 
 
 @Component({
@@ -18,7 +19,19 @@ import { ConfirmModalComponent } from '../../shared/confirm-modal/confirm-modal.
   templateUrl: './registro-empleado.page.html',
   styleUrls: ['./registro-empleado.page.scss'],
   standalone: true,
-  imports: [IonContent, IonItem, IonInput, IonButton, IonIcon, IonSelect, IonSelectOption, CommonModule, ReactiveFormsModule,CepaSpinnerComponent]
+  imports: [
+    IonContent, 
+    IonItem, 
+    IonInput, 
+    IonButton, 
+    IonIcon, 
+    IonSelect, 
+    IonSelectOption, 
+    CommonModule, 
+    ReactiveFormsModule,
+    CepaSpinnerComponent,
+    CepaHeaderComponent
+  ]
 })
 export class RegistroEmpleadoPage implements OnInit {
   registroForm!: FormGroup;

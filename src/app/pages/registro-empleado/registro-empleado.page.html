@@ -2,7 +2,7 @@
 
   <app-cepa-spinner *ngIf="cargando"></app-cepa-spinner>
 
-  <form [formGroup]="registroForm" (ngSubmit)="registrar()" [hidden]="cargando">
+  <form [formGroup]="registroForm" (ngSubmit)="confirmarAlta()" [hidden]="cargando">
 
 
     <!-- Hero: foto del empleado + escaneo de DNI como acciones contextuales -->
@@ -33,7 +33,7 @@
 
       <ion-item class="field" lines="none">
         <ion-icon name="person-outline" slot="start"></ion-icon>
-        <ion-input formControlName="nombres" label="Nombres" labelPlacement="floating" type="text"></ion-input>
+        <ion-input formControlName="nombres" label="Nombres" labelPlacement="floating" type="text" ></ion-input>
       </ion-item>
 
       <ion-item class="field" lines="none">
@@ -94,7 +94,7 @@
     class="btn-submit" 
     type="button" 
     expand="block" 
-    (click)="registrar()" 
+    (click)="confirmarAlta()" 
     [disabled]="cargando">
       {{ cargando ? 'Guardando...' : 'Guardar Empleado' }}
     </ion-button>

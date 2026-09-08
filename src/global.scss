@@ -39,7 +39,7 @@
 
 
 /* ============================================
-   TEMA ALERTA LOGIN (Va en global.scss)
+  TEMA ALERTA LOGIN 
    ============================================ */
 .alerta-tema-login {
   --background: #FCF3E1; 
@@ -101,4 +101,28 @@
 /* Color del centro del circulito marcado */
 .alerta-tema-login .alert-radio-inner {
   background-color: #6B002B !important;
+}
+
+/* Centra el modal y lo ajusta al tamaño de su contenido */
+.modal-alerta {
+  --background: transparent;
+  --box-shadow: none;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Le saca el ancho y alto del 100% que viene por defecto */
+.modal-alerta::part(content) {
+  width: auto;
+  height: auto;
+}
+
+/* Estilo para el cartelito de éxito (Toast) */
+.toast-exito {
+  --background: #1B3B2D; 
+  --color: #E6D5C3;      
+  --border-radius: 8px;
+  --box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  font-weight: bold;
+  text-align: center;
 }

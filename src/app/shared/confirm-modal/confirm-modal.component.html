@@ -1,0 +1,14 @@
+<div class="modal-card">
+  <h3>Aviso</h3>
+  <p>{{ mensaje }}</p>
+  
+  <div class="botones-container">
+    <ion-button class="btn-cancelar" (click)="responder(false)">
+      Cancelar
+    </ion-button>
+    
+    <ion-button class="btn-confirmar" (click)="responder(true)">
+      Confirmar
+    </ion-button>
+  </div>
+</div>

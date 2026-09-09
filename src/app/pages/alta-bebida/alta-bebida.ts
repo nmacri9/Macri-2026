@@ -156,4 +156,5 @@ import { CepaHeaderComponent } from '../../shared/components/cepa-header/cepa-he
         // Pauta Excluyente: Vibración en errores
         await Haptics.impact({ style: ImpactStyle.Heavy });
         }
+
     }

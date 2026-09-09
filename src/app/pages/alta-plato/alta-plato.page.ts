@@ -11,12 +11,15 @@ import {
   IonInput,
   IonButton,
   IonIcon,
-  IonTextarea
+  IonTextarea,
+  IonToolbar,
+  IonFooter,
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { cameraOutline, imagesOutline, restaurantOutline, documentTextOutline, timeOutline, cashOutline } from 'ionicons/icons';
 import { CepaSpinnerComponent } from '../../shared/components/cepa-spinner/cepa-spinner.component';
 import { CepaHeaderComponent } from '../../shared/components/cepa-header/cepa-header.component';
+
 
 @Component({
   selector: 'app-alta-plato',
@@ -32,6 +35,8 @@ import { CepaHeaderComponent } from '../../shared/components/cepa-header/cepa-he
     IonTextarea,
     IonButton,
     IonIcon,
+    IonFooter,
+    IonToolbar,
     CepaSpinnerComponent,
     CepaHeaderComponent
   ]

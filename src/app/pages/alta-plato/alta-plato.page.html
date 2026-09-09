@@ -12,7 +12,8 @@
       <div class="alta-divider"></div>
     </div>
 
-    <form [formGroup]="platoForm" (ngSubmit)="guardar()">
+    <!-- MUY IMPORTANTE: Le agregamos el id="formAltaPlato" al form -->
+    <form [formGroup]="platoForm" (ngSubmit)="guardar()" id="formAltaPlato">
 
       <ion-item class="alta-item" lines="none">
         <ion-icon name="restaurant-outline" slot="start"></ion-icon>
@@ -73,10 +74,10 @@
 
           <div class="foto-actions">
             <ion-button size="small" fill="outline" class="foto-btn" (click)="seleccionarFoto(i, 'camera')">
-              <ion-icon name="camera-outline"></ion-icon>
+              <ion-icon slot="icon-only" name="camera-outline"></ion-icon>
             </ion-button>
             <ion-button size="small" fill="outline" class="foto-btn" (click)="seleccionarFoto(i, 'photos')">
-              <ion-icon name="images-outline"></ion-icon>
+              <ion-icon slot="icon-only" name="images-outline"></ion-icon>
             </ion-button>
           </div>
         </div>
@@ -90,10 +91,10 @@
         {{ mensajeExito }}
       </div>
 
-      <ion-button expand="block" type="submit" class="alta-submit">
+    <ion-button expand="block" type="submit" class="alta-submit">
         Registrar Plato
-      </ion-button>
-
+    </ion-button>
     </form>
   </div>
 </ion-content>
+

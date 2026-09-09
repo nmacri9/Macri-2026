@@ -51,5 +51,9 @@ export const routes: Routes = [
       import('./pages/alta-mesa/alta-mesa.page').then((m) => m.AltaMesaPage),
     canActivate: [roleGuard],
     data: { roles: ['DUENO', 'SUPERVISOR'] },
+  },  {
+    path: 'registro-cliente',
+    loadComponent: () => import('./pages/registro-cliente/registro-cliente.page').then( m => m.RegistroClientePage)
   },
+
 ];

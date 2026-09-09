@@ -1,0 +1,498 @@
+:host {
+  --color-bg: #FCF3E1;
+  --color-wine: #6B002B;
+  --color-wine-dark: #5e0026;
+  --color-mauve: #A37684;
+  --color-mauve-dark: #8f6874;
+  --color-border: #e3d3c8;
+  --color-ink: #3A2A2E;
+  --color-white: #FFFFFF;
+  --color-error: red;
+}
+
+ion-content {
+  --background: var(--color-bg);
+}
+
+form {
+  padding: 0 16px 8px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* ============================================
+avatar + título
+   ============================================ */
+.avatar-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 0 20px;
+}
+
+.avatar-ring {
+  position: relative;
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  background: var(--color-white);
+  border: 2px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0 0 14px;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+
+  &:focus-visible {
+    outline: 2px solid var(--color-wine);
+    outline-offset: 3px;
+  }
+
+  &:active {
+    border-color: var(--color-mauve);
+  }
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.avatar-placeholder {
+  font-size: 40px;
+  color: var(--color-mauve);
+}
+
+.avatar-badge {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--color-wine);
+  border: 2px solid var(--color-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  ion-icon {
+    color: var(--color-white);
+    font-size: 15px;
+  }
+}
+
+.page-title {
+  font-family: 'EB Garamond', serif;
+  color: var(--color-wine);
+  font-weight: 500;
+  font-size: 24px;
+  margin: 0 0 4px;
+  text-align: center;
+}
+
+.avatar-error {
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  color: var(--color-error);
+  margin: -6px 0 4px;
+}
+
+.scan-link {
+  --color: var(--color-wine);
+  --background-hover: transparent;
+  --background-focused: transparent;
+  --background-activated: transparent;
+  --ripple-color: transparent;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  margin: 2px 0 0;
+  height: 32px;
+
+  ion-icon {
+    font-size: 16px;
+  }
+}
+
+/* ============================================
+  Secciones
+   ============================================ */
+.form-section {
+  margin-bottom: 22px;
+}
+
+.section-label {
+  font-family: 'EB Garamond', serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-wine);
+  margin: 0 4px 10px;
+}
+
+/* ============================================
+  Campos
+   ============================================ */
+.field {
+  --background: var(--color-white);
+  --border-radius: 12px;
+  --padding-start: 14px;
+  --min-height: 54px;
+  --ion-color-danger: var(--color-mauve);
+  --ion-color-step-550: var(--color-mauve);
+  --highlight-color-invalid: transparent;
+
+  
+  --color: var(--color-mauve);
+
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  margin-bottom: 12px;
+  
+  width: 75%; 
+  max-width: 400px; 
+  margin: 0 auto 12px auto; 
+
+
+  ion-input, ion-select {
+    --color: var(--color-ink);
+    --placeholder-color: var(--color-mauve);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+  }
+
+  
+  ion-input::part(label),
+  ion-select::part(label) {
+    color: var(--color-mauve) !important; 
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+  }
+
+  ion-select {
+    &::part(text) {
+      color: var(--color-ink);
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+    }
+    &::part(placeholder) {
+      color: var(--color-mauve);
+      opacity: 1;
+    }
+  }
+
+  ion-icon {
+    color: var(--color-mauve);
+    font-size: 19px;
+    margin-right: 10px;
+    transition: color 0.2s ease;
+  }
+
+  
+  &.item-has-focus {
+    border-color: var(--color-wine);
+    --color: var(--color-wine); 
+
+    ion-icon {
+      color: var(--color-wine);
+    }
+    
+    ion-input::part(label),
+    ion-select::part(label) {
+      color: var(--color-wine) !important;
+    }
+  }
+}
+
+/* ============================================
+  Error general del formulario
+   ============================================ */
+.form-error {
+  text-align: center;
+  margin: 4px 4px 15px;
+
+  small {
+    font-family: 'EB Garamond', serif;
+    color: var(--color-error);
+    font-weight: 600;
+    font-size: 15px;
+  }
+}
+
+/* ============================================
+Barra fija de guardado
+   ============================================ */
+.submit-spacer {
+  height: 30px;
+}
+
+.submit-bar {
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+
+
+.btn-submit {
+  --background: var(--color-wine);
+  --color: var(--color-white);
+  --border-radius: 12px;
+  --background-hover: var(--color-wine-dark);
+  --background-focused: var(--color-wine-dark);
+  --background-activated: var(--color-wine-dark);
+  --ripple-color: transparent;
+  --box-shadow: 0 4px 14px rgba(107, 0, 43, 0.28);
+  max-width: 480px;
+  margin: 0 auto;
+  height: 52px;
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: none;
+
+  &[disabled] {
+    --background: var(--color-mauve);
+    --box-shadow: none;
+    opacity: 0.6;
+  }
+}
+
+.btn-submit:hover{
+    color: #A37684;
+}
+
+/* ============================================
+  RESPONSIVE - Media Queries
+   ============================================ */
+
+
+ion-content {
+  --padding-start: 0;
+  --padding-end: 0;
+}
+
+form {
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+/* --------------------------------------------
+  Celulares estándar (hasta 480px)
+   -------------------------------------------- */
+@media (max-width: 480px) {
+  form {
+    padding: 0 16px 8px;
+  }
+
+  
+  .avatar-hero {
+    padding: 20px 0 16px;
+  }
+
+  .avatar-ring {
+    width: 84px;
+    height: 84px;
+  }
+
+  .avatar-placeholder {
+    font-size: 34px;
+  }
+
+  .avatar-badge {
+    width: 26px;
+    height: 26px;
+
+    ion-icon {
+      font-size: 13px;
+    }
+  }
+
+  .page-title {
+    font-size: 21px;
+  }
+
+  .avatar-error {
+    font-size: 13px;
+  }
+
+  .form-section {
+    margin-bottom: 18px;
+  }
+
+  .section-label {
+    font-size: 18px;
+    margin: 0 2px 8px;
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  .field {
+    width: 85%;
+    max-width: 320px;
+    --min-height: 50px;
+
+    ion-input, ion-select,
+    ion-select::part(text),
+    ion-select::part(placeholder),
+    ion-select::part(label) {
+      font-size: 14px;
+    }
+
+    ion-icon {
+      font-size: 18px;
+      margin-right: 8px;
+      flex-shrink: 0;
+    }
+  }
+
+  .form-error small {
+    font-size: 14px;
+  }
+
+  .btn-submit {
+    max-width: 100%;
+    height: 48px;
+    font-size: 15px;
+  }
+
+  .submit-spacer {
+    height: 24px;
+  }
+
+  
+  .submit-bar {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+}
+
+/* --------------------------------------------
+  Celulares chicos hasta 375px
+   -------------------------------------------- */
+@media (max-width: 375px) {
+  .avatar-hero {
+    padding: 16px 0 12px;
+  }
+
+  .avatar-ring {
+    width: 76px;
+    height: 76px;
+    margin: 0 0 10px;
+  }
+
+  .avatar-placeholder {
+    font-size: 30px;
+  }
+
+  .page-title {
+    font-size: 19px;
+  }
+
+  .section-label {
+    font-size: 17px;
+  }
+
+  .field {
+    width: 88%;
+    max-width: 300px;
+    --padding-start: 10px;
+    --min-height: 48px;
+
+    ion-input, ion-select,
+    ion-select::part(text),
+    ion-select::part(placeholder),
+    ion-select::part(label) {
+      font-size: 13px;
+    }
+
+    ion-icon {
+      font-size: 17px;
+      margin-right: 6px;
+    }
+  }
+
+  .btn-submit {
+    height: 46px;
+    font-size: 14px;
+  }
+}
+
+/* --------------------------------------------
+  Celulares muy chicos 
+   -------------------------------------------- */
+@media (max-width: 320px) {
+  form {
+    padding: 0 12px 8px;
+  }
+
+  .avatar-ring {
+    width: 68px;
+    height: 68px;
+  }
+
+  .page-title {
+    font-size: 17px;
+  }
+
+  .section-label {
+    font-size: 16px;
+  }
+
+  .field {
+    width: 92%;
+    max-width: 280px;
+    --padding-start: 8px;
+    --min-height: 46px;
+
+    ion-input, ion-select,
+    ion-select::part(text),
+    ion-select::part(placeholder),
+    ion-select::part(label) {
+      font-size: 12.5px;
+    }
+  }
+
+  .btn-submit {
+    height: 44px;
+    font-size: 13.5px;
+  }
+}
+
+/* --------------------------------------------
+  Celulares en horizontal (landscape) con poco alto:
+  se achica el bloque del avatar para que no empuje
+  el resto del formulario fuera de la pantalla visible.
+   -------------------------------------------- */
+@media (max-height: 480px) and (orientation: landscape) {
+  .avatar-hero {
+    flex-direction: row;
+    justify-content: center;
+    gap: 12px;
+    padding: 12px 0;
+  }
+
+  .avatar-ring {
+    width: 56px;
+    height: 56px;
+    margin: 0;
+  }
+
+  .page-title {
+    font-size: 18px;
+    margin: 0;
+  }
+
+  .avatar-badge {
+    width: 22px;
+    height: 22px;
+
+    ion-icon {
+      font-size: 11px;
+    }
+  }
+}

@@ -6,13 +6,12 @@ import { cameraOutline,camera, qrCodeOutline, personOutline, cardOutline, docume
 import { addIcons } from 'ionicons';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-import { BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
 import { SupabaseService } from '../../services/supabase.service';
 import { CepaSpinnerComponent } from '../../shared/components/cepa-spinner/cepa-spinner.component';
 import { ModalController, ToastController } from '@ionic/angular';
 import { ConfirmModalComponent } from '../../shared/confirm-modal/confirm-modal.component';
 import { CepaHeaderComponent } from '../../shared/components/cepa-header/cepa-header.component';
-
+import { DniScannerService } from '../../services/dni-scanner'; 
 
 @Component({
   selector: 'app-registro-empleado',
@@ -39,24 +38,17 @@ export class RegistroEmpleadoPage implements OnInit {
   formEnviado = false;
   errorSupabase: string | undefined;
 
-
   cargando = false;
 
-  constructor(private fb: FormBuilder, 
+  constructor(
+    private fb: FormBuilder, 
     private cdr: ChangeDetectorRef,
     private supabase: SupabaseService,
     private modalCtrl: ModalController,
-    private toastCtrl: ToastController) 
-    {
-    addIcons({cameraOutline,
-      camera,
-      qrCodeOutline,
-      personOutline,
-      cardOutline,
-      documentTextOutline,
-      mailOutline,
-      lockClosedOutline,
-      briefcaseOutline});
+    private toastCtrl: ToastController,
+    private dniScanner: DniScannerService // <-- INYECCIÓN DEL SERVICIO
+  ) {
+    addIcons({cameraOutline, camera, qrCodeOutline, personOutline, cardOutline, documentTextOutline, mailOutline, lockClosedOutline, briefcaseOutline});
   }
 
   ngOnInit() {
@@ -74,46 +66,25 @@ export class RegistroEmpleadoPage implements OnInit {
 
   async escanearDNI() {
     try {
-      // 1. Verificamos e instalamos el módulo de Google Play 
-      const { available } = await BarcodeScanner.isGoogleBarcodeScannerModuleAvailable();
-      if (!available) {
-        this.errorSupabase = 'Instalando módulo de escáner... aguarde.';
-        this.cdr.detectChanges();
-        await BarcodeScanner.installGoogleBarcodeScannerModule();
-      }
-
-      // 2. Pedimos permisos y validamos explicitamente
-      const permissions = await BarcodeScanner.requestPermissions();
-      if (permissions.camera !== 'granted' && permissions.camera !== 'limited') {
-        throw new Error('Permiso de cámara denegado por el usuario.');
-      }
-
-      // Limpiamos mensajes previos antes de abrir la camara
       this.errorSupabase = undefined; 
       this.cdr.detectChanges();
 
-      // 3. Ejecuto el escaner
-      const result = await BarcodeScanner.scan();
-      
-      const rawData = result.barcodes[0].rawValue;
-      if (!rawData) throw new Error('No se pudo leer el código');
-
-      const partes = rawData.split('@');
-      
-      if (partes.length >= 5) {
-        this.registroForm.patchValue({
-          apellidos: partes[1].charAt(0) + partes[1].slice(1).toLowerCase(),
-          nombres: partes[2].charAt(0) + partes[2].slice(1).toLowerCase(),
-          dni: partes[4]
-        });
+      // Llamamos al servicio, pasándole la función por si tiene que instalar el módulo
+      const datosDni = await this.dniScanner.escanear(() => {
+        this.errorSupabase = 'Instalando módulo de escáner... aguarde.';
         this.cdr.detectChanges();
-      } else {
-        throw new Error('Formato de DNI inválido');
-      }
+      });
+      
+      // Si todo sale bien, autocompleta su form
+      this.registroForm.patchValue({
+        apellidos: datosDni.apellidos,
+        nombres: datosDni.nombres,
+        dni: datosDni.dni
+      });
+      this.cdr.detectChanges();
+
     } catch (error: any) {
       await Haptics.impact({ style: ImpactStyle.Heavy });
-      
-      // 4. Imprimimos el error directamente en el HTML para que sea imposible no verlo
       this.errorSupabase = 'Error Escáner: ' + (error.message || 'Fallo desconocido');
       this.cdr.detectChanges();
       console.error('Error escaner DNI:', error);
@@ -133,14 +104,12 @@ export class RegistroEmpleadoPage implements OnInit {
       this.registroForm.patchValue({ foto: this.fotoPreview });
       this.cdr.detectChanges();
     } catch (error: any) {
-     
       alert('Hubo un error al abrir la cámara: ' + error.message);
       console.error('Error cámara:', error);
     }
   }
 
   async confirmarAlta() {
-    
     this.formEnviado = true;
     this.registroForm.markAllAsTouched();
     if (this.registroForm.invalid) {
@@ -159,7 +128,6 @@ export class RegistroEmpleadoPage implements OnInit {
       this.registrar(); 
     }
   }
-
 
   async mostrarMensajeExito() {
     const toast = await this.toastCtrl.create({
@@ -187,7 +155,6 @@ export class RegistroEmpleadoPage implements OnInit {
     this.cdr.detectChanges();
 
     try {
-      // Retraso artificial de 1.5 segundos para mantener la experiencia visual
       await new Promise(resolve => setTimeout(resolve, 1500));
 
       const datosEmpleado = this.registroForm.value;
@@ -228,13 +195,9 @@ export class RegistroEmpleadoPage implements OnInit {
       this.errorSupabase = error?.message
         ? `No se pudo guardar: ${error.message}`
         : 'No se pudo guardar el empleado. Intente nuevamente.';
-      // Vibración de feedback si la base de datos falla
       await Haptics.impact({ style: ImpactStyle.Heavy });
       alert('Fallo nativo: ' + JSON.stringify(error));
-      console.error('Error escaner DNI:', error);
     } finally {
-      // Oculto el spinner siempre al terminar, ya sea con éxito o error
-      
       this.cargando = false;
       this.cdr.detectChanges();
     }

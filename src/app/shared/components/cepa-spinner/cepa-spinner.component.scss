@@ -6,7 +6,8 @@
   width: 100%;
   height: 100%;
   z-index: 9999;
-  background-color: #FCF3E1; 
+  /* 1. ACÁ ESTÁ LA MAGIA: Cambiamos el fondo al verde oscuro */
+  background-color: #132A20; 
 }
 
 .spinner-container {
@@ -25,7 +26,8 @@
 
 .texto-cargando {
   font-family: 'EB Garamond', serif;
-  color: #6B002B; 
+  /* 2. Cambiamos el texto bordó/rojo al color crema */
+  color: #dbcbb9; 
   font-size: 18px;
   font-weight: 500;
 }
@@ -35,4 +37,3 @@
   50% { transform: scale(1.05); }
   100% { transform: scale(1); }
 }
-

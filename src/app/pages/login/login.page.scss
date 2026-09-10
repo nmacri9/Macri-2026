@@ -7,24 +7,21 @@
 }
 
 .loading-text {
-  color: #6B002B; // bordó
+  color: #dbcbb9; // crema - texto principal
   font-size: 20px;
   margin-top: 12px;
 }
 
-
 .login-content {
-  --background: #FCF3E1;
+  --background: #132A20; // verde muy oscuro - fondo principal
+  
 }
-
-
 
 .login-container {
   padding: 4px 24px 32px; 
   max-width: 400px;
   margin: 0 auto;
 }
-
 
 .login-header {
   text-align: center;
@@ -41,7 +38,7 @@
 .login-divider {
   width: 36px;
   height: 2px;
-  background: #3a2b30;
+  background: #C8B29E; // beige oscuro - acento
   opacity: 0.5;
   margin: -35px auto 0; 
 }
@@ -51,37 +48,37 @@
   font-size: 30px;
   font-family: 'EB Garamond', serif;
   font-weight: 500;
-  color: #6B002B;
-  margin: 4px 0 4px; 
+  color: #dbcbb9; // crema - texto principal
+  margin-top: 50px;
 }
 
 .login-subtitle {
   font-size: 20px;
   font-family: 'EB Garamond', serif;
-  color: #3a2b30;
+  color: #dbcbb9; // crema - texto principal
   margin: 0 0 18px; 
 }
 
 .login-item {
-  --background: #FFFFFF;
+  --background: #1B3B2D; // verde oscuro - fondo de tarjetas
   --border-radius: 12px;
   --padding-start: 12px;
-  border: 1px solid #e3d3c8;
-  color: #3a2b30;
+  border: 1px solid #C8B29E; // beige oscuro - acento
+  color: #dbcbb9; // crema - texto principal
   border-radius: 12px;
   margin-bottom: 16px;
 
-  /*Arreglo error de color inputs, Reemplazo el rojo de error interno de Ionic por el Marron oscuro Cepa */
-  --ion-color-danger: #3a2b30;
-  --ion-color-step-550: #3a2b30;
+  /*Arreglo error de color inputs, Reemplazo el rojo de error interno de Ionic por el crema Cepa */
+  --ion-color-danger: #dbcbb9;
+  --ion-color-step-550: #dbcbb9;
   --highlight-color-invalid: transparent;
 
   ion-input {
-    --color: #3a2b30; /* Color del texto normal */
+    --color: #dbcbb9; /* Color del texto normal */
   }
 
   ion-icon {
-    color: #3a2b30;
+    color: #dbcbb9;
     font-size: 18px;
     margin-right: 8px;
     transition: all 0.3s ease;
@@ -93,13 +90,13 @@
   text-align: right;
   font-family: 'EB Garamond', serif;
   font-size: 18px;
-  color: #3a2b30;
+  color: #dbcbb9; // crema - texto principal
   margin: 0 0 20px;
 }
 
 .login-submit {
-  --background: #6B002B;
-  --color: #FCF3E1;
+  --background: #C8B29E; // beige oscuro - fondo de botón
+  --color: #091610; // verde hiper oscuro - texto dentro de botones
   --border-radius: 12px;
   height: 44px;
   font-weight: 500;
@@ -115,13 +112,13 @@
   span {
     flex: 1;
     height: 1px;
-    background: #e3d3c8;
+    background: #C8B29E; // beige oscuro - acento
   }
 
   p {
     font-size: 16px;
     font-family: 'EB Garamond', serif;
-    color: #3a2b30;
+    color: #dbcbb9; // crema - texto principal
     text-transform: uppercase;
     letter-spacing: 1.5px;
     white-space: nowrap;

@@ -7,7 +7,7 @@
   span { 
     flex: 1; 
     height: 1px; 
-    background: #C8B29E; 
+    background: #dbcbb9; 
   }
   
   p { 
@@ -21,10 +21,15 @@
 }
 
 .btn-acceso-rapido {
-  
-  --background: #C8B29E; 
+  --background: #dbcbb9; 
   --color: #091610; 
   --border-radius: 12px; 
+  --border-width: 0px;
+  --border-style: none;
+  --box-shadow: none;
+  border: none; 
+  outline: none;
+
   height: 44px; 
   font-weight: 600; 
   margin-bottom: 20px;
@@ -53,12 +58,12 @@
     
     .rol-email { 
       font-size: 14px; 
-      color: #C8B29E; 
+      color: #dbcbb9; 
       margin-top: 4px;
     }
     
     ion-avatar { 
-      border: 2px solid #C8B29E; 
+      border: 2px solid #dbcbb9; 
       padding: 2px; 
       background: #132A20;
     }

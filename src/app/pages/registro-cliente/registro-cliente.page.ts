@@ -168,7 +168,7 @@ export class RegistroClientePage implements OnInit {
             foto_url: datosCliente.foto,
             rol: datosCliente.perfil.toUpperCase(),
             estado: 'PENDIENTE' // Queda pendiente de aprobación por dueño/supervisor
-          }
+          }                     // ESTO FALTA ARREGLAR CUANDO SE HAGA SUPABASE
         }
       });
 

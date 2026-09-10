@@ -1,22 +1,22 @@
 .cepa-header-container {
-    box-shadow: 0 2px 8px rgba(107, 0, 43, 0.08);
-    }
+    box-shadow: 0 2px 10px rgba(9, 22, 16, 0.35); // sombra un poco mas marcada para que no quede plano
+}
 
 .cepa-toolbar {
-    --background: #6B002B !important;
-    --color:  #FCF3E1!important;
+    --background:  #C8B29E !important; // beige - igual que el botón
+    --color:  #091610 !important; // verde hiper oscuro - texto/ícono sobre fondo claro
     --border-color: transparent;
     padding: 0 4px;
 
 .cepa-menu-btn {
-        --color: #FCF3E1 !important;
-        color: #FCF3E1 !important;
+        --color: #091610 !important; // verde hiper oscuro
+        color: #091610 !important; // verde hiper oscuro
     }
 
 .cepa-title {
-        color: #FCF3E1 !important;
+        color: #091610 !important; // verde hiper oscuro
         font-family: 'EB Garamond', serif;
-        font-size: 1.3rem;
+        font-size: 24px;
         font-weight: 700;
         letter-spacing: 0.5px;
     }

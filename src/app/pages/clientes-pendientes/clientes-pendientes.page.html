@@ -1,13 +1,52 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>clientes-pendientes</ion-title>
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Clientes Pendientes</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">clientes-pendientes</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<!-- Uso scrollY false para que el contenedor principal no haga scroll libre,
+    sino que delegoel scroll al list-container con su scroll-snap -->
+<ion-content [scrollY]="false">
+  
+  <app-cepa-spinner *ngIf="cargando"></app-cepa-spinner>
+
+  <div class="list-container" *ngIf="clientesPendientes.length > 0 && !cargando; else sinPendientes">
+    
+    <div class="client-card" *ngFor="let cliente of clientesPendientes">
+      
+      <div class="card-content">
+        <div class="avatar-container">
+          <img [src]="cliente.foto" alt="Foto del cliente">
+        </div>
+
+        <div class="info-container">
+          <h2>{{ cliente.apellidos }}</h2>
+          <h3>{{ cliente.nombres }}</h3>
+        </div>
+      </div>
+
+      <div class="actions-container">
+        <!-- Botón Rechazar -->
+      <ion-button fill="outline" color="danger" (click)="rechazarCliente(cliente.id, cliente.nombres)">
+      <ion-icon slot="start" name="close-circle-outline"></ion-icon>
+      Rechazar
+      </ion-button>
+
+      <!-- Botón Aceptar -->
+      <ion-button fill="solid" color="success" (click)="aceptarCliente(cliente.id, cliente.nombres)">
+      <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
+      Aceptar
+      </ion-button>
+  </div>
+
+    </div>
+
+  </div>
+
+  <ng-template #sinPendientes>
+    <div class="empty-state" *ngIf="!cargando">
+      <p>Todos los registros han sido gestionados. No hay clientes pendientes.</p>
+    </div>
+  </ng-template>
+
 </ion-content>

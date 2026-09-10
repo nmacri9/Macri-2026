@@ -1,0 +1,97 @@
+.list-container {
+    height: calc(100vh - 56px); 
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory; 
+    background-color: #f4f5f8; 
+}
+
+.client-card {
+    width: 100%;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 16px;
+    background: white;
+    border-bottom: 4px solid #f4f5f8;
+    box-sizing: border-box;
+
+
+    height: calc((100vh - 56px) / 3); 
+
+@media (max-height: 650px) {
+    height: calc((100vh - 56px) / 2);
+}
+
+
+@media (min-height: 850px) {
+    height: calc((100vh - 56px) / 4);
+}
+
+  /* --- ESTILOS INTERNOS DE LA TARJETA --- */
+.card-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    height: 100%;
+
+.avatar-container {
+    width: 75px;
+    height: 75px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #ccc;
+    flex-shrink: 0;
+
+img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    }
+}
+
+.info-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+h2 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #222;
+}
+
+h3 {
+    margin: 4px 0 0 0;
+    font-size: 1.1rem;
+    color: #555;
+}
+
+    }
+
+}
+
+.actions-container {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: auto; 
+}
+}
+
+.empty-state {
+    height: calc(100vh - 56px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f4f5f8;
+    padding: 20px;
+    text-align: center;
+
+p {
+    font-size: 1.2rem;
+    color: #666;
+}
+
+}

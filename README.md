@@ -20,8 +20,8 @@ Trabajo Final Integrador (TFI) — Aplicación móvil desarrollada con Angular, 
 ### 👨‍💻 Macri, Nicolas
 
 - **Branch:** `nico-alta-platos`
-- **Período de tarea:** 27/08/2026 — 04/09/2026
-- **Observaciones / Reasignaciones:** Tareas completadas en tiempo y forma. _(No hubo necesidad de reasignar plazos ni módulos)._
+- **Período de tarea:** 27/08/2026 — 07/09/2026
+- **Observaciones / Reasignaciones:** Tareas completadas en tiempo y forma. _(Modificaciones por corrección del profesor)._
 - **Módulos asignados:**
   - [x] **UI/UX y Assets:** Diseño de ícono, definición de paleta de colores global (`variables.scss`) y generación de assets nativos (Capacitor).
   - [x] **Splash Screen:** Integración estática y dinámica con animación de entrada (fade-in) y ruteo automático.

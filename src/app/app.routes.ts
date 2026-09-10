@@ -55,5 +55,9 @@ export const routes: Routes = [
     path: 'registro-cliente',
     loadComponent: () => import('./pages/registro-cliente/registro-cliente.page').then( m => m.RegistroClientePage)
   },
+  {
+    path: 'clientes-pendientes',
+    loadComponent: () => import('./pages/clientes-pendientes/clientes-pendientes.page').then( m => m.ClientesPendientesPage)
+  },
 
 ];

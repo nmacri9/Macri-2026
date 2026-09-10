@@ -1,17 +1,5 @@
-:host {
-  --color-bg: #FCF3E1;
-  --color-wine: #6B002B;
-  --color-wine-dark: #5e0026;
-  --color-mauve: #A37684;
-  --color-mauve-dark: #8f6874;
-  --color-border: #e3d3c8;
-  --color-ink: #3A2A2E;
-  --color-white: #FFFFFF;
-  --color-error: red;
-}
-
 ion-content {
-  --background: var(--color-bg);
+  --background: #132A20; // verde muy oscuro - fondo principal
 }
 
 form {
@@ -35,8 +23,8 @@ avatar + título
   width: 92px;
   height: 92px;
   border-radius: 50%;
-  background: var(--color-white);
-  border: 2px solid var(--color-border);
+  background: #1B3B2D; // verde oscuro - fondo de tarjeta
+  border: 2px solid #C8B29E; // beige oscuro - acento
   display: flex;
   align-items: center;
   justify-content: center;
@@ -46,12 +34,12 @@ avatar + título
   transition: border-color 0.2s ease;
 
   &:focus-visible {
-    outline: 2px solid var(--color-wine);
+    outline: 2px solid #dbcbb9; // crema - estado activo
     outline-offset: 3px;
   }
 
   &:active {
-    border-color: var(--color-mauve);
+    border-color: #C8B29E; // beige oscuro - acento
   }
 }
 
@@ -64,7 +52,7 @@ avatar + título
 
 .avatar-placeholder {
   font-size: 40px;
-  color: var(--color-mauve);
+  color: #dbcbb9; // crema - destacado, es la acción principal de la pantalla
 }
 
 .avatar-badge {
@@ -74,22 +62,23 @@ avatar + título
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background: var(--color-wine);
-  border: 2px solid var(--color-bg);
+  background: #C8B29E; // beige oscuro - fondo de botón
+  border: 2px solid #132A20; // verde muy oscuro - fondo principal
   display: flex;
   align-items: center;
   justify-content: center;
 
   ion-icon {
-    color: var(--color-white);
+    color: #091610; // verde hiper oscuro - texto dentro de botones
     font-size: 15px;
   }
 }
 
 .page-title {
   font-family: 'EB Garamond', serif;
-  color: var(--color-wine);
-  font-weight: 500;
+  color: #dbcbb9; // crema - texto principal
+  font-weight: 700; // más peso para destacar sobre el resto del texto
+  letter-spacing: 0.4px;
   font-size: 24px;
   margin: 0 0 4px;
   text-align: center;
@@ -98,12 +87,12 @@ avatar + título
 .avatar-error {
   font-family: 'Inter', sans-serif;
   font-size: 15px;
-  color: var(--color-error);
+  color: red;
   margin: -6px 0 4px;
 }
 
 .scan-link {
-  --color: var(--color-wine);
+  --color: #dbcbb9; // crema - texto principal
   --background-hover: transparent;
   --background-focused: transparent;
   --background-activated: transparent;
@@ -130,7 +119,7 @@ avatar + título
   font-family: 'EB Garamond', serif;
   font-size: 20px;
   font-weight: 600;
-  color: var(--color-wine);
+  color: #dbcbb9; // crema - texto principal
   margin: 0 4px 10px;
 }
 
@@ -138,19 +127,19 @@ avatar + título
   Campos
    ============================================ */
 .field {
-  --background: var(--color-white);
-  --border-radius: 12px;
+  --background: #1B3B2D; // verde oscuro - fondo de tarjeta
+  --border-radius: 18px;
   --padding-start: 14px;
   --min-height: 54px;
-  --ion-color-danger: var(--color-mauve);
-  --ion-color-step-550: var(--color-mauve);
+  --ion-color-danger: #C8B29E; // beige oscuro - acento
+  --ion-color-step-550: #C8B29E; // beige oscuro - acento
   --highlight-color-invalid: transparent;
 
   
-  --color: var(--color-mauve);
+  --color: #C8B29E; // beige oscuro - acento
 
-  border: 1px solid var(--color-border);
-  border-radius: 12px;
+  border: 1px solid #C8B29E; // beige oscuro - acento
+  border-radius: 18px;
   margin-bottom: 12px;
   
   width: 75%; 
@@ -159,8 +148,8 @@ avatar + título
 
 
   ion-input, ion-select {
-    --color: var(--color-ink);
-    --placeholder-color: var(--color-mauve);
+    --color: #dbcbb9; // crema - valor tipeado
+    --placeholder-color: #C8B29E; // beige oscuro - placeholder
     font-family: 'Inter', sans-serif;
     font-size: 15px;
   }
@@ -168,25 +157,25 @@ avatar + título
   
   ion-input::part(label),
   ion-select::part(label) {
-    color: var(--color-mauve) !important; 
+    color: #C8B29E !important; // beige oscuro - acento
     font-family: 'Inter', sans-serif;
     font-size: 15px;
   }
 
   ion-select {
     &::part(text) {
-      color: var(--color-ink);
+      color: #dbcbb9; // crema - texto principal
       font-family: 'Inter', sans-serif;
       font-size: 15px;
     }
     &::part(placeholder) {
-      color: var(--color-mauve);
+      color: #C8B29E; // beige oscuro - placeholder
       opacity: 1;
     }
   }
 
   ion-icon {
-    color: var(--color-mauve);
+    color: #C8B29E; // beige oscuro - acento
     font-size: 19px;
     margin-right: 10px;
     transition: color 0.2s ease;
@@ -194,16 +183,16 @@ avatar + título
 
   
   &.item-has-focus {
-    border-color: var(--color-wine);
-    --color: var(--color-wine); 
+    border-color: #dbcbb9; // crema - estado activo
+    --color: #dbcbb9; // crema - estado activo
 
     ion-icon {
-      color: var(--color-wine);
+      color: #dbcbb9; // crema - estado activo
     }
     
     ion-input::part(label),
     ion-select::part(label) {
-      color: var(--color-wine) !important;
+      color: #dbcbb9 !important; // crema - estado activo
     }
   }
 }
@@ -217,7 +206,7 @@ avatar + título
 
   small {
     font-family: 'EB Garamond', serif;
-    color: var(--color-error);
+    color: red;
     font-weight: 600;
     font-size: 15px;
   }
@@ -239,14 +228,14 @@ Barra fija de guardado
 
 
 .btn-submit {
-  --background: var(--color-wine);
-  --color: var(--color-white);
-  --border-radius: 12px;
-  --background-hover: var(--color-wine-dark);
-  --background-focused: var(--color-wine-dark);
-  --background-activated: var(--color-wine-dark);
+  --background: #C8B29E; // beige oscuro - fondo de botón
+  --color: #091610; // verde hiper oscuro - texto dentro de botones
+  --border-radius: 18px;
+  --background-hover: darken(#C8B29E, 8%);
+  --background-focused: darken(#C8B29E, 8%);
+  --background-activated: darken(#C8B29E, 8%);
   --ripple-color: transparent;
-  --box-shadow: 0 4px 14px rgba(107, 0, 43, 0.28);
+  --box-shadow: 0 4px 14px rgba(200, 178, 158, 0.28);
   max-width: 480px;
   margin: 0 auto;
   height: 52px;
@@ -256,14 +245,14 @@ Barra fija de guardado
   text-transform: none;
 
   &[disabled] {
-    --background: var(--color-mauve);
+    --background: #C8B29E; // beige oscuro - acento
     --box-shadow: none;
     opacity: 0.6;
   }
 }
 
 .btn-submit:hover{
-    color: #A37684;
+    color: #091610; // verde hiper oscuro - texto dentro de botones
 }
 
 /* ============================================

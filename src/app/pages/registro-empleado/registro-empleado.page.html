@@ -1,5 +1,5 @@
 <app-cepa-header [titulo]="'Registro de Empleados'"></app-cepa-header>
-<ion-content class="ion-padding">
+<ion-content class="ion-padding" [fullscreen]="true">
   <app-cepa-spinner *ngIf="cargando"></app-cepa-spinner>
 
   <form [formGroup]="registroForm" (ngSubmit)="confirmarAlta()" [hidden]="cargando">
@@ -68,12 +68,12 @@
 
       <ion-item class="field" lines="none">
         <ion-icon name="briefcase-outline" slot="start"></ion-icon>
-        <ion-select formControlName="perfil" label="Perfil" labelPlacement="floating">
+        <ion-select formControlName="perfil" label="Perfil" labelPlacement="floating" [interfaceOptions]="{ cssClass: 'cepa-select-alert' }">
         <ion-select-option value="COCINERO">Cocinero</ion-select-option>
         <ion-select-option value="MOZO">Mozo</ion-select-option>
         <ion-select-option value="CANTINERO">Cantinero</ion-select-option>
         <ion-select-option value="METRE">Metre</ion-select-option>
-</ion-select>
+        </ion-select>
       </ion-item>
     </section>
 

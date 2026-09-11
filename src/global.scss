@@ -133,3 +133,49 @@
   font-weight: bold;
   text-align: center;
 }
+
+
+/* ============================================
+   Estilos personalizados para el Alert del Select de Perfil
+   ============================================ */
+.cepa-select-alert {
+  /* Fondo del cuadro emergente (Verde oscuro de tarjetas) */
+  --background: #1B3B2D; 
+  --backdrop-opacity: 0.6;
+
+  /* Redondeo y borde opcional para que resalte contra el fondo oscuro de la página */
+  .alert-wrapper {
+    border: 1px solid #C8B29E; 
+    border-radius: 12px;
+  }
+
+  /* Título "Perfil" */
+  .alert-title {
+    color: #E6D5C3 !important; /* Crema */
+    font-family: 'EB Garamond', serif;
+    font-size: 22px;
+  }
+
+  /* Opciones de la lista (Cocinero, Mozo, etc.) */
+  .alert-radio-label {
+    color: #E6D5C3 !important; /* Crema */
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* Botones de CANCELAR y OK */
+  .alert-button.ion-focusable {
+    color: #C8B29E !important; /* Beige oscuro */
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+  }
+
+  /* Círculo desmarcado y borde del círculo marcado */
+  .alert-radio-icon {
+    border-color: #C8B29E !important; 
+  }
+  
+  /* Punto interior cuando la opción está seleccionada */
+  .alert-radio-inner {
+    background-color: #C8B29E !important;
+  }
+}

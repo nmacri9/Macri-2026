@@ -136,72 +136,85 @@ avatar + título
   Campos (Inputs y Selects)
    ============================================ */
 .field {
-  --background: var(--color-card-bg);
-  --border-radius: 12px;
+  /* 1. Fondo y estructura base de la tarjeta */
+  --background: #1B3B2D; /* Verde oscuro */
   --padding-start: 14px;
   --min-height: 54px;
-  --ion-color-danger: var(--color-error);
-  --ion-color-step-550: var(--color-accent);
-  --highlight-color-invalid: transparent;
   
-  --color: var(--color-text-main);
-
-  /* Quitamos el borde claro y usamos el fondo de tarjeta */
-  border: 1px solid var(--color-card-bg);
+  border: 1px solid #1B3B2D;
   border-radius: 12px;
-  margin-bottom: 12px;
-  
+  margin: 0 auto 12px auto;
   width: 75%; 
   max-width: 400px; 
-  margin: 0 auto 12px auto; 
+
+  /* 2. Reseteamos el color base del ion-item para que el label inactivo sea Beige oscuro */
+  --color: #C8B29E; 
 
   ion-input, ion-select {
-    --color: var(--color-text-main);
-    --placeholder-color: rgba(230, 213, 195, 0.6); /* Crema con transparencia */
+    /* Color del texto que el usuario escribe */
+    --color: #E6D5C3; 
+    --placeholder-color: rgba(230, 213, 195, 0.6); 
+    
+    /* Variables exactas de Ionic para el label flotante: 
+       Evita que desaparezca y le da los colores correctos */
+    --highlight-color-focused: #C8B29E; /* Beige oscuro al clickear */
+    --highlight-color-invalid: #ff6b6b; /* Rojo claro para el error */
+    --highlight-color-valid: #C8B29E;
+    
+    caret-color: #C8B29E; /* Color de la barrita que titila al escribir */
     font-family: 'Inter', sans-serif;
     font-size: 15px;
   }
   
-  ion-input::part(label),
-  ion-select::part(label) {
-    color: var(--color-accent) !important; 
+  /* Ajustes para el select (lista desplegable) */
+  ion-select::part(text) {
+    color: #E6D5C3;
     font-family: 'Inter', sans-serif;
     font-size: 15px;
   }
-
-  ion-select {
-    &::part(text) {
-      color: var(--color-text-main);
-      font-family: 'Inter', sans-serif;
-      font-size: 15px;
-    }
-    &::part(icon) {
-      color: var(--color-accent);
-    }
+  ion-select::part(icon) {
+    color: #C8B29E;
   }
 
+  /* Íconos de la izquierda */
   ion-icon {
-    color: var(--color-accent);
+    color: #C8B29E;
     font-size: 19px;
     margin-right: 10px;
     transition: color 0.2s ease;
   }
-  
-  &.item-has-focus {
-    border-color: var(--color-accent);
-    --color: var(--color-accent); 
 
-    ion-icon {
-      color: var(--color-accent);
-    }
+  /* ============================================
+     BORDES E ÍCONOS DINÁMICOS
+     ============================================ */
+  
+  /* A. Al clickear y estar escribiendo (FOCUS) -> Borde Beige oscuro */
+  &.item-has-focus {
+    border-color: #C8B29E; 
     
-    ion-input::part(label),
-    ion-select::part(label) {
-      color: var(--color-accent) !important;
+    ion-icon { 
+      color: #C8B29E; 
+    }
+  }
+
+  /* B. Error real (Cuando salís del input y está vacío/inválido) -> Borde Rojo */
+  &.ion-invalid.ion-touched {
+    border-color: #ff6b6b; 
+    
+    ion-icon { 
+      color: #ff6b6b; 
+    }
+  }
+  
+  /* C. Mantenemos foco Beige oscuro si volvemos a clickear un input con error */
+  &.item-has-focus.ion-invalid.ion-touched {
+    border-color: #C8B29E; 
+    
+    ion-icon { 
+      color: #C8B29E; 
     }
   }
 }
-
 /* ============================================
   Error general del formulario
    ============================================ */

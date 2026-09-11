@@ -1,24 +1,23 @@
 .cepa-header-container {
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4); /* Sombra mucho más notoria */
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25); 
 }
 
 .cepa-toolbar {
-    /* Fondo verde muy oscuro (#132A20) con 85% de opacidad para notar el scroll */
-    --background: rgba(19, 42, 32, 0.85) !important; 
+    --background: rgba(19, 42, 32, 0.55) !important; 
     --border-color: transparent;
     padding: 0 4px;
-    
-    /* Efecto de desenfoque para el contenido que pasa por debajo */
-    backdrop-filter: blur(10px); 
-    -webkit-backdrop-filter: blur(10px);
+    &::part(background) {
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
 
     .cepa-menu-btn {
-        --color: #C8B29E !important; /* Beige oscuro para acentos */
+        --color: #C8B29E !important; 
         color: #C8B29E !important; 
     }
 
     .cepa-title {
-        color: #E6D5C3 !important; /* Crema para el texto principal */
+        color: #E6D5C3 !important; 
         font-family: 'EB Garamond', serif;
         font-size: 24px;
         font-weight: 700;
@@ -26,6 +25,6 @@
     }
 
     .cepa-logout-btn {
-        --color: #C8B29E !important; /* Beige oscuro para los íconos */
+        --color: #C8B29E !important;
     }
 }

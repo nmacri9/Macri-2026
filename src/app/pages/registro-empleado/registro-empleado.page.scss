@@ -1,13 +1,11 @@
 :host {
-  --color-bg: #FCF3E1;
-  --color-wine: #6B002B;
-  --color-wine-dark: #5e0026;
-  --color-mauve: #A37684;
-  --color-mauve-dark: #8f6874;
-  --color-border: #e3d3c8;
-  --color-ink: #3A2A2E;
-  --color-white: #FFFFFF;
-  --color-error: red;
+  /* Nueva Paleta de Colores */
+  --color-bg: #132A20;           /* Verde muy oscuro (Fondo principal) */
+  --color-card-bg: #1B3B2D;      /* Verde oscuro (Fondo tarjetas/inputs) */
+  --color-text-main: #E6D5C3;    /* Crema / Marrón claro (Textos) */
+  --color-accent: #C8B29E;       /* Beige oscuro (Acentos e íconos) */
+  --color-btn-text: #091610;     /* Verde hiper oscuro (Texto botones) */
+  --color-error: #ff6b6b;        /* Rojo suavizado para contrastar en oscuro */
 }
 
 ion-content {
@@ -35,8 +33,8 @@ avatar + título
   width: 92px;
   height: 92px;
   border-radius: 50%;
-  background: var(--color-white);
-  border: 2px solid var(--color-border);
+  background: var(--color-card-bg);
+  border: 2px solid var(--color-card-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -46,12 +44,12 @@ avatar + título
   transition: border-color 0.2s ease;
 
   &:focus-visible {
-    outline: 2px solid var(--color-wine);
+    outline: 2px solid var(--color-accent);
     outline-offset: 3px;
   }
 
   &:active {
-    border-color: var(--color-mauve);
+    border-color: var(--color-accent);
   }
 }
 
@@ -64,7 +62,7 @@ avatar + título
 
 .avatar-placeholder {
   font-size: 40px;
-  color: var(--color-mauve);
+  color: var(--color-accent);
 }
 
 .avatar-badge {
@@ -74,21 +72,21 @@ avatar + título
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background: var(--color-wine);
+  background: var(--color-accent);
   border: 2px solid var(--color-bg);
   display: flex;
   align-items: center;
   justify-content: center;
 
   ion-icon {
-    color: var(--color-white);
+    color: var(--color-btn-text);
     font-size: 15px;
   }
 }
 
 .page-title {
   font-family: 'EB Garamond', serif;
-  color: var(--color-wine);
+  color: var(--color-text-main);
   font-weight: 500;
   font-size: 24px;
   margin: 0 0 4px;
@@ -103,7 +101,7 @@ avatar + título
 }
 
 .scan-link {
-  --color: var(--color-wine);
+  --color: var(--color-accent);
   --background-hover: transparent;
   --background-focused: transparent;
   --background-activated: transparent;
@@ -130,84 +128,93 @@ avatar + título
   font-family: 'EB Garamond', serif;
   font-size: 20px;
   font-weight: 600;
-  color: var(--color-wine);
+  color: var(--color-text-main);
   margin: 0 4px 10px;
 }
 
 /* ============================================
-  Campos
+  Campos (Inputs y Selects)
    ============================================ */
 .field {
-  --background: var(--color-white);
-  --border-radius: 12px;
+  /* 1. Fondo y estructura base de la tarjeta */
+  --background: #1B3B2D; /* Verde oscuro */
   --padding-start: 14px;
   --min-height: 54px;
-  --ion-color-danger: var(--color-mauve);
-  --ion-color-step-550: var(--color-mauve);
-  --highlight-color-invalid: transparent;
-
   
-  --color: var(--color-mauve);
-
-  border: 1px solid var(--color-border);
+  border: 1px solid #1B3B2D;
   border-radius: 12px;
-  margin-bottom: 12px;
-  
+  margin: 0 auto 12px auto;
   width: 75%; 
   max-width: 400px; 
-  margin: 0 auto 12px auto; 
 
+  /* 2. Reseteamos el color base del ion-item para que el label inactivo sea Beige oscuro */
+  --color: #C8B29E; 
 
   ion-input, ion-select {
-    --color: var(--color-ink);
-    --placeholder-color: var(--color-mauve);
+    /* Color del texto que el usuario escribe */
+    --color: #E6D5C3; 
+    --placeholder-color: rgba(230, 213, 195, 0.6); 
+    
+    /* Variables exactas de Ionic para el label flotante: 
+       Evita que desaparezca y le da los colores correctos */
+    --highlight-color-focused: #C8B29E; /* Beige oscuro al clickear */
+    --highlight-color-invalid: #ff6b6b; /* Rojo claro para el error */
+    --highlight-color-valid: #C8B29E;
+    
+    caret-color: #C8B29E; /* Color de la barrita que titila al escribir */
     font-family: 'Inter', sans-serif;
     font-size: 15px;
   }
-
   
-  ion-input::part(label),
-  ion-select::part(label) {
-    color: var(--color-mauve) !important; 
+  /* Ajustes para el select (lista desplegable) */
+  ion-select::part(text) {
+    color: #E6D5C3;
     font-family: 'Inter', sans-serif;
     font-size: 15px;
   }
-
-  ion-select {
-    &::part(text) {
-      color: var(--color-ink);
-      font-family: 'Inter', sans-serif;
-      font-size: 15px;
-    }
-    &::part(placeholder) {
-      color: var(--color-mauve);
-      opacity: 1;
-    }
+  ion-select::part(icon) {
+    color: #C8B29E;
   }
 
+  /* Íconos de la izquierda */
   ion-icon {
-    color: var(--color-mauve);
+    color: #C8B29E;
     font-size: 19px;
     margin-right: 10px;
     transition: color 0.2s ease;
   }
 
+  /* ============================================
+     BORDES E ÍCONOS DINÁMICOS
+     ============================================ */
   
+  /* A. Al clickear y estar escribiendo (FOCUS) -> Borde Beige oscuro */
   &.item-has-focus {
-    border-color: var(--color-wine);
-    --color: var(--color-wine); 
-
-    ion-icon {
-      color: var(--color-wine);
-    }
+    border-color: #C8B29E; 
     
-    ion-input::part(label),
-    ion-select::part(label) {
-      color: var(--color-wine) !important;
+    ion-icon { 
+      color: #C8B29E; 
+    }
+  }
+
+  /* B. Error real (Cuando salís del input y está vacío/inválido) -> Borde Rojo */
+  &.ion-invalid.ion-touched {
+    border-color: #ff6b6b; 
+    
+    ion-icon { 
+      color: #ff6b6b; 
+    }
+  }
+  
+  /* C. Mantenemos foco Beige oscuro si volvemos a clickear un input con error */
+  &.item-has-focus.ion-invalid.ion-touched {
+    border-color: #C8B29E; 
+    
+    ion-icon { 
+      color: #C8B29E; 
     }
   }
 }
-
 /* ============================================
   Error general del formulario
    ============================================ */
@@ -236,17 +243,19 @@ Barra fija de guardado
   bottom: 0;
 }
 
-
-
 .btn-submit {
-  --background: var(--color-wine);
-  --color: var(--color-white);
+  --background: var(--color-accent); /* Beige oscuro */
+  --color: var(--color-btn-text);    /* Texto hiper oscuro */
   --border-radius: 12px;
-  --background-hover: var(--color-wine-dark);
-  --background-focused: var(--color-wine-dark);
-  --background-activated: var(--color-wine-dark);
-  --ripple-color: transparent;
-  --box-shadow: 0 4px 14px rgba(107, 0, 43, 0.28);
+  
+  /* Efectos hover sutiles aclarando/oscureciendo el beige */
+  --background-hover: #d2c0ae; 
+  --background-focused: #d2c0ae;
+  --background-activated: #b59f8a;
+  
+  --ripple-color: rgba(9, 22, 16, 0.2);
+  --box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+  
   max-width: 480px;
   margin: 0 auto;
   height: 52px;
@@ -256,31 +265,12 @@ Barra fija de guardado
   text-transform: none;
 
   &[disabled] {
-    --background: var(--color-mauve);
+    --background: rgba(200, 178, 158, 0.5);
+    --color: rgba(9, 22, 16, 0.5);
     --box-shadow: none;
-    opacity: 0.6;
   }
 }
 
-.btn-submit:hover{
-    color: #A37684;
-}
-
-/* ============================================
-  RESPONSIVE - Media Queries
-   ============================================ */
-
-
-ion-content {
-  --padding-start: 0;
-  --padding-end: 0;
-}
-
-form {
-  width: 100%;
-  box-sizing: border-box;
-  overflow-x: hidden;
-}
 
 /* --------------------------------------------
   Celulares estándar (hasta 480px)

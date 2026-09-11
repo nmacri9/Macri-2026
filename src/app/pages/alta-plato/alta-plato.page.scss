@@ -1,5 +1,5 @@
 .alta-content {
-  --background: #FCF3E1;
+  --background: #132A20; // verde muy oscuro - fondo principal
 }
 
 .alta-container {
@@ -16,51 +16,52 @@
 }
 
 .alta-title {
-  font-size: 20px;
+  font-size: 25px;
   font-family: 'EB Garamond', serif;
-  font-weight: 500;
-  color: #6B002B;
+  font-weight: 700; // más peso para destacar sobre el resto del texto
+  letter-spacing: 0.4px;
+  color: #dbcbb9; // crema - texto principal
   margin: 4px 0 2px;
 }
 
 .alta-subtitle {
-  font-size: 13px;
+  font-size: 15px;
   font-family: 'EB Garamond', serif;
-  color: #3a2b30;
+  color: #dbcbb9; // crema - texto principal
   margin: 0 0 8px;
 }
 
 .alta-divider {
   width: 36px;
   height: 2px;
-  background: #3a2b30;
+  background: #C8B29E; // beige oscuro - acento decorativo
   opacity: 0.5;
   margin: 5px auto 0;
 }
 
 .alta-item {
-  --background: #FFFFFF;
-  --border-radius: 12px;
-  --border-color: #e3d3c8;
+  --background: #1B3B2D; // verde oscuro - fondo de tarjeta/input
+  --border-radius: 18px;
+  --border-color: #C8B29E;
   --padding-start: 12px;
   --padding-top: 4px;    
   --padding-bottom: 4px; 
   --min-height: 32px;
-  border: 1px solid #e3d3c8;
-  color: #3a2b30;
-  border-radius: 12px;
+  border: 1px solid #C8B29E; // beige oscuro - acento
+  color: #C8B29E; // beige oscuro - color base/ícono del item
+  border-radius: 18px;
   margin-bottom: 6px;
 
 
   ion-icon {
-    color: #3a2b30;
+    color: #C8B29E; // beige oscuro - acento
     font-size: 18px;
     margin-right: 8px;
   }
 
   ion-input, ion-textarea {
-    --color: #6B002B;
-    --placeholder-color: #3a2b30;
+    --color: #dbcbb9; // crema - valor tipeado (texto principal)
+    --placeholder-color: #C8B29E; // beige oscuro - placeholder (acento)
     --placeholder-opacity: 1;
   }
 }
@@ -68,9 +69,9 @@
 .alta-section-label {
   font-size: 12px;
   font-family: 'EB Garamond', serif;
-  color: #6B002B;
-  text-align: center;
-  margin: 4px 0 4px;
+  color: #dbcbb9; // crema - texto principal
+  text-align: left;
+  margin: 4px 0 8px 10px;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
@@ -78,7 +79,7 @@
 .fotos-grid {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 22px;
   margin-bottom: 6px;
 
   .foto-card {
@@ -89,9 +90,9 @@
     .foto-box {
       flex: 1;
       height: 110px; 
-      background: #FFFFFF;
-      border: 1px solid #e3d3c8;
-      border-radius: 10px;
+      background: #1B3B2D; // verde oscuro - fondo de tarjeta
+      border: 1px solid #C8B29E; // beige oscuro - acento
+      border-radius: 16px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -100,7 +101,7 @@
       span {
         font-size: 11px;
         font-family: 'EB Garamond', serif;
-        color: #3a2b30;
+        color: #C8B29E; // beige oscuro - texto placeholder/muted
       }
 
       img {
@@ -116,9 +117,9 @@
       gap: 4px;
 
       .foto-btn {
-        --border-color: #6B002B;
-        --color: #6B002B;
-        --border-radius: 6px;
+        --border-color: #C8B29E; // beige oscuro - borde del botón outline
+        --color: #dbcbb9; // crema - destacado, es la acción principal de la fila
+        --border-radius: 10px;
         width: 30px;
         height: 30px;
         margin: 0;
@@ -137,9 +138,9 @@ form {
 }
 
 .alta-submit {
-  --background: #6B002B;
-  --color: #FCF3E1;
-  --border-radius: 12px;
+  --background: #C8B29E; // beige oscuro - fondo de botón sólido
+  --color: #091610; // verde hiper oscuro - texto dentro del botón
+  --border-radius: 18px;
   height: 44px;
   margin: 0; 
   font-weight: 500;
@@ -148,14 +149,14 @@ form {
 }
 
 .error-text {
-  color: #d32f2f;
+  color: #d32f2f; // rojo semántico, sin cambios
   font-size: 11px;
   font-family: 'EB Garamond', serif;
   margin: -10px 0 10px 8px;
 }
 
 .banner-error {
-  background: #d32f2f;
+  background: #d32f2f; // rojo semántico, sin cambios
   color: #FFFFFF;
   padding: 10px;
   border-radius: 10px;
@@ -165,7 +166,7 @@ form {
 }
 
 .banner-exito {
-  background: #2e7d32;
+  background: #2e7d32; // verde semántico, sin cambios
   color: #FFFFFF;
   padding: 10px;
   border-radius: 10px;
@@ -182,7 +183,7 @@ form {
   height: 70vh;
 
   p {
-    color: #6B002B;
+    color: #dbcbb9; // crema - texto principal
     font-family: 'EB Garamond', serif;
     font-size: 15px;
     margin-top: 12px;

@@ -68,13 +68,20 @@
   border-radius: 12px;
   margin-bottom: 16px;
 
-  /*Arreglo error de color inputs, Reemplazo el rojo de error interno de Ionic por el crema Cepa */
-  --ion-color-danger: #dbcbb9;
-  --ion-color-step-550: #dbcbb9;
-  --highlight-color-invalid: transparent;
+  --ion-color-primary: #dbcbb9 !important;
+  --ion-color-danger: #dbcbb9 !important;
+  --ion-color-step-550: #dbcbb9 !important;
+  --highlight-color: #dbcbb9 !important;
+  --highlight-color-focused: #dbcbb9 !important;
+  --highlight-color-invalid: transparent !important;
 
   ion-input {
     --color: #dbcbb9; /* Color del texto normal */
+  }
+
+  /* Color inicial del label (para que combine con los bordes) */
+  ion-input::part(label) {
+    color: #C8B29E !important; 
   }
 
   ion-icon {
@@ -84,6 +91,21 @@
     transition: all 0.3s ease;
   }
 
+  
+  &.item-has-focus,
+  &.ion-touched,
+  &.ion-invalid {
+    border-color: #dbcbb9 !important;
+    --highlight-color: #dbcbb9 !important;
+    
+    ion-icon {
+      color: #dbcbb9 !important;
+    }
+    
+    ion-input::part(label) {
+      color: #dbcbb9 !important; 
+    }
+  }
 }
 
 .login-forgot {

@@ -1,15 +1,15 @@
 :host {
-  --color-bg: #FCF3E1;
-  --color-wine: #6B002B;
-  --color-ink: #3A2A2E;
-  --color-mauve: #A37684;
-  --color-border: #E3D3C8;
-  --color-white: #FFFFFF;
+  --color-bg: #132A20;
+  --color-text: #C8B29E;
+  --color-surface: #1B3B2D;
+  --color-shadow: rgba(0, 0, 0, 0.18);
+  --color-border: rgba(200, 178, 158, 0.08);
+  color-scheme: dark;
 }
 
 .home-header ion-toolbar {
   --background: var(--color-bg);
-  --color: var(--color-wine);
+  --color: var(--color-text);
   --border-width: 0 0 1px;
   --border-color: var(--color-border);
   --min-height: 62px;
@@ -23,65 +23,116 @@
 }
 
 .profile-nav {
-  display: flex;
-  max-width: 190px;
-  align-items: center;
-  margin-inline-end: 12px;
-  color: var(--color-ink);
+  appearance: none;
+  -webkit-appearance: none;
+  box-shadow: none;
+  background-image: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  margin-inline-end: 16px;
+  border: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.profile-nav img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .profile-nav > ion-icon {
-  flex: 0 0 auto;
-  margin-inline-end: 7px;
-  color: var(--color-wine);
-  font-size: 30px;
+  font-size: 44px;
 }
 
-.profile-details {
+.profile-nav:focus-visible,
+.profile-menu button:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 3px;
+}
+
+.profile-popover {
+  --background: #1B3B2D;
+  --width: 210px;
+  --box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.profile-popover::part(content) {
+  border: 1px solid rgba(200, 178, 158, 0.25);
+  border-radius: 12px;
+}
+
+.profile-menu {
+  --color-text: #C8B29E;
+  padding: 8px;
+  background: #1B3B2D;
+}
+
+.profile-menu button {
   display: flex;
-  min-width: 0;
-  flex-direction: column;
-  gap: 1px;
-}
-
-.profile-details strong,
-.profile-details small {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.profile-details strong {
-  color: var(--color-ink);
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-text);
   font-family: 'Inter', sans-serif;
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
 }
 
-.profile-details small {
-  color: var(--color-mauve);
-  font-family: 'Inter', sans-serif;
-  font-size: 10px;
+.profile-menu button:hover,
+.profile-menu button:focus-visible {
+  background: #132A20;
 }
 
+.profile-menu ion-icon {
+  font-size: 22px;
+}
+
+.profile-nav:disabled,
+.profile-menu button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
 .home-content {
   --background: var(--color-bg);
 }
 
+.home-content::part(scroll) {
+  display: flex;
+  flex-direction: column;
+}
+
 .home-container {
-  width: min(100% - 32px, 480px);
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: calc(100% - 32px);
   margin: 0 auto;
-  padding: 38px 0 48px;
+  padding: 38px 0 calc(16px + var(--ion-safe-area-bottom, 0px));
 }
 
 .welcome-section {
+  flex-shrink: 0;
   margin-bottom: 28px;
 }
 
 .welcome-eyebrow {
   display: block;
   margin-bottom: 8px;
-  color: var(--color-mauve);
+  color: var(--color-text);
   font-family: 'Inter', sans-serif;
   font-size: 12px;
   font-weight: 700;
@@ -91,7 +142,7 @@
 
 .welcome-section h1 {
   margin: 0 0 8px;
-  color: var(--color-wine);
+  color: var(--color-text);
   font-family: 'EB Garamond', serif;
   font-size: 36px;
   font-weight: 500;
@@ -101,7 +152,7 @@
 .welcome-section p {
   max-width: 340px;
   margin: 0;
-  color: var(--color-ink);
+  color: var(--color-text);
   font-family: 'Inter', sans-serif;
   font-size: 14px;
   line-height: 1.5;
@@ -109,45 +160,37 @@
 
 .menu-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  flex: 1 0 auto;
+  grid-template-columns: minmax(0, 1fr);
+  grid-auto-rows: minmax(92px, 1fr);
   gap: 12px;
 }
 
 .menu-option {
   position: relative;
   display: flex;
-  min-height: 174px;
-  flex-direction: column;
-  padding: 18px 16px 15px;
+  min-height: 92px;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 16px;
   overflow: hidden;
   border: 1px solid var(--color-border);
   border-radius: 14px;
-  background: var(--color-white);
-  color: var(--color-ink);
+  background: var(--color-surface);
+  color: var(--color-text);
   text-decoration: none;
-  box-shadow: 0 5px 14px rgba(58, 42, 46, 0.06);
+  box-shadow: 0 5px 14px var(--color-shadow);
   transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
 }
 
-.menu-option::after {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 52px;
-  height: 52px;
-  border-radius: 0 0 0 100%;
-  background: rgba(163, 118, 132, 0.1);
-  content: '';
-}
-
 .menu-option:focus-visible {
-  outline: 3px solid rgba(107, 0, 43, 0.25);
+  outline: 3px solid var(--color-text);
   outline-offset: 3px;
 }
 
 .menu-option:hover {
-  border-color: var(--color-mauve);
-  box-shadow: 0 9px 20px rgba(58, 42, 46, 0.11);
+  border-color: var(--color-text);
+  box-shadow: 0 9px 20px var(--color-shadow);
   transform: translateY(-2px);
 }
 
@@ -155,11 +198,11 @@
   display: grid;
   width: 42px;
   height: 42px;
+  flex: 0 0 42px;
   place-items: center;
-  margin-bottom: 20px;
   border-radius: 11px;
-  background: var(--color-wine);
-  color: var(--color-white);
+  background: var(--color-text);
+  color: var(--color-bg);
 }
 
 .menu-icon ion-icon {
@@ -169,13 +212,13 @@
 .menu-copy {
   display: flex;
   flex: 1;
+  min-width: 0;
   flex-direction: column;
   gap: 5px;
 }
 
 .menu-copy strong {
-  max-width: 150px;
-  color: var(--color-wine);
+  color: var(--color-text);
   font-family: 'EB Garamond', serif;
   font-size: 21px;
   font-weight: 600;
@@ -183,16 +226,15 @@
 }
 
 .menu-copy small {
-  max-width: 150px;
-  color: var(--color-ink);
+  color: var(--color-text);
   font-family: 'Inter', sans-serif;
   font-size: 12px;
   line-height: 1.35;
 }
 
 .menu-arrow {
-  align-self: flex-end;
-  color: var(--color-mauve);
+  flex: 0 0 auto;
+  color: var(--color-text);
   font-size: 18px;
 }
 
@@ -210,16 +252,9 @@
     font-size: 32px;
   }
 
-  .menu-grid {
-    grid-template-columns: 1fr;
-  }
-
   .menu-option {
-    min-height: 132px;
-  }
-
-  .menu-icon {
-    margin-bottom: 12px;
+    gap: 12px;
+    padding: 16px 12px;
   }
 }
 

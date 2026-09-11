@@ -35,7 +35,7 @@
 
       <ion-item class="field" lines="none">
         <ion-icon name="list-outline" slot="start"></ion-icon>
-        <ion-select formControlName="tipo" label="Tipo de mesa" labelPlacement="floating" placeholder="Seleccioná el tipo de mesa" [interfaceOptions]="{ cssClass: 'alerta-tema-login' }">
+        <ion-select formControlName="tipo" label="Tipo de mesa" labelPlacement="floating" placeholder="Seleccioná el tipo de mesa" [interfaceOptions]="{ cssClass: 'alerta-tema-mesa' }">
           <ion-select-option value="VIP">VIP</ion-select-option>
           <ion-select-option value="ESTANDAR">Estándar</ion-select-option>
           <ion-select-option value="MOVILIDAD_REDUCIDA">Movilidad reducida</ion-select-option>
@@ -48,7 +48,7 @@
       <h3 class="section-label">Disponibilidad inicial</h3>
       <ion-item class="field" lines="none">
         <ion-icon name="list-outline" slot="start"></ion-icon>
-        <ion-select formControlName="disponibilidad" label="Estado de la mesa" labelPlacement="floating" placeholder="Seleccioná la disponibilidad" [interfaceOptions]="{ cssClass: 'alerta-tema-login' }">
+        <ion-select formControlName="disponibilidad" label="Estado de la mesa" labelPlacement="floating" placeholder="Seleccioná la disponibilidad" [interfaceOptions]="{ cssClass: 'alerta-tema-mesa' }">
           <ion-select-option value="VACIA">Vacía</ion-select-option>
           <ion-select-option value="OCUPADA">Ocupada</ion-select-option>
           <ion-select-option value="RESERVADA">Reservada</ion-select-option>
@@ -76,7 +76,7 @@
       <div class="mesa-data">
         <strong>Mesa {{ mesa.numero }}</strong>
         <small>{{ mesa.comensales }} comensales · {{ mesa.tipo === 'ESTANDAR' ? 'Estándar' : mesa.tipo === 'MOVILIDAD_REDUCIDA' ? 'Movilidad reducida' : 'VIP' }}</small>
-        <ion-select aria-label="Cambiar disponibilidad" [value]="mesa.disponibilidad" [interfaceOptions]="{ cssClass: 'alerta-tema-login' }" (ionChange)="cambiarDisponibilidad(mesa, $event.detail.value)">
+        <ion-select aria-label="Cambiar disponibilidad" [value]="mesa.disponibilidad" [interfaceOptions]="{ cssClass: 'alerta-tema-mesa' }" (ionChange)="cambiarDisponibilidad(mesa, $event.detail.value)">
           <ion-select-option value="VACIA">Vacía</ion-select-option>
           <ion-select-option value="OCUPADA">Ocupada</ion-select-option>
           <ion-select-option value="RESERVADA">Reservada</ion-select-option>

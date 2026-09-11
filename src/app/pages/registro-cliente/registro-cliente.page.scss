@@ -126,16 +126,23 @@ avatar + título
 /* ============================================
   Campos
    ============================================ */
+/* ============================================
+  Campos
+   ============================================ */
 .field {
   --background: #1B3B2D; // verde oscuro - fondo de tarjeta
   --border-radius: 18px;
   --padding-start: 14px;
   --min-height: 54px;
-  --ion-color-danger: #C8B29E; // beige oscuro - acento
-  --ion-color-step-550: #C8B29E; // beige oscuro - acento
-  --highlight-color-invalid: transparent;
-
   
+  /* 1. Jaque mate al bordó fantasma en Registro */
+  --ion-color-primary: #dbcbb9 !important;
+  --ion-color-danger: #dbcbb9 !important;
+  --ion-color-step-550: #dbcbb9 !important;
+  --highlight-color: #dbcbb9 !important;
+  --highlight-color-focused: #dbcbb9 !important;
+  --highlight-color-invalid: transparent !important;
+
   --color: #C8B29E; // beige oscuro - acento
 
   border: 1px solid #C8B29E; // beige oscuro - acento
@@ -146,14 +153,12 @@ avatar + título
   max-width: 400px; 
   margin: 0 auto 12px auto; 
 
-
   ion-input, ion-select {
     --color: #dbcbb9; // crema - valor tipeado
     --placeholder-color: #C8B29E; // beige oscuro - placeholder
     font-family: 'Inter', sans-serif;
     font-size: 15px;
   }
-
   
   ion-input::part(label),
   ion-select::part(label) {
@@ -181,13 +186,15 @@ avatar + título
     transition: color 0.2s ease;
   }
 
-  
-  &.item-has-focus {
-    border-color: #dbcbb9; // crema - estado activo
-    --color: #dbcbb9; // crema - estado activo
+  /* 2. Anti-parpadeo: Forzamos el crema en foco, tocado o inválido */
+  &.item-has-focus,
+  &.ion-touched,
+  &.ion-invalid {
+    border-color: #dbcbb9 !important; // crema - estado activo
+    --color: #dbcbb9 !important; // crema - estado activo
 
     ion-icon {
-      color: #dbcbb9; // crema - estado activo
+      color: #dbcbb9 !important; // crema - estado activo
     }
     
     ion-input::part(label),

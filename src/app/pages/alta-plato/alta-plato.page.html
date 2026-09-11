@@ -12,8 +12,7 @@
       <div class="alta-divider"></div>
     </div>
 
-    <!-- MUY IMPORTANTE: Le agregamos el id="formAltaPlato" al form -->
-    <form [formGroup]="platoForm" (ngSubmit)="guardar()" id="formAltaPlato">
+    <form [formGroup]="platoForm" (ngSubmit)="confirmarGuardado()" id="formAltaPlato">
 
       <ion-item class="alta-item" lines="none">
         <ion-icon name="restaurant-outline" slot="start"></ion-icon>

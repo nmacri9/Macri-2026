@@ -1,13 +1,31 @@
 <ion-header class="home-header">
   <ion-toolbar>
     <ion-title>Cepa</ion-title>
-    <div class="profile-nav" slot="end" aria-label="Perfil actualmente logueado">
-      <ion-icon name="person-circle-outline"></ion-icon>
-      <span class="profile-details">
-        <strong>{{ nombreUsuario }}</strong>
-        <small>{{ rolUsuario }}</small>
-      </span>
-    </div>
+    <button id="profile-trigger" class="profile-nav" slot="end" type="button"
+      [attr.aria-label]="'Abrir opciones de ' + nombreUsuario" aria-haspopup="dialog"
+      [attr.aria-expanded]="menuPerfilAbierto" [disabled]="cerrandoSesion">
+      @if (fotoUsuario) {
+        <img [src]="fotoUsuario" alt="" (error)="fotoUsuario = null">
+      } @else {
+        <ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon>
+      }
+    </button>
+    <ion-popover #profileMenu trigger="profile-trigger" class="profile-popover"
+      side="bottom" alignment="end" aria-label="Opciones de cuenta"
+      (didPresent)="menuPerfilAbierto = true" (didDismiss)="menuPerfilAbierto = false">
+      <ng-template>
+        <div class="profile-menu">
+          <button type="button" (click)="profileMenu.dismiss()">
+            <ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon>
+            Mi perfil
+          </button>
+          <button type="button" [disabled]="cerrandoSesion" (click)="cerrarSesion(profileMenu)">
+            <ion-icon name="log-out-outline" aria-hidden="true"></ion-icon>
+            Cerrar sesión
+          </button>
+        </div>
+      </ng-template>
+    </ion-popover>
   </ion-toolbar>
 </ion-header>
 
@@ -60,6 +78,16 @@
         <span class="menu-copy">
           <strong>Nueva mesa</strong>
           <small>Configurá un espacio del salón</small>
+        </span>
+        <ion-icon name="arrow-forward-outline" class="menu-arrow"></ion-icon>
+      </a>
+      <a class="menu-option" routerLink="/clientes-pendientes">
+        <span class="menu-icon">
+          <ion-icon name="people-outline"></ion-icon>
+        </span>
+        <span class="menu-copy">
+          <strong>Clientes pendientes</strong>
+          <small>Revisá las solicitudes de registro</small>
         </span>
         <ion-icon name="arrow-forward-outline" class="menu-arrow"></ion-icon>
       </a>

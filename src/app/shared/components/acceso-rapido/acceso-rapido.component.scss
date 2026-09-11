@@ -35,6 +35,11 @@
   margin-bottom: 20px;
 }
 
+/* Fuerzas el fondo oscuro en el modal general */
+ion-modal {
+  --background: #132A20;
+}
+
 // Estilos del Modal
 .modal-toolbar { 
   --background: #1B3B2D; 
@@ -43,6 +48,11 @@
 
 .modal-content {
   --background: #132A20; 
+
+  /* Quitas el fondo blanco por defecto de la lista */
+  ion-list {
+    background: transparent;
+  }
 
   .perfil-item {
     --background: #1B3B2D; 

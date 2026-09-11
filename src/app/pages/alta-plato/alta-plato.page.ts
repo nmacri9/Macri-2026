@@ -19,6 +19,8 @@ import { addIcons } from 'ionicons';
 import { cameraOutline, imagesOutline, restaurantOutline, documentTextOutline, timeOutline, cashOutline } from 'ionicons/icons';
 import { CepaSpinnerComponent } from '../../shared/components/cepa-spinner/cepa-spinner.component';
 import { CepaHeaderComponent } from '../../shared/components/cepa-header/cepa-header.component';
+import { ModalController } from '@ionic/angular';
+import { ConfirmModalComponent } from '../../shared/confirm-modal/confirm-modal.component';
 
 
 @Component({
@@ -53,7 +55,8 @@ export class AltaPlatoPage implements OnInit {
   constructor(
     private fb: FormBuilder,
     private productosService: ProductosService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private modalCtrl: ModalController
   ) {
     addIcons({
       'camera-outline': cameraOutline,
@@ -102,50 +105,65 @@ export class AltaPlatoPage implements OnInit {
     }
   }
 
-  async guardar() {
-    this.mensajeError = '';
-    this.mensajeExito = '';
+  async confirmarGuardado() {
+  this.mensajeError = '';
+  this.mensajeExito = '';
 
-    if (this.platoForm.invalid) {
-      this.platoForm.markAllAsTouched();
-      await this.notificarError('Por favor complete todos los campos requeridos con valores válidos.');
-      return;
-    }
-
-    const fotosCompletas = this.fotos.filter(f => f !== null) as File[];
-    if (fotosCompletas.length !== 3) {
-      await this.notificarError('Debe ingresar obligatoriamente las 3 fotografías requeridas.');
-      return;
-    }
-
-    this.cargando = true;
-    this.cdr.detectChanges();
-
-    try {
-      const nuevoPlato: Producto = {
-        nombre: this.platoForm.value.nombre,
-        descripcion: this.platoForm.value.descripcion,
-        tipo: 'PLATO',
-        precio: Number(this.platoForm.value.precio),
-        tiempo_elaboracion: Number(this.platoForm.value.tiempo_elaboracion),
-        activo: true
-      };
-
-      await this.productosService.crearProductoConImagenes(nuevoPlato, fotosCompletas);
-
-      this.mensajeExito = '¡Plato registrado con éxito en el menú!';
-
-      this.platoForm.reset();
-      this.fotos = [null, null, null];
-      this.previews = [null, null, null];
-
-    } catch (err: any) {
-      await this.notificarError(err.message || 'Ocurrió un error al guardar el plato.');
-    } finally {
-      this.cargando = false;
-      this.cdr.detectChanges();
-    }
+  if (this.platoForm.invalid) {
+    this.platoForm.markAllAsTouched();
+    await this.notificarError('Por favor complete todos los campos requeridos con valores válidos.');
+    return;
   }
+
+  const fotosCompletas = this.fotos.filter(f => f !== null) as File[];
+  if (fotosCompletas.length !== 3) {
+    await this.notificarError('Debe ingresar obligatoriamente las 3 fotografías requeridas.');
+    return;
+  }
+
+  const modal = await this.modalCtrl.create({
+    component: ConfirmModalComponent,
+    componentProps: { mensaje: '¿Desea confirmar el alta de este plato?' },
+    cssClass: 'modal-alerta'
+  });
+
+  await modal.present();
+  const { data } = await modal.onDidDismiss();
+
+  if (data) {
+    this.guardar(fotosCompletas);
+  }
+}
+
+async guardar(fotosCompletas: File[]) {
+  this.cargando = true;
+  this.cdr.detectChanges();
+
+  try {
+    const nuevoPlato: Producto = {
+      nombre: this.platoForm.value.nombre,
+      descripcion: this.platoForm.value.descripcion,
+      tipo: 'PLATO',
+      precio: Number(this.platoForm.value.precio),
+      tiempo_elaboracion: Number(this.platoForm.value.tiempo_elaboracion),
+      activo: true
+    };
+
+    await this.productosService.crearProductoConImagenes(nuevoPlato, fotosCompletas);
+
+    this.mensajeExito = '¡Plato registrado con éxito en el menú!';
+
+    this.platoForm.reset();
+    this.fotos = [null, null, null];
+    this.previews = [null, null, null];
+
+  } catch (err: any) {
+    await this.notificarError(err.message || 'Ocurrió un error al guardar el plato.');
+  } finally {
+    this.cargando = false;
+    this.cdr.detectChanges();
+  }
+}
 
   private async notificarError(mensaje: string) {
     this.mensajeError = mensaje;

@@ -23,47 +23,88 @@
 }
 
 .profile-nav {
-  display: flex;
-  max-width: 190px;
-  align-items: center;
-  margin-inline-end: 12px;
+  appearance: none;
+  -webkit-appearance: none;
+  box-shadow: none;
+  background-image: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  margin-inline-end: 16px;
+  border: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  background: transparent;
   color: var(--color-text);
+  cursor: pointer;
+}
+
+.profile-nav img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .profile-nav > ion-icon {
-  flex: 0 0 auto;
-  margin-inline-end: 7px;
-  color: var(--color-text);
-  font-size: 30px;
+  font-size: 44px;
 }
 
-.profile-details {
+.profile-nav:focus-visible,
+.profile-menu button:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 3px;
+}
+
+.profile-popover {
+  --background: #1B3B2D;
+  --width: 210px;
+  --box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.profile-popover::part(content) {
+  border: 1px solid rgba(200, 178, 158, 0.25);
+  border-radius: 12px;
+}
+
+.profile-menu {
+  --color-text: #C8B29E;
+  padding: 8px;
+  background: #1B3B2D;
+}
+
+.profile-menu button {
   display: flex;
-  min-width: 0;
-  flex-direction: column;
-  gap: 1px;
-}
-
-.profile-details strong,
-.profile-details small {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.profile-details strong {
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
   color: var(--color-text);
   font-family: 'Inter', sans-serif;
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
 }
 
-.profile-details small {
-  color: var(--color-text);
-  font-family: 'Inter', sans-serif;
-  font-size: 10px;
+.profile-menu button:hover,
+.profile-menu button:focus-visible {
+  background: #132A20;
 }
 
+.profile-menu ion-icon {
+  font-size: 22px;
+}
+
+.profile-nav:disabled,
+.profile-menu button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
 .home-content {
   --background: var(--color-bg);
 }

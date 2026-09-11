@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { IonContent, IonHeader, IonIcon, IonTitle, IonToolbar } from '@ionic/angular';
+import { IonContent, IonHeader, IonIcon, IonPopover, IonTitle, IonToolbar, NavController, ToastController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import {
   arrowForwardOutline,
   gridOutline,
+  logOutOutline,
   peopleOutline,
   personCircleOutline,
   personAddOutline,
@@ -18,16 +19,20 @@ import { ChangeDetectorRef } from '@angular/core';
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
-  imports: [RouterLink, IonContent, IonHeader, IonIcon, IonTitle, IonToolbar],
+  imports: [RouterLink, IonContent, IonHeader, IonIcon, IonPopover, IonTitle, IonToolbar],
 })
 export class HomePage {
   nombreUsuario = 'Usuario';
-  rolUsuario = 'Rol no disponible';
+  fotoUsuario: string | null = null;
+  menuPerfilAbierto = false;
+  cerrandoSesion = false;
 
-  constructor(private cdr: ChangeDetectorRef,private authService: AuthService) {
+  constructor(private cdr: ChangeDetectorRef, private authService: AuthService,
+    private navController: NavController, private toastController: ToastController) {
     addIcons({
       arrowForwardOutline,
       gridOutline,
+      logOutOutline,
       peopleOutline,
       personCircleOutline,
       personAddOutline,
@@ -40,6 +45,27 @@ export class HomePage {
     this.cargarPerfil();
   }
 
+  async cerrarSesion(menu: IonPopover) {
+    if (this.cerrandoSesion) return;
+    this.cerrandoSesion = true;
+    try {
+      await this.authService.logout();
+      await menu.dismiss();
+      await this.navController.navigateRoot('/login', { replaceUrl: true });
+    } catch (error) {
+      console.error('No se pudo cerrar la sesión:', error);
+      const toast = await this.toastController.create({
+        message: 'No se pudo cerrar la sesión. Intentá nuevamente.',
+        duration: 4000,
+        position: 'bottom'
+      });
+      await toast.present();
+    } finally {
+      this.cerrandoSesion = false;
+      this.cdr.markForCheck();
+    }
+  }
+
   private async cargarPerfil() {
     try {
       const usuario = await this.authService.obtenerUsuarioActual();
@@ -49,7 +75,7 @@ export class HomePage {
       }
 
       this.nombreUsuario = usuario.email || 'Usuario';
-      this.rolUsuario = this.formatearRol(usuario.user_metadata?.['rol']);
+      this.fotoUsuario = usuario.user_metadata?.['foto_url'] || null;
 
       this.cdr.detectChanges();
 
@@ -64,7 +90,7 @@ export class HomePage {
         .join(' ');
 
       this.nombreUsuario = nombreCompleto || perfil.email || this.nombreUsuario;
-      this.rolUsuario = this.formatearRol(perfil.rol);
+      this.fotoUsuario = perfil.foto_url || this.fotoUsuario;
       this.cdr.detectChanges();
 
     } catch (error) {
@@ -72,23 +98,4 @@ export class HomePage {
     }
   }
 
-  private formatearRol(rol: string | null | undefined): string {
-    const roles: Record<string, string> = {
-      DUENO: 'Dueño',
-      SUPERVISOR: 'Supervisor',
-      COCINERO: 'Cocinero',
-      CANTINERO: 'Cantinero',
-      MOZO: 'Mozo',
-      METRE: 'Metre',
-      CLIENTE_REGISTRADO: 'Cliente registrado'
-    };
-
-    const rolNormalizado = String(rol ?? '')
-      .trim()
-      .toUpperCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '');
-
-    return roles[rolNormalizado] || 'Rol no disponible';
-  }
 }

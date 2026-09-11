@@ -1,17 +1,24 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { IonContent, IonItem, IonInput, IonButton, IonIcon, IonSelect, IonSelectOption } from '@ionic/angular';
-import { cameraOutline, camera, qrCodeOutline, personOutline, cardOutline, mailOutline, lockClosedOutline, briefcaseOutline } from 'ionicons/icons';
+import { AbstractControl, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { IonContent, IonItem, IonInput, IonButton, IonIcon } from '@ionic/angular';
+import { cameraOutline, camera, qrCodeOutline, personOutline, cardOutline, mailOutline, lockClosedOutline } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-import { SupabaseService } from '../../services/supabase.service';
+import { Capacitor } from '@capacitor/core';
+import { AuthService } from '../../services/auth.service';
+import { RouterLink } from '@angular/router';
 import { CepaSpinnerComponent } from '../../shared/components/cepa-spinner/cepa-spinner.component';
 import { ModalController, ToastController } from '@ionic/angular';
 import { ConfirmModalComponent } from '../../shared/confirm-modal/confirm-modal.component';
-import { CepaHeaderComponent } from '../../shared/components/cepa-header/cepa-header.component';
+
 import { DniScannerService } from '../../services/dni-scanner';
+
+export function confirmarClaveValidator(form: AbstractControl) {
+  return form.get('clave')?.value === form.get('confirmarClave')?.value
+    ? null : { clavesDistintas: true };
+}
 
 @Component({
   selector: 'app-registro-cliente',
@@ -24,31 +31,34 @@ import { DniScannerService } from '../../services/dni-scanner';
     IonInput,
     IonButton,
     IonIcon,
-    IonSelect,
-    IonSelectOption,
     CommonModule,
     ReactiveFormsModule,
     CepaSpinnerComponent,
-    CepaHeaderComponent
+    RouterLink
   ]
 })
 export class RegistroClientePage implements OnInit {
+  @ViewChild('archivoFoto') archivoFoto?: ElementRef<HTMLInputElement>;
   registroForm!: FormGroup;
   fotoPreview: string | undefined;
   formEnviado = false;
   errorSupabase: string | undefined;
 
   cargando = false;
+  registroExitoso = false;
+  confirmando = false;
+  cargandoFoto = false;
+  errorFoto = '';
 
   constructor(
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef,
-    private supabase: SupabaseService,
+    private authService: AuthService,
     private modalCtrl: ModalController,
     private toastCtrl: ToastController,
     private dniScanner: DniScannerService
   ) {
-    addIcons({ cameraOutline, camera, qrCodeOutline, personOutline, cardOutline, mailOutline, lockClosedOutline, briefcaseOutline });
+    addIcons({ cameraOutline, camera, qrCodeOutline, personOutline, cardOutline, mailOutline, lockClosedOutline });
   }
 
   ngOnInit() {
@@ -58,9 +68,9 @@ export class RegistroClientePage implements OnInit {
       dni: ['', [Validators.required, Validators.pattern(/^[0-9]{7,8}$/)]],
       email: ['', [Validators.required, Validators.email]],
       clave: ['', [Validators.required, Validators.minLength(6)]],
-      perfil: ['', [Validators.required]],
+      confirmarClave: ['', [Validators.required]],
       foto: ['', [Validators.required]]
-    });
+    }, { validators: confirmarClaveValidator });
   }
 
   async escanearDNI() {
@@ -90,40 +100,105 @@ export class RegistroClientePage implements OnInit {
   }
 
   async tomarFoto() {
+    if (this.cargandoFoto || this.cargando) return;
+
+    if (!Capacitor.isNativePlatform()) {
+      const input = this.archivoFoto?.nativeElement;
+      if (!input) {
+        this.errorFoto = 'No se pudo abrir el selector de imágenes.';
+        return;
+      }
+      input.value = '';
+      input.click();
+      return;
+    }
+
+    this.cargandoFoto = true;
+    this.errorFoto = '';
     try {
       const image = await Camera.getPhoto({
         quality: 80,
         allowEditing: false,
         resultType: CameraResultType.DataUrl,
-        source: CameraSource.Camera // Forzado a cámara: bloquea el acceso a la galería
+        source: CameraSource.Prompt,
+        promptLabelHeader: 'Foto de perfil',
+        promptLabelPhoto: 'Elegir de la galería',
+        promptLabelPicture: 'Tomar una foto',
+        promptLabelCancel: 'Cancelar'
       });
 
+      if (!image.dataUrl) throw new Error('No se pudo leer la foto.');
       this.fotoPreview = image.dataUrl;
       this.registroForm.patchValue({ foto: this.fotoPreview });
-      this.cdr.detectChanges();
+      this.registroForm.get('foto')?.markAsDirty();
     } catch (error: any) {
-      alert('Hubo un error al abrir la cámara: ' + error.message);
-      console.error('Error cámara:', error);
+      if (!/cancel|canceled|cancelled|no image picked/i.test(error?.message ?? '')) {
+        this.errorFoto = 'No se pudo cargar la foto. Revisá los permisos o elegí otra imagen.';
+      }
+    } finally {
+      this.cargandoFoto = false;
+      this.cdr.detectChanges();
     }
   }
 
+  async cargarArchivoFoto(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const archivo = input.files?.[0];
+    if (!archivo) return;
+
+    this.cargandoFoto = true;
+    this.errorFoto = '';
+    try {
+      if (!archivo.type.startsWith('image/')) {
+        throw new Error('El archivo seleccionado no es una imagen.');
+      }
+      const dataUrl = await this.leerArchivoComoDataUrl(archivo);
+      this.fotoPreview = dataUrl;
+      this.registroForm.patchValue({ foto: dataUrl });
+      this.registroForm.get('foto')?.markAsDirty();
+    } catch {
+      this.errorFoto = 'No se pudo cargar la foto. Elegí otra imagen e intentá nuevamente.';
+    } finally {
+      this.cargandoFoto = false;
+      this.cdr.detectChanges();
+    }
+  }
+
+  private leerArchivoComoDataUrl(archivo: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => typeof reader.result === 'string'
+        ? resolve(reader.result)
+        : reject(new Error('No se pudo leer la imagen.'));
+      reader.onerror = () => reject(reader.error ?? new Error('No se pudo leer la imagen.'));
+      reader.readAsDataURL(archivo);
+    });
+  }
+
   async confirmarAlta() {
+    if (this.cargando || this.cargandoFoto || this.confirmando || this.registroExitoso) return;
     this.formEnviado = true;
     this.registroForm.markAllAsTouched();
     if (this.registroForm.invalid) {
       return;
     }
-    const modal = await this.modalCtrl.create({
-      component: ConfirmModalComponent,
-      componentProps: { mensaje: '¿Desea registrarse con estos datos?' },
-      cssClass: 'modal-alerta'
-    });
+    this.confirmando = true;
+    try {
+      const modal = await this.modalCtrl.create({
+        component: ConfirmModalComponent,
+        componentProps: { mensaje: '¿Desea registrarse con estos datos?' },
+        cssClass: 'modal-alerta'
+      });
 
-    await modal.present();
-    const { data } = await modal.onDidDismiss();
+      await modal.present();
+      const { data } = await modal.onDidDismiss();
 
-    if (data) {
-      this.registrar();
+      if (data) {
+        await this.registrar();
+      }
+    } finally {
+      this.confirmando = false;
+      this.cdr.markForCheck();
     }
   }
 
@@ -139,7 +214,7 @@ export class RegistroClientePage implements OnInit {
   }
 
   async registrar() {
-    if (this.cargando) return;
+    if (this.cargando || this.cargandoFoto || this.registroExitoso) return;
 
     this.formEnviado = true;
     this.errorSupabase = undefined;
@@ -153,36 +228,13 @@ export class RegistroClientePage implements OnInit {
     this.cdr.detectChanges();
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
       const datosCliente = this.registroForm.value;
-      const { data: sesionAdmin } = await this.supabase.getClient().auth.getSession();
-      const { data: authData, error: authError } = await this.supabase.getClient().auth.signUp({
-        email: datosCliente.email,
-        password: datosCliente.clave,
-        options: {
-          data: {
-            nombres: datosCliente.nombres,
-            apellidos: datosCliente.apellidos,
-            dni: datosCliente.dni,
-            foto_url: datosCliente.foto,
-            rol: datosCliente.perfil.toUpperCase(),
-            estado: 'PENDIENTE' // Queda pendiente de aprobación por dueño/supervisor
-          }                     // ESTO FALTA ARREGLAR CUANDO SE HAGA SUPABASE
-        }
-      });
-
-      if (authError) throw authError;
-      if (!authData.user) throw new Error('No se generó el ID de usuario en Auth.');
-      if (sesionAdmin.session) {
-        await this.supabase.getClient().auth.setSession({
-          access_token: sesionAdmin.session.access_token,
-          refresh_token: sesionAdmin.session.refresh_token,
-        });
-      }
-
-      console.log('Cliente registrado, pendiente de aprobación');
-
+      await this.authService.registrarCliente(
+        datosCliente.email.trim(), datosCliente.clave,
+        datosCliente.nombres.trim(), datosCliente.apellidos.trim(),
+        datosCliente.dni, undefined, datosCliente.foto
+      );
+      this.registroExitoso = true;
       this.registroForm.reset();
       this.formEnviado = false;
       this.fotoPreview = undefined;

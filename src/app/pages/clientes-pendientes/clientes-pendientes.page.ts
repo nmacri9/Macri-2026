@@ -1,109 +1,94 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ModalController, IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonIcon } from '@ionic/angular';
+import { ModalController, IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonIcon, IonButtons, IonBackButton } from '@ionic/angular';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { addIcons } from 'ionicons';
-import { checkmarkCircleOutline, closeCircleOutline } from 'ionicons/icons';
-import { ConfirmModalComponent } from '../../shared/confirm-modal/confirm-modal.component'; 
+import { checkmarkCircleOutline, closeCircleOutline, personCircleOutline, refreshOutline } from 'ionicons/icons';
+import { ConfirmModalComponent } from '../../shared/confirm-modal/confirm-modal.component';
 import { CepaSpinnerComponent } from '../../shared/components/cepa-spinner/cepa-spinner.component';
+import { ClientePendiente, ClientesService, ResolucionCliente } from '../../services/clientes.service';
 
 @Component({
   selector: 'app-clientes-pendientes',
   templateUrl: './clientes-pendientes.page.html',
   styleUrls: ['./clientes-pendientes.page.scss'],
   standalone: true,
-  imports: [
-    CommonModule, 
-    IonHeader, 
-    IonToolbar, 
-    IonTitle, 
-    IonContent, 
-    IonButton, 
-    IonIcon, 
-    CepaSpinnerComponent
-  ]
+  imports: [CommonModule, IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonIcon,
+    IonButtons, IonBackButton, CepaSpinnerComponent]
 })
-export class ClientesPendientesPage implements OnInit {
+export class ClientesPendientesPage {
   cargando = false;
-  
-  clientesPendientes = [
-    { id: '1', nombres: 'Juan Carlos', apellidos: 'Pérez', foto: 'https://i.pravatar.cc/150?u=juan' },
-    { id: '2', nombres: 'María Laura', apellidos: 'Gómez', foto: 'https://i.pravatar.cc/150?u=maria' },
-    { id: '3', nombres: 'Carlos Alberto', apellidos: 'Rodríguez', foto: 'https://i.pravatar.cc/150?u=carlos' },
-    { id: '4', nombres: 'Ana', apellidos: 'Martínez', foto: 'https://i.pravatar.cc/150?u=ana' }
-  ];
+  procesandoId: number | null = null;
+  errorMensaje = '';
+  mensajeExito = '';
+  clientesPendientes: ClientePendiente[] = [];
 
   constructor(
     private cdr: ChangeDetectorRef,
-    private modalCtrl: ModalController // 3. Lo inyectamos en el constructor
+    private modalCtrl: ModalController,
+    private clientesService: ClientesService
   ) {
-    addIcons({ checkmarkCircleOutline, closeCircleOutline });
+    addIcons({ checkmarkCircleOutline, closeCircleOutline, personCircleOutline, refreshOutline });
   }
 
-  ngOnInit() {
-    // Acá el Integrante 4 tiene que llamar a su función para traer datos
+  ionViewWillEnter() {
+    return this.cargarClientes();
   }
 
-  // --- FUNCIÓN INTERMEDIA PARA EL MODAL ---
+  async cargarClientes() {
+    if (this.cargando || this.procesandoId !== null) return;
+    this.cargando = true;
+    this.errorMensaje = '';
+    this.mensajeExito = '';
+    this.cdr.markForCheck();
+    try {
+      this.clientesPendientes = await this.clientesService.listarPendientes();
+    } catch {
+      this.errorMensaje = 'No se pudieron cargar los clientes pendientes. Intentá actualizar la lista.';
+    } finally {
+      this.cargando = false;
+      this.cdr.markForCheck();
+    }
+  }
+
   async pedirConfirmacion(mensaje: string): Promise<boolean> {
     const modal = await this.modalCtrl.create({
       component: ConfirmModalComponent,
       componentProps: { mensaje },
-      cssClass: 'modal-confirmacion' 
+      cssClass: 'modal-alerta'
     });
-
     await modal.present();
-
-    
-    const { data } = await modal.onWillDismiss(); 
+    const { data } = await modal.onDidDismiss();
     return data === true;
   }
 
-  // --- ACCIONES ACTUALIZADAS ---
-  async aceptarCliente(id: string, nombre: string) {
-    // 4. Pausamos la ejecución hasta que el usuario decida
-    const confirmado = await this.pedirConfirmacion(`¿Desea ACEPTAR al cliente ${nombre}?`);
-    
-    if (!confirmado) return; // Si tocó cancelar, cortamos acá
-
-    this.cargando = true;
-    this.cdr.detectChanges();
-
-    try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      await Haptics.impact({ style: ImpactStyle.Light });
-      this.removerClienteDeLista(id);
-    } catch (error) {
-      await Haptics.impact({ style: ImpactStyle.Heavy });
-      console.error('Error al aceptar:', error);
-    } finally {
-      this.cargando = false;
-      this.cdr.detectChanges();
-    }
+  aceptarCliente(id: number, nombre: string) {
+    return this.resolverCliente(id, nombre, 'APROBADO');
   }
 
-  async rechazarCliente(id: string, nombre: string) {
-    const confirmado = await this.pedirConfirmacion(`¿Está seguro que desea RECHAZAR a ${nombre}?`);
-    
-    if (!confirmado) return;
-
-    this.cargando = true;
-    this.cdr.detectChanges();
-
-    try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      await Haptics.impact({ style: ImpactStyle.Medium });
-      this.removerClienteDeLista(id);
-    } catch (error) {
-      await Haptics.impact({ style: ImpactStyle.Heavy }); 
-      console.error('Error al rechazar:', error);
-    } finally {
-      this.cargando = false;
-      this.cdr.detectChanges();
-    }
+  rechazarCliente(id: number, nombre: string) {
+    return this.resolverCliente(id, nombre, 'RECHAZADO');
   }
 
-  private removerClienteDeLista(id: string) {
-    this.clientesPendientes = this.clientesPendientes.filter(c => c.id !== id);
+  private async resolverCliente(id: number, nombre: string, estado: ResolucionCliente) {
+    if (this.cargando || this.procesandoId !== null) return;
+    this.procesandoId = id;
+    this.errorMensaje = '';
+    this.mensajeExito = '';
+    this.cdr.markForCheck();
+    try {
+      const accion = estado === 'APROBADO' ? 'aprobar' : 'rechazar';
+      if (!await this.pedirConfirmacion(`¿Querés ${accion} la solicitud de ${nombre}?`)) return;
+      await this.clientesService.resolver(id, estado);
+      this.clientesPendientes = this.clientesPendientes.filter(cliente => cliente.id !== id);
+      this.mensajeExito = estado === 'APROBADO' ? 'Cliente aprobado.' : 'Cliente rechazado.';
+      // Un fallo de vibración no debe presentarse como un fallo de guardado.
+      await Haptics.impact({ style: ImpactStyle.Light }).catch(() => undefined);
+    } catch {
+      this.errorMensaje = 'No se pudo actualizar la solicitud. Actualizá la lista: puede haber sido resuelta por otra persona o tu sesión puede haber vencido.';
+    } finally {
+      this.procesandoId = null;
+      this.cdr.markForCheck();
+    }
   }
 }

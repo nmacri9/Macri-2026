@@ -1,12 +1,19 @@
-<app-cepa-header [titulo]="'Registro de Clientes'"></app-cepa-header>
+
 <ion-content class="ion-padding">
+  <div class="register-navigation"><a routerLink="/login">Volver al login</a></div>
   <app-cepa-spinner *ngIf="cargando"></app-cepa-spinner>
 
-  <form [formGroup]="registroForm" (ngSubmit)="confirmarAlta()" [hidden]="cargando">
+  <form [formGroup]="registroForm" (ngSubmit)="confirmarAlta()" [hidden]="cargando || registroExitoso">
 
-    <!-- Hero: foto del cliente + escaneo de DNI como acciones contextuales -->
+    <header class="register-intro">
+      <span class="brand-name">Cepa</span>
+      <h1>Creá tu usuario</h1>
+      <p>Tu lugar en la mesa empieza acá.</p>
+    </header>
     <div class="avatar-hero">
-      <button type="button" class="avatar-ring" (click)="tomarFoto()">
+      <input #archivoFoto class="photo-input" type="file" accept="image/*" capture="environment"
+        (change)="cargarArchivoFoto($event)" aria-hidden="true" tabindex="-1">
+      <button type="button" class="avatar-ring" aria-label="Cargar foto de perfil" [disabled]="cargandoFoto || cargando" (click)="tomarFoto()">
         <img *ngIf="fotoPreview" [src]="fotoPreview" class="avatar-img" alt="Foto cliente">
         <ion-icon *ngIf="!fotoPreview" name="camera-outline" class="avatar-placeholder"></ion-icon>
         <span class="avatar-badge">
@@ -18,7 +25,8 @@
         La foto es obligatoria.
       </small>
 
-      <h2 class="page-title">Registro de Cliente</h2>
+      <span class="photo-label">{{ cargandoFoto ? 'Cargando foto...' : fotoPreview ? 'Tocá para cambiar tu foto' : 'Tocá para agregar tu foto' }}</span>
+      <small class="avatar-error" *ngIf="errorFoto" role="alert">{{ errorFoto }}</small>
 
       <ion-button type="button" fill="clear" size="small" class="scan-link" (click)="escanearDNI()">
         <ion-icon name="qr-code-outline" slot="start"></ion-icon>
@@ -26,9 +34,7 @@
       </ion-button>
     </div>
 
-    <!-- Campos autocompletables por DNI -->
-    <section class="form-section">
-      <h3 class="section-label">Datos personales</h3>
+    <div class="form-fields">
 
       <ion-item class="field" lines="none">
         <ion-icon name="person-outline" slot="start"></ion-icon>
@@ -44,11 +50,6 @@
         <ion-icon name="card-outline" slot="start"></ion-icon>
         <ion-input formControlName="dni" label="DNI" labelPlacement="floating" type="tel"></ion-input>
       </ion-item>
-    </section>
-
-    <!-- Campos manuales -->
-    <section class="form-section">
-      <h3 class="section-label">Acceso al sistema</h3>
 
       <ion-item class="field" lines="none">
         <ion-icon name="mail-outline" slot="start"></ion-icon>
@@ -57,17 +58,15 @@
 
       <ion-item class="field" lines="none">
         <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
-        <ion-input formControlName="clave" label="Contraseña" labelPlacement="floating" type="password"></ion-input>
+        <ion-input formControlName="clave" label="Contraseña" labelPlacement="floating" type="password" autocomplete="new-password" helperText="Al menos 6 caracteres." errorText="Usá al menos 6 caracteres."></ion-input>
       </ion-item>
 
       <ion-item class="field" lines="none">
-        <ion-icon name="briefcase-outline" slot="start"></ion-icon>
-        <ion-select formControlName="perfil" label="Perfil" labelPlacement="floating">
-          <ion-select-option value="CLIENTE">Cliente</ion-select-option>
-          <ion-select-option value="METRE">Metre</ion-select-option>
-        </ion-select>
+        <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+        <ion-input formControlName="confirmarClave" label="Repetí tu contraseña" labelPlacement="floating" type="password" autocomplete="new-password" errorText="Repetí tu contraseña."></ion-input>
       </ion-item>
-    </section>
+      <small class="field-error" role="alert" *ngIf="registroForm.hasError('clavesDistintas') && (registroForm.get('confirmarClave')?.touched || formEnviado)">Las contraseñas no coinciden.</small>
+    </div>
 
     <!-- Manejo de errores general -->
     <div class="form-error" *ngIf="formEnviado && registroForm.invalid">
@@ -78,18 +77,17 @@
       <small>{{ errorSupabase }}</small>
     </div>
 
-    <div class="submit-spacer"></div>
+    <div class="submit-bar">
+      <ion-button class="btn-submit" type="submit" [disabled]="cargando || cargandoFoto || confirmando">
+        {{ cargando ? 'Registrando...' : 'Registrarme' }}
+      </ion-button>
+    </div>
   </form>
 
-  <div class="submit-bar">
-    <ion-button
-      class="btn-submit"
-      type="button"
-      expand="block"
-      (click)="confirmarAlta()"
-      [disabled]="cargando">
-      {{ cargando ? 'Registrando...' : 'Registrarme' }}
-    </ion-button>
-  </div>
-
+  <section class="registration-success" *ngIf="registroExitoso" role="status">
+    <h2 class="page-title">Solicitud enviada</h2>
+    <p>Tu cuenta quedó pendiente de aprobación. Si recibís un correo de confirmación, seguí sus instrucciones.</p>
+    <ion-button routerLink="/login" class="btn-submit" expand="block">Volver al login</ion-button>
+  </section>
+  <p class="register-login" *ngIf="!registroExitoso">¿Ya tenés cuenta? <a routerLink="/login">Iniciá sesión</a></p>
 </ion-content>

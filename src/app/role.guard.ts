@@ -20,7 +20,21 @@ export const roleGuard: CanActivateFn = async (route) => {
     console.error('No se pudo obtener el perfil del usuario:', error);
   }
 
-  const rol = normalizarRol(perfil?.rol ?? usuario.user_metadata?.['rol']);
+  if (!perfil) {
+    return router.createUrlTree(['/login']);
+  }
+
+  if (perfil.rol === 'CLIENTE_REGISTRADO' && perfil.estado !== 'APROBADO') {
+    return router.createUrlTree(['/login']);
+  }
+
+  if (route.data?.['requireStoredRole'] && perfil?.estado !== 'ACTIVO') {
+    return router.createUrlTree(['/home']);
+  }
+
+  const rol = normalizarRol(route.data?.['requireStoredRole']
+    ? perfil?.rol
+    : perfil?.rol ?? usuario.user_metadata?.['rol']);
   const rolesPermitidos = route.data?.['roles'] as RolUsuario[] | undefined;
 
   if (!rolesPermitidos || rolesPermitidos.includes(rol)) {

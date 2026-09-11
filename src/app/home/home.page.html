@@ -81,6 +81,7 @@
         </span>
         <ion-icon name="arrow-forward-outline" class="menu-arrow"></ion-icon>
       </a>
+      @if (puedeGestionarClientes) {
       <a class="menu-option" routerLink="/clientes-pendientes">
         <span class="menu-icon">
           <ion-icon name="people-outline"></ion-icon>
@@ -91,6 +92,7 @@
         </span>
         <ion-icon name="arrow-forward-outline" class="menu-arrow"></ion-icon>
       </a>
+      }
     </nav>
   </main>
 </ion-content>

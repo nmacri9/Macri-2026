@@ -1,52 +1,47 @@
 <ion-header>
   <ion-toolbar color="primary">
-    <ion-title>Clientes Pendientes</ion-title>
+    <ion-buttons slot="start"><ion-back-button defaultHref="/home" text="Volver"></ion-back-button></ion-buttons>
+    <ion-title>Clientes pendientes</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cargarClientes()" [disabled]="cargando || procesandoId !== null" aria-label="Actualizar clientes pendientes">
+        <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<!-- Uso scrollY false para que el contenedor principal no haga scroll libre,
-    sino que delegoel scroll al list-container con su scroll-snap -->
-<ion-content [scrollY]="false">
-  
+<ion-content>
   <app-cepa-spinner *ngIf="cargando"></app-cepa-spinner>
+  <div class="status-message error-message" *ngIf="errorMensaje" role="alert">
+    <p>{{ errorMensaje }}</p>
+    <ion-button fill="clear" (click)="cargarClientes()" [disabled]="cargando || procesandoId !== null">Actualizar lista</ion-button>
+  </div>
+  <p class="status-message" *ngIf="mensajeExito" role="status">{{ mensajeExito }}</p>
 
-  <div class="list-container" *ngIf="clientesPendientes.length > 0 && !cargando; else sinPendientes">
-    
-    <div class="client-card" *ngFor="let cliente of clientesPendientes">
-      
+  <div class="list-container" *ngIf="clientesPendientes.length > 0 && !cargando">
+    <div class="client-card" *ngFor="let cliente of clientesPendientes" [attr.aria-busy]="procesandoId === cliente.id">
       <div class="card-content">
         <div class="avatar-container">
-          <img [src]="cliente.foto" alt="Foto del cliente">
+          <img *ngIf="cliente.foto_url; else sinFoto" [src]="cliente.foto_url" alt="Foto del cliente" (error)="cliente.foto_url = null">
+          <ng-template #sinFoto><ion-icon name="person-circle-outline" aria-label="Sin foto"></ion-icon></ng-template>
         </div>
-
         <div class="info-container">
-          <h2>{{ cliente.apellidos }}</h2>
-          <h3>{{ cliente.nombres }}</h3>
+          <h2>{{ cliente.apellido }}</h2>
+          <h3>{{ cliente.nombre }}</h3>
         </div>
       </div>
-
       <div class="actions-container">
-        <!-- Botón Rechazar -->
-      <ion-button fill="outline" color="danger" (click)="rechazarCliente(cliente.id, cliente.nombres)">
-      <ion-icon slot="start" name="close-circle-outline"></ion-icon>
-      Rechazar
-      </ion-button>
-
-      <!-- Botón Aceptar -->
-      <ion-button fill="solid" color="success" (click)="aceptarCliente(cliente.id, cliente.nombres)">
-      <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
-      Aceptar
-      </ion-button>
+        <ion-button fill="outline" color="danger" [disabled]="procesandoId !== null" (click)="rechazarCliente(cliente.id, (cliente.nombre || '') + ' ' + cliente.apellido)">
+          <ion-icon slot="start" name="close-circle-outline"></ion-icon>Rechazar
+        </ion-button>
+        <ion-button fill="solid" color="success" [disabled]="procesandoId !== null" (click)="aceptarCliente(cliente.id, (cliente.nombre || '') + ' ' + cliente.apellido)">
+          <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>Aprobar
+        </ion-button>
+      </div>
+    </div>
   </div>
 
-    </div>
-
+  <div class="empty-state" *ngIf="!cargando && !errorMensaje && clientesPendientes.length === 0">
+    <p>No hay clientes pendientes de aprobación.</p>
   </div>
-
-  <ng-template #sinPendientes>
-    <div class="empty-state" *ngIf="!cargando">
-      <p>Todos los registros han sido gestionados. No hay clientes pendientes.</p>
-    </div>
-  </ng-template>
-
 </ion-content>

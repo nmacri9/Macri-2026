@@ -1,494 +1,168 @@
+:host {
+  --register-bg: #132A20;
+  --register-surface: #1B3B2D;
+  --register-accent: #C8B29E;
+  --register-text: #DBCBB9;
+  --ion-color-primary: #C8B29E;
+  --ion-color-danger: #FF9B91;
+  color-scheme: dark;
+  font-family: 'Inter', sans-serif;
+}
+
 ion-content {
-  --background: #132A20; // verde muy oscuro - fondo principal
+  --background: var(--register-bg);
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-bottom: calc(24px + var(--ion-safe-area-bottom, 0px));
 }
 
-form {
-  padding: 0 16px 8px;
-  max-width: 480px;
+form,
+.register-navigation,
+.register-login,
+.registration-success {
+  box-sizing: border-box;
+  width: calc(100% - 40px);
+  max-width: 420px;
   margin: 0 auto;
+  color: var(--register-text);
 }
 
-/* ============================================
-avatar + título
-   ============================================ */
+.register-navigation {
+  padding: 0 0 12px;
+  a { display: inline-flex; align-items: center; min-height: 44px; font-size: 13px; }
+}
+
+a { color: var(--register-accent); text-underline-offset: 4px; }
+a:focus-visible, .avatar-ring:focus-visible { outline: 2px solid var(--register-accent); outline-offset: 4px; }
+
+.register-intro {
+  text-align: center;
+  .brand-name {
+    display: block;
+    font-family: 'EB Garamond', serif;
+    font-size: 24px;
+    color: var(--register-accent);
+    margin-bottom: 16px;
+  }
+  h1 {
+    font-family: 'EB Garamond', serif;
+    font-weight: 500;
+    font-size: clamp(34px, 9vw, 42px);
+    line-height: 1.1;
+    margin: 0 0 10px;
+  }
+  p { margin: 0; font-size: 14px; line-height: 1.5; color: var(--register-accent); }
+}
+
 .avatar-hero {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 28px 0 20px;
+  padding: 24px 0;
 }
+
+.photo-input { display: none; }
 
 .avatar-ring {
   position: relative;
-  width: 92px;
-  height: 92px;
-  border-radius: 50%;
-  background: #1B3B2D; // verde oscuro - fondo de tarjeta
-  border: 2px solid #C8B29E; // beige oscuro - acento
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
+  width: 80px;
+  height: 80px;
   padding: 0;
-  margin: 0 0 14px;
-  cursor: pointer;
-  transition: border-color 0.2s ease;
-
-  &:focus-visible {
-    outline: 2px solid #dbcbb9; // crema - estado activo
-    outline-offset: 3px;
-  }
-
-  &:active {
-    border-color: #C8B29E; // beige oscuro - acento
-  }
-}
-
-.avatar-img {
-  width: 100%;
-  height: 100%;
+  margin: 0 0 12px;
+  border: 1px solid var(--register-accent);
   border-radius: 50%;
-  object-fit: cover;
+  background: var(--register-surface);
+  color: var(--register-accent);
+  appearance: none;
+  box-shadow: none;
+  cursor: pointer;
 }
-
-.avatar-placeholder {
-  font-size: 40px;
-  color: #dbcbb9; // crema - destacado, es la acción principal de la pantalla
-}
-
+.avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+.avatar-placeholder { font-size: 30px; }
 .avatar-badge {
   position: absolute;
-  right: -2px;
-  bottom: -2px;
-  width: 30px;
-  height: 30px;
+  right: -3px;
+  bottom: -3px;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 2px solid var(--register-bg);
   border-radius: 50%;
-  background: #C8B29E; // beige oscuro - fondo de botón
-  border: 2px solid #132A20; // verde muy oscuro - fondo principal
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  ion-icon {
-    color: #091610; // verde hiper oscuro - texto dentro de botones
-    font-size: 15px;
-  }
+  background: var(--register-accent);
+  color: var(--register-bg);
+  ion-icon { font-size: 13px; }
 }
-
-.page-title {
-  font-family: 'EB Garamond', serif;
-  color: #dbcbb9; // crema - texto principal
-  font-weight: 700; // más peso para destacar sobre el resto del texto
-  letter-spacing: 0.4px;
-  font-size: 24px;
-  margin: 0 0 4px;
-  text-align: center;
-}
-
-.avatar-error {
-  font-family: 'Inter', sans-serif;
-  font-size: 15px;
-  color: red;
-  margin: -6px 0 4px;
-}
-
+.photo-label { font-size: 12px; color: var(--register-accent); }
 .scan-link {
-  --color: #dbcbb9; // crema - texto principal
-  --background-hover: transparent;
-  --background-focused: transparent;
-  --background-activated: transparent;
-  --ripple-color: transparent;
-  font-family: 'Inter', sans-serif;
-  font-size: 13px;
-  font-weight: 600;
-  margin: 2px 0 0;
-  height: 32px;
-
-  ion-icon {
-    font-size: 16px;
-  }
-}
-
-/* ============================================
-  Secciones
-   ============================================ */
-.form-section {
-  margin-bottom: 22px;
-}
-
-.section-label {
-  font-family: 'EB Garamond', serif;
-  font-size: 20px;
-  font-weight: 600;
-  color: #dbcbb9; // crema - texto principal
-  margin: 0 4px 10px;
-}
-
-/* ============================================
-  Campos
-   ============================================ */
-/* ============================================
-  Campos
-   ============================================ */
-.field {
-  --background: #1B3B2D; // verde oscuro - fondo de tarjeta
-  --border-radius: 18px;
-  --padding-start: 14px;
-  --min-height: 54px;
-  
-  /* 1. Jaque mate al bordó fantasma en Registro */
-  --ion-color-primary: #dbcbb9 !important;
-  --ion-color-danger: #dbcbb9 !important;
-  --ion-color-step-550: #dbcbb9 !important;
-  --highlight-color: #dbcbb9 !important;
-  --highlight-color-focused: #dbcbb9 !important;
-  --highlight-color-invalid: transparent !important;
-
-  --color: #C8B29E; // beige oscuro - acento
-
-  border: 1px solid #C8B29E; // beige oscuro - acento
-  border-radius: 18px;
-  margin-bottom: 12px;
-  
-  width: 75%; 
-  max-width: 400px; 
-  margin: 0 auto 12px auto; 
-
-  ion-input, ion-select {
-    --color: #dbcbb9; // crema - valor tipeado
-    --placeholder-color: #C8B29E; // beige oscuro - placeholder
-    font-family: 'Inter', sans-serif;
-    font-size: 15px;
-  }
-  
-  ion-input::part(label),
-  ion-select::part(label) {
-    color: #C8B29E !important; // beige oscuro - acento
-    font-family: 'Inter', sans-serif;
-    font-size: 15px;
-  }
-
-  ion-select {
-    &::part(text) {
-      color: #dbcbb9; // crema - texto principal
-      font-family: 'Inter', sans-serif;
-      font-size: 15px;
-    }
-    &::part(placeholder) {
-      color: #C8B29E; // beige oscuro - placeholder
-      opacity: 1;
-    }
-  }
-
-  ion-icon {
-    color: #C8B29E; // beige oscuro - acento
-    font-size: 19px;
-    margin-right: 10px;
-    transition: color 0.2s ease;
-  }
-
-  /* 2. Anti-parpadeo: Forzamos el crema en foco, tocado o inválido */
-  &.item-has-focus,
-  &.ion-touched,
-  &.ion-invalid {
-    border-color: #dbcbb9 !important; // crema - estado activo
-    --color: #dbcbb9 !important; // crema - estado activo
-
-    ion-icon {
-      color: #dbcbb9 !important; // crema - estado activo
-    }
-    
-    ion-input::part(label),
-    ion-select::part(label) {
-      color: #dbcbb9 !important; // crema - estado activo
-    }
-  }
-}
-
-/* ============================================
-  Error general del formulario
-   ============================================ */
-.form-error {
-  text-align: center;
-  margin: 4px 4px 15px;
-
-  small {
-    font-family: 'EB Garamond', serif;
-    color: red;
-    font-weight: 600;
-    font-size: 15px;
-  }
-}
-
-/* ============================================
-Barra fija de guardado
-   ============================================ */
-.submit-spacer {
-  height: 30px;
-}
-
-.submit-bar {
-  left: 0;
-  right: 0;
-  bottom: 0;
-}
-
-
-
-.btn-submit {
-  --background: #C8B29E; // beige oscuro - fondo de botón
-  --color: #091610; // verde hiper oscuro - texto dentro de botones
-  --border-radius: 18px;
-  --background-hover: darken(#C8B29E, 8%);
-  --background-focused: darken(#C8B29E, 8%);
-  --background-activated: darken(#C8B29E, 8%);
-  --ripple-color: transparent;
-  --box-shadow: 0 4px 14px rgba(200, 178, 158, 0.28);
-  max-width: 480px;
-  margin: 0 auto;
-  height: 52px;
-  font-family: 'Inter', sans-serif;
-  font-size: 16px;
-  font-weight: 600;
+  --color: var(--register-text);
+  --background-hover: var(--register-surface);
+  --background-activated: var(--register-surface);
+  --border-radius: 8px;
+  min-height: 44px;
+  margin: 4px 0 0;
+  font-size: 12px;
   text-transform: none;
-
-  &[disabled] {
-    --background: #C8B29E; // beige oscuro - acento
-    --box-shadow: none;
-    opacity: 0.6;
-  }
 }
 
-.btn-submit:hover{
-    color: #091610; // verde hiper oscuro - texto dentro de botones
-}
-
-/* ============================================
-  RESPONSIVE - Media Queries
-   ============================================ */
-
-
-ion-content {
-  --padding-start: 0;
-  --padding-end: 0;
-}
-
-form {
-  width: 100%;
-  box-sizing: border-box;
-  overflow-x: hidden;
-}
-
-/* --------------------------------------------
-  Celulares estándar (hasta 480px)
-   -------------------------------------------- */
-@media (max-width: 480px) {
-  form {
-    padding: 0 16px 8px;
-  }
-
-  
-  .avatar-hero {
-    padding: 20px 0 16px;
-  }
-
-  .avatar-ring {
-    width: 84px;
-    height: 84px;
-  }
-
-  .avatar-placeholder {
-    font-size: 34px;
-  }
-
-  .avatar-badge {
-    width: 26px;
-    height: 26px;
-
-    ion-icon {
-      font-size: 13px;
-    }
-  }
-
-  .page-title {
-    font-size: 21px;
-  }
-
-  .avatar-error {
-    font-size: 13px;
-  }
-
-  .form-section {
-    margin-bottom: 18px;
-  }
-
-  .section-label {
-    font-size: 18px;
-    margin: 0 2px 8px;
-    white-space: normal;
-    word-break: break-word;
-  }
-
-  .field {
-    width: 85%;
-    max-width: 320px;
-    --min-height: 50px;
-
-    ion-input, ion-select,
-    ion-select::part(text),
-    ion-select::part(placeholder),
-    ion-select::part(label) {
-      font-size: 14px;
-    }
-
-    ion-icon {
-      font-size: 18px;
-      margin-right: 8px;
-      flex-shrink: 0;
-    }
-  }
-
-  .form-error small {
+.form-fields { display: grid; gap: 10px; }
+.field {
+  --background: var(--register-surface);
+  --color: var(--register-text);
+  --border-radius: 12px;
+  --padding-start: 14px;
+  --min-height: 56px;
+  --inner-padding-end: 14px;
+  border: 1px solid rgba(200, 178, 158, 0.4);
+  border-radius: 12px;
+  margin: 0;
+  ion-icon { color: var(--register-accent); font-size: 18px; margin-inline-end: 12px; }
+  ion-input {
+    --color: var(--register-text);
+    --highlight-color-focused: var(--register-accent);
+    --highlight-color-valid: var(--register-accent);
+    --highlight-color-invalid: var(--ion-color-danger);
+    font-family: 'Inter', sans-serif;
     font-size: 14px;
   }
-
-  .btn-submit {
-    max-width: 100%;
-    height: 48px;
-    font-size: 15px;
-  }
-
-  .submit-spacer {
-    height: 24px;
-  }
-
-  
-  .submit-bar {
-    padding-bottom: env(safe-area-inset-bottom, 0px);
-  }
+  ion-input::part(label), ion-input::part(helper-text) { color: var(--register-accent); }
+  &.item-has-focus { border-color: var(--register-accent); }
 }
 
-/* --------------------------------------------
-  Celulares chicos hasta 375px
-   -------------------------------------------- */
-@media (max-width: 375px) {
-  .avatar-hero {
-    padding: 16px 0 12px;
-  }
-
-  .avatar-ring {
-    width: 76px;
-    height: 76px;
-    margin: 0 0 10px;
-  }
-
-  .avatar-placeholder {
-    font-size: 30px;
-  }
-
-  .page-title {
-    font-size: 19px;
-  }
-
-  .section-label {
-    font-size: 17px;
-  }
-
-  .field {
-    width: 88%;
-    max-width: 300px;
-    --padding-start: 10px;
-    --min-height: 48px;
-
-    ion-input, ion-select,
-    ion-select::part(text),
-    ion-select::part(placeholder),
-    ion-select::part(label) {
-      font-size: 13px;
-    }
-
-    ion-icon {
-      font-size: 17px;
-      margin-right: 6px;
-    }
-  }
-
-  .btn-submit {
-    height: 46px;
-    font-size: 14px;
-  }
+.avatar-error, .field-error, .form-error small {
+  display: block;
+  color: var(--ion-color-danger);
+  font-size: 13px;
+  line-height: 1.5;
 }
-
-/* --------------------------------------------
-  Celulares muy chicos 
-   -------------------------------------------- */
-@media (max-width: 320px) {
-  form {
-    padding: 0 12px 8px;
-  }
-
-  .avatar-ring {
-    width: 68px;
-    height: 68px;
-  }
-
-  .page-title {
-    font-size: 17px;
-  }
-
-  .section-label {
-    font-size: 16px;
-  }
-
-  .field {
-    width: 92%;
-    max-width: 280px;
-    --padding-start: 8px;
-    --min-height: 46px;
-
-    ion-input, ion-select,
-    ion-select::part(text),
-    ion-select::part(placeholder),
-    ion-select::part(label) {
-      font-size: 12.5px;
-    }
-  }
-
-  .btn-submit {
-    height: 44px;
-    font-size: 13.5px;
-  }
+.avatar-error { margin-bottom: 8px; }
+.form-error { margin-top: 12px; text-align: center; }
+.submit-bar { display: flex; justify-content: center; margin-top: 28px; }
+.btn-submit {
+  --background: var(--register-accent);
+  --background-hover: #B49F8C;
+  --background-focused: #B49F8C;
+  --background-activated: #B49F8C;
+  --color: var(--register-bg);
+  --border-radius: 12px;
+  --box-shadow: none;
+  width: 220px;
+  max-width: 100%;
+  height: 50px;
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  text-transform: none;
+  &[disabled] { opacity: 0.6; }
 }
+.register-login { text-align: center; font-size: 13px; padding-top: 12px; a { display: inline-block; padding: 12px 0; } }
+.registration-success { text-align: center; padding-top: 40px; p { font-size: 14px; line-height: 1.6; margin: 16px 0 24px; } .btn-submit { margin-inline: auto; } }
+.page-title { font-family: 'EB Garamond', serif; font-size: 32px; font-weight: 500; margin: 0; }
 
-/* --------------------------------------------
-  Celulares en horizontal (landscape) con poco alto:
-  se achica el bloque del avatar para que no empuje
-  el resto del formulario fuera de la pantalla visible.
-   -------------------------------------------- */
-@media (max-height: 480px) and (orientation: landscape) {
-  .avatar-hero {
-    flex-direction: row;
-    justify-content: center;
-    gap: 12px;
-    padding: 12px 0;
-  }
-
-  .avatar-ring {
-    width: 56px;
-    height: 56px;
-    margin: 0;
-  }
-
-  .page-title {
-    font-size: 18px;
-    margin: 0;
-  }
-
-  .avatar-badge {
-    width: 22px;
-    height: 22px;
-
-    ion-icon {
-      font-size: 11px;
-    }
-  }
+@media (max-width: 360px) {
+  form, .register-navigation, .register-login, .registration-success { width: calc(100% - 32px); }
+  .register-intro .brand-name { margin-bottom: 10px; }
 }

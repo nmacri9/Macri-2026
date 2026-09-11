@@ -1,12 +1,12 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms'; 
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { IonContent, IonItem, IonInput, IonButton, IonIcon, IonText } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { mailOutline, lockClosedOutline, personOutline, cafeOutline, shieldOutline } from 'ionicons/icons';
 import { Haptics, ImpactStyle } from '@capacitor/haptics'; // Requisito de vibracion
-import { AuthService } from '../../services/auth.service';
+import { AuthService, CuentaClienteNoHabilitadaError } from '../../services/auth.service';
 import { CepaSpinnerComponent } from '../../shared/components/cepa-spinner/cepa-spinner.component';
 import { AccesoRapidoComponent } from '../../shared/components/acceso-rapido/acceso-rapido.component';
 
@@ -16,7 +16,7 @@ import { AccesoRapidoComponent } from '../../shared/components/acceso-rapido/acc
   styleUrls: ['./login.page.scss'],
   standalone: true,
   // IMPORTANTE: Agrego ReactiveFormsModule aca para que funcione el formulario
-  imports: [IonContent, IonItem, IonInput, IonButton, IonIcon, IonText, CommonModule, ReactiveFormsModule, CepaSpinnerComponent, AccesoRapidoComponent]
+  imports: [RouterLink, IonContent, IonItem, IonInput, IonButton, IonIcon, IonText, CommonModule, ReactiveFormsModule, CepaSpinnerComponent, AccesoRapidoComponent]
 })
 export class LoginPage implements OnInit {
   loginForm!: FormGroup;
@@ -70,22 +70,22 @@ export class LoginPage implements OnInit {
 
     this.errorMessage = '';
     const { email, clave } = this.loginForm.value;
-    console.log('Enviando a BD:', email, clave);
     
     try {
       this.isLoading = true; // Activa el spinner visual
       this.cdr.detectChanges();
       
       await new Promise(resolve => setTimeout(resolve, 1500));
-      const usuarioLogueado = await this.authservice.login(email, clave); 
+      await this.authservice.login(email, clave);
       
       // Si pasa la línea anterior sin errores, el login fue exitoso
-      console.log('Ingreso exitoso:', usuarioLogueado);
       this.router.navigate(['/home']); // Jaled debe definir esta ruta
       
     } catch (error: any) {
       // Entra acá si el servicio devuelve un error (ej. clave incorrecta)
-      this.errorMessage = 'Credenciales incorrectas o usuario no registrado.';
+      this.errorMessage = error instanceof CuentaClienteNoHabilitadaError
+        ? error.message
+        : 'Credenciales incorrectas o usuario no registrado.';
       await Haptics.impact({ style: ImpactStyle.Heavy }); // Vibración exigida
       console.error('Error en login:', error);
       

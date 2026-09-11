@@ -26,6 +26,7 @@ export class HomePage {
   fotoUsuario: string | null = null;
   menuPerfilAbierto = false;
   cerrandoSesion = false;
+  puedeGestionarClientes = false;
 
   constructor(private cdr: ChangeDetectorRef, private authService: AuthService,
     private navController: NavController, private toastController: ToastController) {
@@ -91,6 +92,9 @@ export class HomePage {
 
       this.nombreUsuario = nombreCompleto || perfil.email || this.nombreUsuario;
       this.fotoUsuario = perfil.foto_url || this.fotoUsuario;
+      const rol = String(perfil.rol ?? '').trim().toUpperCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      this.puedeGestionarClientes = perfil.estado === 'ACTIVO' && ['DUENO', 'SUPERVISOR'].includes(rol);
       this.cdr.detectChanges();
 
     } catch (error) {

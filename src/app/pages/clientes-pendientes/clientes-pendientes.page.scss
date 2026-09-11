@@ -1,7 +1,4 @@
 .list-container {
-    height: calc(100vh - 56px); 
-    overflow-y: scroll;
-    scroll-snap-type: y mandatory; 
     background-color: #f4f5f8; 
 }
 
@@ -36,6 +33,10 @@
     height: 100%;
 
 .avatar-container {
+    display: grid;
+    place-items: center;
+
+    ion-icon { font-size: 64px; color: #666; }
     width: 75px;
     height: 75px;
     border-radius: 50%;
@@ -73,6 +74,7 @@ h3 {
 }
 
 .actions-container {
+    flex-wrap: wrap;
     display: flex;
     justify-content: flex-end;
     gap: 12px;
@@ -81,7 +83,7 @@ h3 {
 }
 
 .empty-state {
-    height: calc(100vh - 56px);
+    min-height: 240px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -95,3 +97,13 @@ p {
 }
 
 }
+
+.status-message {
+  margin: 0;
+  padding: 12px 20px;
+  color: #132A20;
+  background: #f4f5f8;
+  font-size: 14px;
+}
+
+.error-message { color: #8A2020; }

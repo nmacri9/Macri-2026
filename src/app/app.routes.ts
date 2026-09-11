@@ -3,6 +3,10 @@ import { roleGuard } from './role.guard';
 
 export const routes: Routes = [
   {
+    path: 'register',
+    loadComponent: () => import('./pages/registro-cliente/registro-cliente.page').then(m => m.RegistroClientePage),
+  },
+  {
     path: 'home',
     loadComponent: () => import('./home/home.page').then((m) => m.HomePage),
     canActivate: [roleGuard],
@@ -57,7 +61,9 @@ export const routes: Routes = [
   },
   {
     path: 'clientes-pendientes',
-    loadComponent: () => import('./pages/clientes-pendientes/clientes-pendientes.page').then( m => m.ClientesPendientesPage)
+    loadComponent: () => import('./pages/clientes-pendientes/clientes-pendientes.page').then( m => m.ClientesPendientesPage),
+    canActivate: [roleGuard],
+    data: { roles: ['DUENO', 'SUPERVISOR'], requireStoredRole: true },
   },
 
 ];

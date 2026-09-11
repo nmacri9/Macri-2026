@@ -5,6 +5,7 @@ import { addIcons } from 'ionicons';
 import {
   arrowForwardOutline,
   gridOutline,
+  peopleOutline,
   personCircleOutline,
   personAddOutline,
   restaurantOutline,
@@ -27,6 +28,7 @@ export class HomePage {
     addIcons({
       arrowForwardOutline,
       gridOutline,
+      peopleOutline,
       personCircleOutline,
       personAddOutline,
       restaurantOutline,

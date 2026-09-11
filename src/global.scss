@@ -125,6 +125,38 @@
 }
 
 /* Estilo para el cartelito de éxito (Toast) */
+.alerta-tema-mesa {
+  --background: #1B3B2D;
+  --color: #C8B29E;
+  --ion-text-color: #C8B29E;
+  --ion-color-primary: #C8B29E;
+  color-scheme: dark;
+
+  .alert-wrapper {
+    border: 1px solid rgba(200, 178, 158, 0.25);
+    border-radius: 16px;
+  }
+
+  .alert-title,
+  .alert-radio-label,
+  .alert-button,
+  [aria-checked='true'] .alert-radio-label {
+    color: #C8B29E;
+  }
+
+  .alert-radio-group {
+    border-color: rgba(200, 178, 158, 0.25);
+  }
+
+  .alert-radio-icon {
+    border-color: #C8B29E;
+  }
+
+  .alert-radio-inner {
+    background: #C8B29E;
+  }
+}
+
 .toast-exito {
   --background: #1B3B2D; 
   --color: #E6D5C3;      

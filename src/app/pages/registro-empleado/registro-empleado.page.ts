@@ -168,7 +168,8 @@ export class RegistroEmpleadoPage implements OnInit {
             apellidos: datosEmpleado.apellidos,
             dni: datosEmpleado.dni,
             cuil: datosEmpleado.cuil,
-            foto_url: datosEmpleado.foto,
+            // foto_url: datosEmpleado.foto,
+            foto_url: 'foto-pendiente-de-carga',
             rol: datosEmpleado.perfil.toUpperCase()
           }
         }
@@ -176,6 +177,21 @@ export class RegistroEmpleadoPage implements OnInit {
 
       if (authError) throw authError;
       if (!authData.user) throw new Error('No se generó el ID de usuario en Auth.');
+
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      // 1. El Trigger ya creó la fila. Ahora inyectamos la foto real directamente en la tabla.
+      const { error: errorFoto } = await this.supabase.getClient()
+        .from('usuarios') 
+        .update({ foto_url: datosEmpleado.foto }) // Acá viaja el Base64 gigante sin tocar el Token
+        .eq('id', authData.user.id);
+
+      if (errorFoto) {
+        console.error('Fallo al actualizar la foto:', errorFoto);
+        throw new Error('El empleado se creó, pero hubo un problema al adjuntar la foto.');
+      }
+
+      // 2. Restauramos la sesión del Dueño para que no se desloguee
       if (sesionAdmin.session) {
         await this.supabase.getClient().auth.setSession({
           access_token: sesionAdmin.session.access_token,
@@ -183,7 +199,8 @@ export class RegistroEmpleadoPage implements OnInit {
         });
       }
 
-      console.log('Empleado guardado exitosamente por el Trigger');
+      console.log('Empleado guardado y foto inyectada exitosamente');
+      // ... resto de tu código (reset del form, mensaje de éxito) ...
       
       this.registroForm.reset();
       this.formEnviado = false;

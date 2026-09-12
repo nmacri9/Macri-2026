@@ -12,9 +12,9 @@ export interface DatosClienteEmail {
     })
     export class EmailService {
     // Claves del servicio del grupo
-    private SERVICE_ID = 'service_cepa'; 
-    private PUBLIC_KEY = 'TU_PUBLIC_KEY_EMAILJS'; 
-    private TEMPLATE_UNICA = 'template_notificaciones_cepa'; 
+    private SERVICE_ID = 'service_5ev3xxj'; 
+    private PUBLIC_KEY = 'CnmkCtC5sn8SXky7V'; 
+    private TEMPLATE_UNICA = 'template_78axyn3'; 
 
     constructor() {
         emailjs.init(this.PUBLIC_KEY);

@@ -3,7 +3,7 @@
 }
 
 .alta-container {
-  padding: 4px 24px 24px;
+  padding: 40px 24px 24px;
   max-width: 400px;
   margin: 0 auto;
   display: flex;
@@ -16,7 +16,7 @@
 }
 
 .alta-title {
-  font-size: 25px;
+  font-size: 20px;
   font-family: 'EB Garamond', serif;
   font-weight: 700; // más peso para destacar sobre el resto del texto
   letter-spacing: 0.4px;
@@ -25,10 +25,10 @@
 }
 
 .alta-subtitle {
-  font-size: 15px;
+  font-size: 20px;
   font-family: 'EB Garamond', serif;
   color: #dbcbb9; // crema - texto principal
-  margin: 0 0 8px;
+  margin: 10 0 8px;
 }
 
 .alta-divider {
@@ -192,7 +192,7 @@ form {
 
 @media (max-width: 400px) {
   .alta-container {
-    padding: 4px 20px 10px;
+    padding: 32px 20px 10px;
   }
 
   .alta-header {

@@ -1,14 +1,25 @@
 <ion-content class="splash-content" [fullscreen]="true" [scrollY]="false">
   <div class="splash-container">
-    <img src="assets/icono.png" alt="Logo Cepa" class="splash-logo" />
 
-    <div class="splash-progress"></div>
+    <!-- Bloque Superior: Saludo completo -->
+    <div class="saludo-top">
+      <h1>Bienvenido</h1>
+      <p>Tu experiencia comienza aquí</p>
+    </div>
 
-    <div class="equipo-wrapper">
-      <p class="equipo-label">Desarrollado por:</p>
+    <!-- Bloque Central: Logo y Progreso -->
+    <div class="logo-wrapper">
+      <img src="assets/icono.png" alt="Logo Cepa" class="splash-logo" />
+      <div class="splash-progress"></div>
+    </div>
+
+    <!-- Bloque Inferior: Créditos -->
+    <div class="creditos-footer">
+      <p class="equipo-label">DESARROLLADO POR:</p>
       <ul class="equipo-lista">
         <li *ngFor="let nombre of nombresEquipo">{{ nombre }}</li>
       </ul>
     </div>
+
   </div>
 </ion-content>

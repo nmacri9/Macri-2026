@@ -3,6 +3,9 @@ import { CommonModule } from '@angular/common';
 import { ModalController, IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonIcon, IonButtons, IonBackButton } from '@ionic/angular';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { addIcons } from 'ionicons';
+import { OnInit, OnDestroy } from '@angular/core';
+import { PushNotifications } from '@capacitor/push-notifications';
+import { PluginListenerHandle } from '@capacitor/core';
 import { checkmarkCircleOutline, closeCircleOutline, personCircleOutline, refreshOutline } from 'ionicons/icons';
 import { ConfirmModalComponent } from '../../shared/confirm-modal/confirm-modal.component';
 import { CepaSpinnerComponent } from '../../shared/components/cepa-spinner/cepa-spinner.component';
@@ -16,7 +19,8 @@ import { ClientePendiente, ClientesService, ResolucionCliente } from '../../serv
   imports: [CommonModule, IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonIcon,
     IonButtons, IonBackButton, CepaSpinnerComponent]
 })
-export class ClientesPendientesPage {
+export class ClientesPendientesPage implements OnInit, OnDestroy {
+  private pushListener: PluginListenerHandle | null = null;
   cargando = false;
   procesandoId: number | null = null;
   errorMensaje = '';
@@ -30,6 +34,30 @@ export class ClientesPendientesPage {
   ) {
     addIcons({ checkmarkCircleOutline, closeCircleOutline, personCircleOutline, refreshOutline });
   }
+
+  async ngOnInit() {
+    // Escucha notificaciones entrantes cuando la app está abierta en primer plano
+    this.pushListener = await PushNotifications.addListener(
+      'pushNotificationReceived',
+      async (notification) => {
+        // Vibra al recibir la notificación
+        await Haptics.impact({ style: ImpactStyle.Heavy }).catch(() => undefined);
+        
+        // Actualiza la lista en tiempo real
+        this.cargarClientes();
+      }
+    );
+  }
+
+  ngOnDestroy() {
+    // Limpia el listener para evitar fugas de memoria al salir de la vista
+    if (this.pushListener) {
+      this.pushListener.remove();
+    }
+  }
+
+
+
 
   ionViewWillEnter() {
     return this.cargarClientes();

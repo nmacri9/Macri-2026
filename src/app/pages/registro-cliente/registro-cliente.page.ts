@@ -1,8 +1,8 @@
 import { Component, OnInit, ChangeDetectorRef, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AbstractControl, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { IonContent, IonItem, IonInput, IonButton, IonIcon } from '@ionic/angular';
-import { cameraOutline, camera, qrCodeOutline, personOutline, cardOutline, mailOutline, lockClosedOutline } from 'ionicons/icons';
+import { IonContent, IonItem, IonInput, IonButton, IonIcon, IonHeader, IonToolbar, IonButtons, IonTitle } from '@ionic/angular';
+import { cameraOutline, camera, qrCodeOutline, personOutline, cardOutline, mailOutline, lockClosedOutline, arrowBackOutline } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
@@ -26,6 +26,10 @@ export function confirmarClaveValidator(form: AbstractControl) {
   styleUrls: ['./registro-cliente.page.scss'],
   standalone: true,
   imports: [
+    IonHeader,
+    IonToolbar,
+    IonButtons,
+    IonTitle,
     IonContent,
     IonItem,
     IonInput,
@@ -58,7 +62,7 @@ export class RegistroClientePage implements OnInit {
     private toastCtrl: ToastController,
     private dniScanner: DniScannerService
   ) {
-    addIcons({ cameraOutline, camera, qrCodeOutline, personOutline, cardOutline, mailOutline, lockClosedOutline });
+    addIcons({ cameraOutline, camera, qrCodeOutline, personOutline, cardOutline, mailOutline, lockClosedOutline, arrowBackOutline });
   }
 
   ngOnInit() {

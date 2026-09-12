@@ -1,12 +1,22 @@
 
-<ion-content class="ion-padding">
-  <div class="register-navigation"><a routerLink="/login">Volver al login</a></div>
+<ion-header class="ion-no-border register-header">
+  <ion-toolbar>
+    <ion-title slot="start">Cepa</ion-title>
+    <ion-buttons slot="end">
+      <ion-button routerLink="/login" aria-label="Volver al login">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
   <app-cepa-spinner *ngIf="cargando"></app-cepa-spinner>
 
+  <div class="register-layout" [hidden]="cargando || registroExitoso">
   <form [formGroup]="registroForm" (ngSubmit)="confirmarAlta()" [hidden]="cargando || registroExitoso">
 
     <header class="register-intro">
-      <span class="brand-name">Cepa</span>
       <h1>Creá tu usuario</h1>
       <p>Tu lugar en la mesa empieza acá.</p>
     </header>
@@ -83,11 +93,12 @@
       </ion-button>
     </div>
   </form>
+  <p class="register-login">¿Ya tenés cuenta? <a routerLink="/login">Iniciá sesión</a></p>
+  </div>
 
   <section class="registration-success" *ngIf="registroExitoso" role="status">
     <h2 class="page-title">Solicitud enviada</h2>
     <p>Tu cuenta quedó pendiente de aprobación. Si recibís un correo de confirmación, seguí sus instrucciones.</p>
     <ion-button routerLink="/login" class="btn-submit" expand="block">Volver al login</ion-button>
   </section>
-  <p class="register-login" *ngIf="!registroExitoso">¿Ya tenés cuenta? <a routerLink="/login">Iniciá sesión</a></p>
 </ion-content>

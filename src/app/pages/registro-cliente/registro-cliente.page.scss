@@ -13,12 +13,10 @@ ion-content {
   --background: var(--register-bg);
   --padding-start: 0;
   --padding-end: 0;
-  --padding-bottom: calc(24px + var(--ion-safe-area-bottom, 0px));
+  --padding-bottom: 0;
 }
 
-form,
-.register-navigation,
-.register-login,
+.register-layout,
 .registration-success {
   box-sizing: border-box;
   width: calc(100% - 40px);
@@ -27,9 +25,43 @@ form,
   color: var(--register-text);
 }
 
-.register-navigation {
-  padding: 0 0 12px;
-  a { display: inline-flex; align-items: center; min-height: 44px; font-size: 13px; }
+.register-header {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  ion-toolbar {
+    --background: var(--register-bg);
+    --color: var(--register-accent);
+    --border-width: 0;
+    --min-height: 60px;
+    padding-inline: 4px;
+  }
+  ion-title {
+    position: static;
+    width: auto;
+    flex: 0 0 auto;
+    padding-inline: 12px;
+    text-align: left;
+    color: #E6D5C3;
+    font-family: 'EB Garamond', serif;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  ion-button { --color: var(--register-accent); min-width: 44px; min-height: 44px; }
+}
+
+.register-layout {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 28px 0 calc(16px + var(--ion-safe-area-bottom, 0px));
+}
+
+form {
+  margin: 0;
+}
+
+.register-layout[hidden], form[hidden] {
+  display: none;
 }
 
 a { color: var(--register-accent); text-underline-offset: 4px; }
@@ -37,13 +69,6 @@ a:focus-visible, .avatar-ring:focus-visible { outline: 2px solid var(--register-
 
 .register-intro {
   text-align: center;
-  .brand-name {
-    display: block;
-    font-family: 'EB Garamond', serif;
-    font-size: 24px;
-    color: var(--register-accent);
-    margin-bottom: 16px;
-  }
   h1 {
     font-family: 'EB Garamond', serif;
     font-weight: 500;
@@ -69,6 +94,7 @@ a:focus-visible, .avatar-ring:focus-visible { outline: 2px solid var(--register-
   place-items: center;
   width: 80px;
   height: 80px;
+  flex-shrink: 0;
   padding: 0;
   margin: 0 0 12px;
   border: 1px solid var(--register-accent);
@@ -79,7 +105,15 @@ a:focus-visible, .avatar-ring:focus-visible { outline: 2px solid var(--register-
   box-shadow: none;
   cursor: pointer;
 }
-.avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+.avatar-img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
 .avatar-placeholder { font-size: 30px; }
 .avatar-badge {
   position: absolute;
@@ -107,7 +141,10 @@ a:focus-visible, .avatar-ring:focus-visible { outline: 2px solid var(--register-
   text-transform: none;
 }
 
-.form-fields { display: grid; gap: 10px; }
+.form-fields {
+  display: grid;
+  gap: 10px;
+}
 .field {
   --background: var(--register-surface);
   --color: var(--register-text);
@@ -118,6 +155,7 @@ a:focus-visible, .avatar-ring:focus-visible { outline: 2px solid var(--register-
   border: 1px solid rgba(200, 178, 158, 0.4);
   border-radius: 12px;
   margin: 0;
+  flex-shrink: 0;
   ion-icon { color: var(--register-accent); font-size: 18px; margin-inline-end: 12px; }
   ion-input {
     --color: var(--register-text);
@@ -158,11 +196,10 @@ a:focus-visible, .avatar-ring:focus-visible { outline: 2px solid var(--register-
   text-transform: none;
   &[disabled] { opacity: 0.6; }
 }
-.register-login { text-align: center; font-size: 13px; padding-top: 12px; a { display: inline-block; padding: 12px 0; } }
+.register-login { margin: 0; text-align: center; font-size: 13px; padding-top: 12px; a { display: inline-block; padding: 12px 0; } }
 .registration-success { text-align: center; padding-top: 40px; p { font-size: 14px; line-height: 1.6; margin: 16px 0 24px; } .btn-submit { margin-inline: auto; } }
 .page-title { font-family: 'EB Garamond', serif; font-size: 32px; font-weight: 500; margin: 0; }
 
 @media (max-width: 360px) {
-  form, .register-navigation, .register-login, .registration-success { width: calc(100% - 32px); }
-  .register-intro .brand-name { margin-bottom: 10px; }
+  .register-layout, .registration-success { width: calc(100% - 32px); }
 }

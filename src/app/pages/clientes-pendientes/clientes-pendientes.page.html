@@ -1,6 +1,6 @@
 <ion-header>
-  <ion-toolbar color="primary">
-    <ion-buttons slot="start"><ion-back-button defaultHref="/home" text="Volver"></ion-back-button></ion-buttons>
+  <ion-toolbar>
+    <ion-buttons slot="start"><ion-back-button defaultHref="/home" text="" aria-label="Volver"></ion-back-button></ion-buttons>
     <ion-title>Clientes pendientes</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="cargarClientes()" [disabled]="cargando || procesandoId !== null" aria-label="Actualizar clientes pendientes">
@@ -31,10 +31,10 @@
         </div>
       </div>
       <div class="actions-container">
-        <ion-button fill="outline" color="danger" [disabled]="procesandoId !== null" (click)="rechazarCliente(cliente.id, (cliente.nombre || '') + ' ' + cliente.apellido)">
+        <ion-button fill="outline" class="reject-button" [disabled]="procesandoId !== null" (click)="rechazarCliente(cliente.id, (cliente.nombre || '') + ' ' + cliente.apellido)">
           <ion-icon slot="start" name="close-circle-outline"></ion-icon>Rechazar
         </ion-button>
-        <ion-button fill="solid" color="success" [disabled]="procesandoId !== null" (click)="aceptarCliente(cliente.id, (cliente.nombre || '') + ' ' + cliente.apellido)">
+        <ion-button fill="solid" class="approve-button" [disabled]="procesandoId !== null" (click)="aceptarCliente(cliente.id, (cliente.nombre || '') + ' ' + cliente.apellido)">
           <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>Aprobar
         </ion-button>
       </div>

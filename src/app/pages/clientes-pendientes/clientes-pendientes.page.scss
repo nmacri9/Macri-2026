@@ -5,94 +5,123 @@ ion-content {
 ion-toolbar {
     --background: #132A20;
     --color: #E6D5C3;
+    --border-width: 0 0 1px;
+    --border-color: rgba(200, 178, 158, 0.08);
+    --min-height: 60px;
+
+    ion-title {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        padding-inline: 60px;
+        text-align: center;
+        pointer-events: none;
+        font-family: 'EB Garamond', serif;
+        font-size: clamp(20px, 5.5vw, 24px);
+        font-weight: 700;
+    }
+
+    ion-buttons {
+        min-width: 48px;
+        justify-content: center;
+    }
+
+    ion-button, ion-back-button { --color: #C8B29E; }
 }
 
 .list-container {
-    background-color: #132A20; 
+    display: grid;
+    gap: 14px;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 20px 16px calc(24px + var(--ion-safe-area-bottom, 0px));
 }
 
 .client-card {
-    width: 100%;
-    scroll-snap-align: start;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 16px;
+    min-width: 0;
+    padding: 20px;
     background: #1B3B2D;
-    border-bottom: 4px solid #132A20;
-    box-sizing: border-box;
-
-    height: calc((100vh - 56px) / 3); 
-
-@media (max-height: 650px) {
-    height: calc((100vh - 56px) / 2);
+    border: 1px solid rgba(200, 178, 158, 0.2);
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
-
-@media (min-height: 850px) {
-    height: calc((100vh - 56px) / 4);
-}
-
-  /* --- ESTILOS INTERNOS DE LA TARJETA --- */
 .card-content {
     display: flex;
     align-items: center;
     gap: 16px;
-    height: 100%;
+}
 
 .avatar-container {
+    width: 64px;
+    height: 64px;
+    flex: 0 0 64px;
     display: grid;
     place-items: center;
-
-    ion-icon { font-size: 64px; color: #C8B29E; }
-    width: 75px;
-    height: 75px;
-    border-radius: 50%;
     overflow: hidden;
-    border: 3px solid #C8B29E;
-    flex-shrink: 0;
+    border: 2px solid #C8B29E;
+    border-radius: 50%;
+    background: #132A20;
+    box-sizing: border-box;
 
-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    }
+    img { display: block; width: 60px; height: 60px; object-fit: cover; }
+    ion-icon { font-size: 48px; color: #C8B29E; }
 }
 
 .info-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    min-width: 0;
+    overflow-wrap: anywhere;
 
-h2 {
-    margin: 0;
-    font-size: 1.3rem;
-    font-weight: bold;
-    color: #E6D5C3;
-}
-
-h3 {
-    margin: 4px 0 0 0;
-    font-size: 1.1rem;
-    color: #E6D5C3;
-    opacity: 0.85;
-}
-
-    }
-
+    h2 { margin: 0; color: #E6D5C3; font-size: 20px; font-weight: 600; line-height: 1.3; }
+    h3 { margin: 4px 0 0; color: #C8B29E; font-size: 16px; font-weight: 400; line-height: 1.4; }
 }
 
 .actions-container {
-    flex-wrap: wrap;
-    display: flex;
-    justify-content: flex-end;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
-    margin-top: auto; 
-    
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(200, 178, 158, 0.14);
+
     ion-button {
-        --color: #091610; 
+        --border-radius: 10px;
+        --box-shadow: none;
+        --padding-start: 12px;
+        --padding-end: 12px;
+        min-width: 0;
+        min-height: 44px;
+        margin: 0;
+        font-size: 14px;
+        font-weight: 600;
+        text-transform: none;
+        letter-spacing: 0;
+    }
+
+    .reject-button {
+        --color: #FFABA3;
+        --border-color: rgba(255, 171, 163, 0.55);
+        --border-width: 1px;
+        --background-hover: rgba(255, 171, 163, 0.08);
+        --background-activated: rgba(255, 171, 163, 0.12);
+    }
+
+    .approve-button {
+        --background: #C8B29E;
+        --color: #132A20;
+        --background-hover: #D8C5B3;
+        --background-activated: #B49F8C;
     }
 }
+
+@media (min-width: 600px) {
+    .actions-container { grid-template-columns: repeat(2, 140px); justify-content: end; }
+}
+
+@media (max-width: 360px) {
+    .client-card { padding: 16px; }
+    .actions-container { gap: 8px; }
 }
 
 .empty-state {

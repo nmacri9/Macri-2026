@@ -43,7 +43,8 @@ export class ClientesPendientesPage {
     this.cdr.markForCheck();
     try {
       this.clientesPendientes = await this.clientesService.listarPendientes();
-    } catch {
+    } catch (error) {
+      console.error('Error al consultar clientes con estado PENDIENTE:', error);
       this.errorMensaje = 'No se pudieron cargar los clientes pendientes. Intentá actualizar la lista.';
     } finally {
       this.cargando = false;

@@ -80,9 +80,14 @@ export class ClientesPendientesPage {
     try {
       const accion = estado === 'APROBADO' ? 'aprobar' : 'rechazar';
       if (!await this.pedirConfirmacion(`¿Querés ${accion} la solicitud de ${nombre}?`)) return;
-      await this.clientesService.resolver(id, estado);
+      const { correoEnviado } = await this.clientesService.resolver(id, estado);
       this.clientesPendientes = this.clientesPendientes.filter(cliente => cliente.id !== id);
       this.mensajeExito = estado === 'APROBADO' ? 'Cliente aprobado.' : 'Cliente rechazado.';
+      if (correoEnviado) {
+        this.mensajeExito += ' Notificación enviada por correo.';
+      } else {
+        this.errorMensaje = 'La resolución quedó guardada, pero no se pudo enviar el correo de notificación al cliente.';
+      }
       // Un fallo de vibración no debe presentarse como un fallo de guardado.
       await Haptics.impact({ style: ImpactStyle.Light }).catch(() => undefined);
     } catch {

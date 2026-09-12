@@ -19,13 +19,40 @@ form {
 }
 
 /* ============================================
-avatar + título
+avatar + título + escáner
    ============================================ */
 .avatar-hero {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 28px 0 20px;
+  padding: 10px 0 20px;
+}
+
+.actions-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 30px; /* Espacio entre los dos botones gigantes */
+  margin-bottom: 14px;
+}
+
+/* Contenedor individual para cada botón y su texto */
+.action-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px; /* Separación entre el círculo y la palabra */
+}
+
+/* Estilo del texto debajo de los botones */
+.action-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-accent);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .avatar-ring {
@@ -39,7 +66,6 @@ avatar + título
   align-items: center;
   justify-content: center;
   padding: 0;
-  margin: 0 0 14px;
   cursor: pointer;
   transition: border-color 0.2s ease;
 
@@ -50,6 +76,32 @@ avatar + título
 
   &:active {
     border-color: var(--color-accent);
+  }
+}
+
+/* Burbuja del escáner - Ahora idéntica a la cámara */
+.scan-bubble {
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  background: var(--color-card-bg);
+  border: 2px solid var(--color-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  padding: 0;
+
+  ion-icon {
+    font-size: 40px; /* Mismo tamaño que el ícono de la cámara */
+    color: var(--color-accent);
+  }
+
+  &:active {
+    transform: scale(0.92);
+    background: var(--color-accent);
+    ion-icon { color: var(--color-bg); }
   }
 }
 
@@ -285,12 +337,12 @@ Barra fija de guardado
     padding: 20px 0 16px;
   }
 
-  .avatar-ring {
+  .avatar-ring, .scan-bubble {
     width: 84px;
     height: 84px;
   }
 
-  .avatar-placeholder {
+  .avatar-placeholder, .scan-bubble ion-icon {
     font-size: 34px;
   }
 

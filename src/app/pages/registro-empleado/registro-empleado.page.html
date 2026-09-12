@@ -1,30 +1,47 @@
-<app-cepa-header [titulo]="'Registro de Empleados'"></app-cepa-header>
+<ion-header class="ion-no-border">
+  <ion-toolbar style="--background: transparent;">
+    <ion-buttons slot="end">
+      <!-- Cambiá routerLink por la ruta a la que debe volver -->
+      <ion-button routerLink="/home">
+        <ion-icon name="exit-outline" slot="icon-only" style="color: var(--color-accent); font-size: 36px;"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
 <ion-content class="ion-padding" [fullscreen]="true">
   <app-cepa-spinner *ngIf="cargando"></app-cepa-spinner>
 
   <form [formGroup]="registroForm" (ngSubmit)="confirmarAlta()" [hidden]="cargando">
 
-
-    <!-- Hero: foto del empleado + escaneo de DNI como acciones contextuales -->
     <div class="avatar-hero">
-      <button type="button" class="avatar-ring" (click)="tomarFoto()">
-        <img *ngIf="fotoPreview" [src]="fotoPreview" class="avatar-img" alt="Foto empleado">
-        <ion-icon *ngIf="!fotoPreview" name="camera-outline" class="avatar-placeholder"></ion-icon>
-        <span class="avatar-badge">
-          <ion-icon name="camera"></ion-icon>
-        </span>
-      </button>
+      <div class="actions-row">
+        <!-- Grupo Foto -->
+        <div class="action-item">
+          <button type="button" class="avatar-ring" (click)="tomarFoto()">
+            <img *ngIf="fotoPreview" [src]="fotoPreview" class="avatar-img" alt="Foto empleado">
+            <ion-icon *ngIf="!fotoPreview" name="camera-outline" class="avatar-placeholder"></ion-icon>
+            <span class="avatar-badge">
+              <ion-icon name="camera"></ion-icon>
+            </span>
+          </button>
+          <span class="action-label">Foto</span>
+        </div>
+
+        <!-- Grupo Escáner -->
+        <div class="action-item">
+          <button type="button" class="scan-bubble" (click)="escanearDNI()">
+            <ion-icon name="qr-code-outline"></ion-icon>
+          </button>
+          <span class="action-label">Escanear DNI</span>
+        </div>
+      </div>
 
       <small class="avatar-error" *ngIf="(registroForm.get('foto')?.dirty || formEnviado) && registroForm.get('foto')?.invalid">
         La foto es obligatoria.
       </small>
 
       <h2 class="page-title">Alta de Empleado</h2>
-
-      <ion-button type="button" fill="clear" size="small" class="scan-link" (click)="escanearDNI()">
-        <ion-icon name="qr-code-outline" slot="start"></ion-icon>
-        Escanear DNI
-      </ion-button>
     </div>
 
     <!-- Campos autocompletables por DNI -->
@@ -60,10 +77,16 @@
         <ion-icon name="mail-outline" slot="start"></ion-icon>
         <ion-input formControlName="email" label="Correo Electrónico" labelPlacement="floating" type="email"></ion-input>
       </ion-item>
-
+      
       <ion-item class="field" lines="none">
         <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
         <ion-input formControlName="clave" label="Contraseña temporal" labelPlacement="floating" type="password"></ion-input>
+      </ion-item>
+
+      <!-- Nuevo Campo: Confirmar Contraseña -->
+      <ion-item class="field" lines="none">
+        <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+        <ion-input formControlName="confirmarClave" label="Confirmar Contraseña" labelPlacement="floating" type="password"></ion-input>
       </ion-item>
 
       <ion-item class="field" lines="none">
@@ -77,8 +100,11 @@
       </ion-item>
     </section>
 
-    <!-- Manejo de errores general -->
-    <div class="form-error" *ngIf="formEnviado && registroForm.invalid">
+    <div class="form-error" *ngIf="registroForm.errors?.['mismatch'] && (registroForm.get('confirmarClave')?.touched || formEnviado)">
+      <small>Las contraseñas no coinciden.</small>
+    </div>
+
+    <div class="form-error" *ngIf="formEnviado && registroForm.invalid && !registroForm.errors?.['mismatch']">
       <small>Por favor, revise los campos vacíos o incorrectos.</small>
     </div>
 
@@ -90,14 +116,8 @@
   </form>
 
   <div class="submit-bar">
-    <ion-button 
-    class="btn-submit" 
-    type="button" 
-    expand="block" 
-    (click)="confirmarAlta()" 
-    [disabled]="cargando">
+    <ion-button class="btn-submit" type="button" expand="block" (click)="confirmarAlta()" [disabled]="cargando">
       {{ cargando ? 'Guardando...' : 'Guardar Empleado' }}
     </ion-button>
   </div>
-
 </ion-content>

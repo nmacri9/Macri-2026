@@ -22,23 +22,21 @@ export class EmailService {
     }
 
     /**
-     * 1. Notificación: Registro en Revisión (Pendiente)
-     * Estilo: Identidad CEPA / Alta Bebida. Fondo Verde Muy Oscuro (#132A20), Tarjeta (#1B3B2D),
-     * Texto Crema (#DBCBB9) y Borde Beige Decorativo (#C8B29E). Tipografía 'EB Garamond'.
-     */
+   * 1. PENDIENTE: Fondo Crema Cálido, Tarjeta Verde Oscuro, Borde Beige Dorado, Tipografía Serif Elegante.
+   */
     async enviarCorreoPendiente(datos: DatosClienteEmail): Promise<boolean> {
         return this.enviarPeticion({
         to_name: datos.nombre,
         to_email: datos.correo,
-        bg_body: '#132A20',
-        bg_card: '#1B3B2D',
-        border_card: '2px solid #C8B29E',
+        bg_body: '#F4ECE1',                       // Fondo Crema Cálido exterior
+        bg_card: '#1B3B2D',                       // Tarjeta Verde Oscuro interno
+        border_card: '3px solid #C8B29E',          // Borde Beige Dorado
         font_family: "'EB Garamond', Georgia, serif",
-        color_titulo: '#DBCBB9',
+        color_titulo: '#C8B29E',                  // Título Beige Dorado
         size_titulo: '26px',
         color_texto: '#DBCBB9',
         size_texto: '17px',
-        color_footer: '#C8B29E',
+        color_footer: '#A09080',
         titulo: 'Solicitud en Proceso ⏳',
         mensaje_html: `
             Estimado/a <strong>${datos.nombre}</strong>,<br><br>
@@ -49,23 +47,21 @@ export class EmailService {
     }
 
     /**
-     * 2. Notificación: Cliente Aprobado
-     * Estilo: Aceptado Éxito. Fondo Verde Muy Oscuro (#132A20), Tarjeta (#1B3B2D),
-     * Borde Verde Esmeralda (#2E7D32), Título Verde Éxito (#81C784) y Tipografía Sans-Serif Limpia.
+     * 2. APROBADO: Fondo Verde Bosque, Tarjeta Verde Muy Oscuro, Borde Verde Esmeralda Éxito, Tipografía Sans-Serif Limpia.
      */
     async enviarCorreoAprobado(datos: DatosClienteEmail): Promise<boolean> {
         return this.enviarPeticion({
         to_name: datos.nombre,
         to_email: datos.correo,
-        bg_body: '#132A20',
-        bg_card: '#1B3B2D',
-        border_card: '3px solid #2E7D32',
+        bg_body: '#0E1F18',                       // Fondo Verde Bosque ultra oscuro exterior
+        bg_card: '#132A20',                       // Tarjeta Verde principal
+        border_card: '3px solid #4CAF50',          // Borde Verde Esmeralda brillante
         font_family: "'Helvetica Neue', Arial, sans-serif",
-        color_titulo: '#81C784',
+        color_titulo: '#81C784',                  // Título Verde Claro brillante
         size_titulo: '28px',
-        color_texto: '#DBCBB9',
+        color_texto: '#FFFFFF',
         size_texto: '18px',
-        color_footer: '#C8B29E',
+        color_footer: '#81C784',
         titulo: '¡Cuenta Aprobada! 🎉',
         mensaje_html: `
             ¡Buenas noticias, <strong>${datos.nombre}</strong>!<br><br>
@@ -75,9 +71,7 @@ export class EmailService {
     }
 
     /**
-     * 3. Notificación: Cliente Rechazado
-     * Estilo: Rechazado Semántico. Fondo Verde Muy Oscuro (#132A20), Tarjeta (#1B3B2D),
-     * Borde Rojo Semántico (#D32F2F), Título Rojo Claro (#EF9A9A), Recuadro Destacado para el Motivo.
+     * 3. RECHAZADO: Fondo Gris/Rojizo, Tarjeta Verde Oscuro, Borde Rojo Semántico, Tipografía Compacta.
      */
     async enviarCorreoRechazado(datos: DatosClienteEmail): Promise<boolean> {
         const motivo = datos.motivoRechazo || 'Incumplimiento de las políticas de validación.';
@@ -85,15 +79,15 @@ export class EmailService {
         return this.enviarPeticion({
         to_name: datos.nombre,
         to_email: datos.correo,
-        bg_body: '#132A20',
-        bg_card: '#1B3B2D',
-        border_card: '2px solid #D32F2F',
+        bg_body: '#2A1A1A',                       // Fondo Rojizo muy oscuro exterior
+        bg_card: '#1B3B2D',                       // Tarjeta Verde Oscuro
+        border_card: '3px solid #D32F2F',          // Borde Rojo Alerta
         font_family: "'Trebuchet MS', sans-serif",
-        color_titulo: '#EF9A9A',
+        color_titulo: '#EF9A9A',                  // Título Rojo Suave
         size_titulo: '24px',
         color_texto: '#DBCBB9',
         size_texto: '16px',
-        color_footer: '#C8B29E',
+        color_footer: '#EF9A9A',
         titulo: 'Solicitud No Aprobada ⚠️',
         mensaje_html: `
             Estimado/a <strong>${datos.nombre}</strong>,<br><br>

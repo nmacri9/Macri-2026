@@ -1,12 +1,12 @@
 import { Component, Input } from '@angular/core';
-import { ModalController, IonContent, IonButton } from '@ionic/angular';
+import { ModalController, IonButton } from '@ionic/angular';
 
 @Component({
   selector: 'app-confirm-modal',
   templateUrl: './confirm-modal.component.html',
   styleUrls: ['./confirm-modal.component.scss'], 
   standalone: true,
-  imports: [IonContent, IonButton] 
+  imports: [IonButton] 
 })
 export class ConfirmModalComponent {
   @Input() mensaje: string = '¿Desea confirmar?';

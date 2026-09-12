@@ -7,7 +7,6 @@ import {
   IonIcon,
   IonInput,
   IonItem,
-  IonNote,
   IonSelect,
   IonSelectOption
 } from '@ionic/angular';
@@ -41,7 +40,6 @@ interface Mesa {
     IonIcon,
     IonInput,
     IonItem,
-    IonNote,
     IonSelect,
     IonSelectOption
   ]

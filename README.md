@@ -203,8 +203,8 @@ Se implementó de manera integral el módulo de carga de bebidas para la carta, 
 | **1** | Ícono de la aplicación    | [Ver imagen](./resources/icon.png)               |
 | **2** | Spinner Dinámico          | [Ver imagen](./capturas/spinner.jpeg)            |
 | **3** | Login: Pantalla principal | [Ver imagen](./capturas/login.jpeg)              |
-| **4** | Pantalla principal        | [Ver imagen](./capturas/pantalla-principal.jpeg) |
+| **4** | Pantalla principal        | [Ver imagen](./capturas/home.jpeg) |
 | **5** | Alta de Mesa: Vista       | [Ver imagen](./capturas/alta-mesa.jpeg)          |
 | **6** | Alta de Plato: Vista      | [Ver imagen](./capturas/alta-plato.jpeg)         |
-| **7** | Alta de Bebida: Vista     | [Ver imagen](./capturas/alta-bebidas.jpeg)       |
+| **7** | Alta de Bebida: Vista     | [Ver imagen](./capturas/alta-bebida.jpeg)       |
 | **8** | Alta de Empleado: Vista   | [Ver imagen](./capturas/alta-empleado.jpeg)      |

@@ -40,6 +40,7 @@ export class ClientesPendientesPage implements OnInit, OnDestroy {
     this.pushListener = await PushNotifications.addListener(
       'pushNotificationReceived',
       async (notification) => {
+        console.log('Notificación recibida en primer plano:', notification);
         await Haptics.impact({ style: ImpactStyle.Heavy }).catch(() => undefined);
         
         // Forzamos la ejecución dentro del ciclo de Angular

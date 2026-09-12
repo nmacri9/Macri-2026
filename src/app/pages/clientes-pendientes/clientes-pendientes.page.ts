@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ModalController, IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonIcon, IonButtons, IonBackButton } from '@ionic/angular';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { addIcons } from 'ionicons';
-import { OnInit, OnDestroy } from '@angular/core';
+import { OnInit, OnDestroy, NgZone } from '@angular/core';
 import { PushNotifications } from '@capacitor/push-notifications';
 import { PluginListenerHandle } from '@capacitor/core';
 import { checkmarkCircleOutline, closeCircleOutline, personCircleOutline, refreshOutline } from 'ionicons/icons';
@@ -30,21 +30,22 @@ export class ClientesPendientesPage implements OnInit, OnDestroy {
   constructor(
     private cdr: ChangeDetectorRef,
     private modalCtrl: ModalController,
-    private clientesService: ClientesService
+    private clientesService: ClientesService,
+    private ngZone: NgZone
   ) {
     addIcons({ checkmarkCircleOutline, closeCircleOutline, personCircleOutline, refreshOutline });
   }
 
-  async ngOnInit() {
-    // Escucha notificaciones entrantes cuando la app está abierta en primer plano
+ async ngOnInit() {
     this.pushListener = await PushNotifications.addListener(
       'pushNotificationReceived',
       async (notification) => {
-        // Vibra al recibir la notificación
         await Haptics.impact({ style: ImpactStyle.Heavy }).catch(() => undefined);
         
-        // Actualiza la lista en tiempo real
-        this.cargarClientes();
+        // Forzamos la ejecución dentro del ciclo de Angular
+        this.ngZone.run(() => {
+          this.cargarClientes();
+        });
       }
     );
   }

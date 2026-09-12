@@ -8,6 +8,7 @@ import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { Capacitor } from '@capacitor/core';
 import { AuthService } from '../../services/auth.service';
+import { EmailService } from '../../services/email.service'; 
 import { RouterLink } from '@angular/router';
 import { CepaSpinnerComponent } from '../../shared/components/cepa-spinner/cepa-spinner.component';
 import { ModalController, ToastController } from '@ionic/angular';
@@ -58,6 +59,7 @@ export class RegistroClientePage implements OnInit {
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef,
     private authService: AuthService,
+    private emailService: EmailService, // 👈 2. Inyectar EmailService
     private modalCtrl: ModalController,
     private toastCtrl: ToastController,
     private dniScanner: DniScannerService
@@ -82,7 +84,6 @@ export class RegistroClientePage implements OnInit {
       this.errorSupabase = undefined;
       this.cdr.detectChanges();
 
-      // El service avisa por callback si tiene que instalar el módulo de escaneo
       const datosDni = await this.dniScanner.escanear(() => {
         this.errorSupabase = 'Instalando módulo de escáner... aguarde.';
         this.cdr.detectChanges();
@@ -233,11 +234,26 @@ export class RegistroClientePage implements OnInit {
 
     try {
       const datosCliente = this.registroForm.value;
+      const emailCliente = datosCliente.email.trim();
+      const nombreCompleto = `${datosCliente.nombres.trim()} ${datosCliente.apellidos.trim()}`;
+
+      // 1. Guardar cliente en Supabase
       await this.authService.registrarCliente(
-        datosCliente.email.trim(), datosCliente.clave,
+        emailCliente, datosCliente.clave,
         datosCliente.nombres.trim(), datosCliente.apellidos.trim(),
         datosCliente.dni, undefined, datosCliente.foto
       );
+
+      // 2. Enviar correo automático de Registro Pendiente vía EmailJS 📩
+      try {
+        await this.emailService.enviarCorreoPendiente({
+          nombre: nombreCompleto,
+          correo: emailCliente
+        });
+      } catch (emailError) {
+        console.warn('El usuario fue creado en Supabase pero falló el envío del correo:', emailError);
+      }
+
       this.registroExitoso = true;
       this.registroForm.reset();
       this.formEnviado = false;

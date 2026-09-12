@@ -11,6 +11,7 @@ const config: CapacitorConfig = {
       backgroundColor: '#FCF3E1',
       androidSplashResourceName: 'splash',
       showSpinner: false
+      
     }
   }
 };

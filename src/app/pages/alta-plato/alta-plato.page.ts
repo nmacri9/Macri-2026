@@ -37,8 +37,6 @@ import { ConfirmModalComponent } from '../../shared/confirm-modal/confirm-modal.
     IonTextarea,
     IonButton,
     IonIcon,
-    IonFooter,
-    IonToolbar,
     CepaSpinnerComponent,
     CepaHeaderComponent
   ]

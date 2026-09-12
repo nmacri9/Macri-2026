@@ -21,22 +21,19 @@ export class EmailService {
         }
     }
 
-    /**
-   * 1. PENDIENTE: Fondo Crema Cálido, Tarjeta Verde Oscuro, Borde Beige Dorado, Tipografía Serif Elegante.
-   */
-    async enviarCorreoPendiente(datos: DatosClienteEmail): Promise<boolean> {
+        async enviarCorreoPendiente(datos: DatosClienteEmail): Promise<boolean> {
         return this.enviarPeticion({
         to_name: datos.nombre,
         to_email: datos.correo,
-        bg_body: '#F4ECE1',                       // Fondo Crema Cálido exterior
-        bg_card: '#1B3B2D',                       // Tarjeta Verde Oscuro interno
-        border_card: '3px solid #C8B29E',          // Borde Beige Dorado
+        bg_body: '#FCF3E1',
+        bg_card: '#1B3B2D',
+        border_card: '2px solid #C8B29E',
         font_family: "'EB Garamond', Georgia, serif",
-        color_titulo: '#C8B29E',                  // Título Beige Dorado
-        size_titulo: '26px',
+        color_titulo: '#DBCBB9',
+        size_titulo: '24px',
         color_texto: '#DBCBB9',
-        size_texto: '17px',
-        color_footer: '#A09080',
+        size_texto: '16px',
+        color_footer: '#C8B29E',
         titulo: 'Solicitud en Proceso ⏳',
         mensaje_html: `
             Estimado/a <strong>${datos.nombre}</strong>,<br><br>
@@ -47,60 +44,67 @@ export class EmailService {
     }
 
     /**
-     * 2. APROBADO: Fondo Verde Bosque, Tarjeta Verde Muy Oscuro, Borde Verde Esmeralda Éxito, Tipografía Sans-Serif Limpia.
+     * 2. APROBADO (Contraste Máximo):
+     * Estilo: Tarjeta Blanca con borde verde esmeralda, tipografía Sans-Serif moderna/gigante,
+     * títulos en verde brillante y texto oscuro sobre fondo blanco.
      */
     async enviarCorreoAprobado(datos: DatosClienteEmail): Promise<boolean> {
         return this.enviarPeticion({
         to_name: datos.nombre,
         to_email: datos.correo,
-        bg_body: '#0E1F18',                       // Fondo Verde Bosque ultra oscuro exterior
-        bg_card: '#132A20',                       // Tarjeta Verde principal
-        border_card: '3px solid #4CAF50',          // Borde Verde Esmeralda brillante
-        font_family: "'Helvetica Neue', Arial, sans-serif",
-        color_titulo: '#81C784',                  // Título Verde Claro brillante
-        size_titulo: '28px',
-        color_texto: '#FFFFFF',
-        size_texto: '18px',
-        color_footer: '#81C784',
-        titulo: '¡Cuenta Aprobada! 🎉',
+        bg_body: '#0A1912',                       // Fondo exterior verde ultra oscuro
+        bg_card: '#FFFFFF',                       // Tarjeta BLANCA para alto contraste
+        border_card: '5px solid #2E7D32',          // Borde grueso verde esmeralda
+        font_family: "'Arial', 'Helvetica Neue', sans-serif",
+        color_titulo: '#1B5E20',                  // Título Verde Bosque Intenso
+        size_titulo: '34px',                      // Título GIGANTE
+        color_texto: '#1C2833',                   // Texto Oscuro sobre tarjeta blanca
+        size_texto: '19px',                       // Fuente grande
+        color_footer: '#2E7D32',
+        titulo: '¡CUENTA APROBADA! 🎉',
         mensaje_html: `
+            <div style="background-color: #E8F5E9; border-radius: 8px; padding: 12px; text-align: center; margin-bottom: 15px;">
+            <strong style="color: #2E7D32; font-size: 16px;">¡Bienvenido/a a la experiencia CEPA!</strong>
+            </div>
             ¡Buenas noticias, <strong>${datos.nombre}</strong>!<br><br>
-            Tu perfil ha sido verificado e ingresado exitosamente a nuestro sistema. Ya podés acceder a la aplicación y disfrutar de nuestra propuesta gastronómica.
+            Tu perfil ha sido verificado e ingresado exitosamente a nuestro sistema. Ya podés acceder a la aplicación y disfrutar de nuestros servicios.
         `
         });
     }
 
     /**
-     * 3. RECHAZADO: Fondo Gris/Rojizo, Tarjeta Verde Oscuro, Borde Rojo Semántico, Tipografía Compacta.
+     * 3. RECHAZADO (Estilo Alerta Monospaciada):
+     * Estilo: Tarjeta Bordó Oscura, fuente 'Courier New' (tipo informe/mecanografiado),
+     * títulos en rojo claro y recuadro blanco de motivo.
      */
     async enviarCorreoRechazado(datos: DatosClienteEmail): Promise<boolean> {
-        const motivo = datos.motivoRechazo || 'Incumplimiento de las políticas de validación.';
+        const motivo = datos.motivoRechazo || 'La documentación presentada no cumple con las políticas de ingreso.';
 
         return this.enviarPeticion({
         to_name: datos.nombre,
         to_email: datos.correo,
-        bg_body: '#2A1A1A',                       // Fondo Rojizo muy oscuro exterior
-        bg_card: '#1B3B2D',                       // Tarjeta Verde Oscuro
-        border_card: '3px solid #D32F2F',          // Borde Rojo Alerta
-        font_family: "'Trebuchet MS', sans-serif",
-        color_titulo: '#EF9A9A',                  // Título Rojo Suave
-        size_titulo: '24px',
-        color_texto: '#DBCBB9',
-        size_texto: '16px',
+        bg_body: '#1E1E1E',                       // Fondo exterior Gris Oscuro Industrial
+        bg_card: '#4A001E',                       // Tarjeta Carmesí/Bordó
+        border_card: '3px solid #D32F2F',          // Borde Rojo Semántico
+        font_family: "'Courier New', Courier, monospace", // Fuente Monospaciada tipo informe
+        color_titulo: '#FFCDD2',                  // Título Rosa/Rojo Claro
+        size_titulo: '22px',
+        color_texto: '#F5F5F5',
+        size_texto: '14px',                       // Fuente más compacta
         color_footer: '#EF9A9A',
-        titulo: 'Solicitud No Aprobada ⚠️',
+        titulo: '[RECHAZADO] SOLICITUD DE INGRESO ⚠️',
         mensaje_html: `
             Estimado/a <strong>${datos.nombre}</strong>,<br><br>
-            Lamentamos informarle que su solicitud de registro en CEPA Restó & Bar no ha sido aprobada por la administración.<br><br>
-            <div style="background-color: #132A20; color: #FFCDD2; border-left: 4px solid #D32F2F; padding: 12px 16px; border-radius: 8px; margin: 15px 0; font-size: 14px; text-align: left;">
-            <strong style="color: #FFFFFF;">Motivo de rechazo:</strong><br>${motivo}
+            Le informamos que su solicitud de registro ha sido evaluada y <strong>NO HA SIDO APROBADA</strong>.<br><br>
+            <div style="background-color: #FFFFFF; color: #B71C1C; border-left: 5px solid #D32F2F; padding: 12px; border-radius: 4px; margin: 15px 0; font-family: sans-serif; font-size: 13px;">
+            <strong>DETALLE DE LA RESOLUCIÓN:</strong><br>${motivo}
             </div>
         `
         });
     }
 
     private async enviarPeticion(params: any): Promise<boolean> {
-        try {
+    try {
         await emailjs.send(this.SERVICE_ID, this.TEMPLATE_UNICA, params, this.PUBLIC_KEY);
         console.log(`Correo enviado correctamente a: ${params.to_email}`);
         return true;
@@ -109,4 +113,5 @@ export class EmailService {
         return false;
         }
     }
-}
+
+    }

@@ -9,22 +9,21 @@
     </app-cepa-spinner>
 
     <div class="alta-container" *ngIf="!cargando">
-        
+
         <div class="alta-header">
-        <h2 class="alta-title">Alta de Bebida</h2>
-        <p class="alta-subtitle">Perfil Cantinero</p>
+        <h5 class="alta-title">PERFIL CANTINERO</h5>
         <div class="alta-divider"></div>
         </div>
 
         <form [formGroup]="formBebida" (ngSubmit)="guardar()">
-        
+
         <!-- Nombre de la bebida -->
         
         <ion-item class="alta-item" lines="none">
             <ion-icon name="wine-outline" slot="start"></ion-icon>
-            <ion-input 
-            formControlName="nombre" 
-            type="text" 
+            <ion-input
+            formControlName="nombre"
+            type="text"
             placeholder="Nombre de la bebida">
             </ion-input>
         </ion-item>
@@ -35,9 +34,9 @@
         <!-- Descripción -->
         <ion-item class="alta-item" lines="none">
             <ion-icon name="document-text-outline" slot="start"></ion-icon>
-            <ion-textarea 
-            formControlName="descripcion" 
-            rows="2" 
+            <ion-textarea
+            formControlName="descripcion"
+            rows="2"
             placeholder="Descripción">
             </ion-textarea>
         </ion-item>
@@ -48,9 +47,9 @@
         <!-- Tiempo de elaboración -->
         <ion-item class="alta-item" lines="none">
             <ion-icon name="time-outline" slot="start"></ion-icon>
-            <ion-input 
-            formControlName="tiempo_elaboracion" 
-            type="number" 
+            <ion-input
+            formControlName="tiempo_elaboracion"
+            type="number"
             placeholder="Tiempo de elaboración (minutos)">
             </ion-input>
         </ion-item>
@@ -61,9 +60,9 @@
         <!-- Precio -->
         <ion-item class="alta-item" lines="none">
             <ion-icon name="cash-outline" slot="start"></ion-icon>
-            <ion-input 
-            formControlName="precio" 
-            type="number" 
+            <ion-input
+            formControlName="precio"
+            type="number"
             placeholder="Precio ($)">
             </ion-input>
         </ion-item>
@@ -92,7 +91,7 @@
             </div>
         </div>
 
-        <!-- Banners de Notificación inline (Sin alert) -->
+        <!-- Banners de Notificación inline -->
         <div class="banner-error" *ngIf="mensajeError">
             {{ mensajeError }}
         </div>
@@ -108,4 +107,4 @@
 
         </form>
     </div>
-    </ion-content>
+</ion-content>

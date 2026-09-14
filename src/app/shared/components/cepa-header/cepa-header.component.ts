@@ -5,14 +5,10 @@ import {
     IonToolbar, 
     IonTitle, 
     IonButtons, 
-    IonMenuButton, 
-    IonIcon,
-    IonButton
+    IonBackButton 
 } from '@ionic/angular';
-import { AuthService } from '../../../services/auth.service';
 import { addIcons } from 'ionicons';
-import { menuOutline, logOutOutline } from 'ionicons/icons';
-import { Router } from '@angular/router';
+import { arrowBackOutline } from 'ionicons/icons';
 
 @Component({
     selector: 'app-cepa-header',
@@ -20,37 +16,21 @@ import { Router } from '@angular/router';
     styleUrls: ['./cepa-header.component.scss'],
     standalone: true,
     imports: [
-    CommonModule,
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonButtons,
-    IonMenuButton,
-    IonIcon,
-    IonButton
-]
-})
-export class CepaHeaderComponent {
-    @Input() titulo: string = 'CEPA';
+        CommonModule,
+        IonHeader,
+        IonToolbar,
+        IonTitle,
+        IonButtons,
+        IonBackButton
+    ]
+    })
+    export class CepaHeaderComponent {
+    @Input() titulo: string = '';
+    @Input() defaultHref: string = '/home';
 
-        constructor(
-        private authService: AuthService,
-        private router: Router
-    ) {
-        addIcons({ 
-        'menu-outline': menuOutline,
-        'log-out-outline': logOutOutline 
+    constructor() {
+        addIcons({
+        'arrow-back-outline': arrowBackOutline
         });
-    }
-
-    async cerrarSesion() {
-        try {
-        // Llamada al método de tu AuthService
-        await this.authService.logout(); 
-        // Redirección a la pantalla de login
-        this.router.navigateByUrl('/login', { replaceUrl: true });
-        } catch (error) {
-        console.error('Error al cerrar sesión:', error);
-        }
     }
 }

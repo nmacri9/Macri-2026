@@ -1,11 +1,10 @@
 :host {
-  /* Nueva Paleta de Colores */
-  --color-bg: #132A20;           /* Verde muy oscuro (Fondo principal) */
-  --color-card-bg: #1B3B2D;      /* Verde oscuro (Fondo tarjetas/inputs) */
-  --color-text-main: #E6D5C3;    /* Crema / Marrón claro (Textos) */
-  --color-accent: #C8B29E;       /* Beige oscuro (Acentos e íconos) */
-  --color-btn-text: #091610;     /* Verde hiper oscuro (Texto botones) */
-  --color-error: #ff6b6b;        /* Rojo suavizado para contrastar en oscuro */
+  --color-bg: #132A20;           
+  --color-card-bg: #1B3B2D;      
+  --color-text-main: #E6D5C3;    
+  --color-accent: #C8B29E;       
+  --color-btn-text: #091610;     
+  --color-error: #ff6b6b;        
 }
 
 ion-content {
@@ -13,44 +12,87 @@ ion-content {
 }
 
 form {
-  padding: 0 16px 8px;
+  padding: 0 16px 8px; 
   max-width: 480px;
   margin: 0 auto;
 }
 
 /* ============================================
-avatar + título
+avatar + título + escáner (Comprimido)
    ============================================ */
 .avatar-hero {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 28px 0 20px;
+  padding: 0 0 10px; 
+  margin-top: -15px; 
+}
+
+.actions-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 24px; 
+  margin-bottom: 8px; 
+}
+
+.action-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px; 
+}
+
+.action-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-accent);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+
+.avatar-ring, .scan-bubble {
+  width: 80px; 
+  height: 80px;
+  border-radius: 50%;
+  background: var(--color-card-bg);
+  border: 2px solid var(--color-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
 }
 
 .avatar-ring {
   position: relative;
-  width: 92px;
-  height: 92px;
-  border-radius: 50%;
-  background: var(--color-card-bg);
-  border: 2px solid var(--color-card-bg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  margin: 0 0 14px;
-  cursor: pointer;
+  border-color: var(--color-card-bg);
   transition: border-color 0.2s ease;
+  
+  &:active { border-color: var(--color-accent); }
+}
 
-  &:focus-visible {
-    outline: 2px solid var(--color-accent);
-    outline-offset: 3px;
+.scan-bubble {
+  transition: transform 0.2s ease;
+  
+  ion-icon {
+    font-size: 34px; 
+    color: var(--color-accent);
   }
 
   &:active {
-    border-color: var(--color-accent);
+    transform: scale(0.92);
+    background: var(--color-accent);
+    ion-icon { color: var(--color-bg); }
   }
+}
+
+.avatar-placeholder {
+  font-size: 34px;
+  color: var(--color-accent);
 }
 
 .avatar-img {
@@ -60,17 +102,12 @@ avatar + título
   object-fit: cover;
 }
 
-.avatar-placeholder {
-  font-size: 40px;
-  color: var(--color-accent);
-}
-
 .avatar-badge {
   position: absolute;
   right: -2px;
   bottom: -2px;
-  width: 30px;
-  height: 30px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   background: var(--color-accent);
   border: 2px solid var(--color-bg);
@@ -80,7 +117,7 @@ avatar + título
 
   ion-icon {
     color: var(--color-btn-text);
-    font-size: 15px;
+    font-size: 13px;
   }
 }
 
@@ -88,85 +125,51 @@ avatar + título
   font-family: 'EB Garamond', serif;
   color: var(--color-text-main);
   font-weight: 500;
-  font-size: 24px;
+  font-size: 22px; 
   margin: 0 0 4px;
   text-align: center;
 }
 
-.avatar-error {
-  font-family: 'Inter', sans-serif;
-  font-size: 15px;
-  color: var(--color-error);
-  margin: -6px 0 4px;
-}
-
-.scan-link {
-  --color: var(--color-accent);
-  --background-hover: transparent;
-  --background-focused: transparent;
-  --background-activated: transparent;
-  --ripple-color: transparent;
-  font-family: 'Inter', sans-serif;
-  font-size: 13px;
-  font-weight: 600;
-  margin: 2px 0 0;
-  height: 32px;
-
-  ion-icon {
-    font-size: 16px;
-  }
-}
-
 /* ============================================
-  Secciones
+  Secciones y Campos (Comprimidos)
    ============================================ */
 .form-section {
-  margin-bottom: 22px;
+  margin-bottom: 12px; 
 }
 
 .section-label {
   font-family: 'EB Garamond', serif;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 600;
   color: var(--color-text-main);
-  margin: 0 4px 10px;
+  margin: 0 4px 6px; 
 }
 
-/* ============================================
-  Campos (Inputs y Selects)
-   ============================================ */
 .field {
-  /* 1. Fondo y estructura base de la tarjeta */
-  --background: #1B3B2D; /* Verde oscuro */
+  --background: #1B3B2D;
   --padding-start: 14px;
-  --min-height: 54px;
+  --min-height: 46px; 
   
   border: 1px solid #1B3B2D;
   border-radius: 12px;
-  margin: 0 auto 12px auto;
-  width: 75%; 
+  margin: 0 auto 8px auto; 
+  width: 85%; 
   max-width: 400px; 
-
-  /* 2. Reseteamos el color base del ion-item para que el label inactivo sea Beige oscuro */
-  --color: #C8B29E; 
-
+  --color: #C8B29E;
   ion-input, ion-select {
-    /* Color del texto que el usuario escribe */
     --color: #E6D5C3; 
     --placeholder-color: rgba(230, 213, 195, 0.6); 
     
-    /* Variables exactas de Ionic para el label flotante: 
-       Evita que desaparezca y le da los colores correctos */
-    --highlight-color-focused: #C8B29E; /* Beige oscuro al clickear */
-    --highlight-color-invalid: #ff6b6b; /* Rojo claro para el error */
+    --highlight-color-focused: #C8B29E; 
+    --highlight-color-invalid: #ff6b6b; 
     --highlight-color-valid: #C8B29E;
     
-    caret-color: #C8B29E; /* Color de la barrita que titila al escribir */
+    caret-color: #C8B29E; 
     font-family: 'Inter', sans-serif;
     font-size: 15px;
   }
   
-  /* Ajustes para el select (lista desplegable) */
+  
   ion-select::part(text) {
     color: #E6D5C3;
     font-family: 'Inter', sans-serif;
@@ -185,10 +188,9 @@ avatar + título
   }
 
   /* ============================================
-     BORDES E ÍCONOS DINÁMICOS
+    BORDES E ÍCONOS DINÁMICOS
      ============================================ */
   
-  /* A. Al clickear y estar escribiendo (FOCUS) -> Borde Beige oscuro */
   &.item-has-focus {
     border-color: #C8B29E; 
     
@@ -197,7 +199,6 @@ avatar + título
     }
   }
 
-  /* B. Error real (Cuando salís del input y está vacío/inválido) -> Borde Rojo */
   &.ion-invalid.ion-touched {
     border-color: #ff6b6b; 
     
@@ -206,7 +207,6 @@ avatar + título
     }
   }
   
-  /* C. Mantenemos foco Beige oscuro si volvemos a clickear un input con error */
   &.item-has-focus.ion-invalid.ion-touched {
     border-color: #C8B29E; 
     
@@ -244,11 +244,9 @@ Barra fija de guardado
 }
 
 .btn-submit {
-  --background: var(--color-accent); /* Beige oscuro */
-  --color: var(--color-btn-text);    /* Texto hiper oscuro */
+  --background: var(--color-accent); 
+  --color: var(--color-btn-text);    
   --border-radius: 12px;
-  
-  /* Efectos hover sutiles aclarando/oscureciendo el beige */
   --background-hover: #d2c0ae; 
   --background-focused: #d2c0ae;
   --background-activated: #b59f8a;
@@ -285,12 +283,12 @@ Barra fija de guardado
     padding: 20px 0 16px;
   }
 
-  .avatar-ring {
+  .avatar-ring, .scan-bubble {
     width: 84px;
     height: 84px;
   }
 
-  .avatar-placeholder {
+  .avatar-placeholder, .scan-bubble ion-icon {
     font-size: 34px;
   }
 
@@ -484,5 +482,78 @@ Barra fija de guardado
     ion-icon {
       font-size: 11px;
     }
+  }
+}
+
+/* --------------------------------------------
+  Ajuste vertical para Samsung A32 y similares (hasta 950px de alto)
+   -------------------------------------------- */
+@media (max-height: 950px) {
+  form {
+    /* Sube todo el formulario para absorber el espacio invisible del header */
+    margin-top: -35px; 
+  }
+  
+  .avatar-hero {
+    padding-bottom: 5px;
+  }
+  
+  .field {
+    --min-height: 44px; /* Entrecierra los inputs */
+    margin-bottom: 6px;
+  }
+  
+  .form-section {
+    margin-bottom: 8px; /* Acerca las secciones */
+  }
+  
+  .section-label {
+    font-size: 17px;
+    margin-bottom: 4px;
+  }
+  
+  .btn-submit {
+    height: 48px;
+  }
+}
+
+/* --------------------------------------------
+  Ajuste extremo para celulares con pantallas más cortas (hasta 820px)
+   -------------------------------------------- */
+@media (max-height: 820px) {
+  form {
+    margin-top: -45px; 
+  }
+  
+  /* Achica las burbujas principales */
+  .avatar-ring, .scan-bubble {
+    width: 65px;
+    height: 65px;
+  }
+  
+  .scan-bubble ion-icon, .avatar-placeholder {
+    font-size: 28px;
+  }
+  
+  .actions-row {
+    gap: 15px;
+    margin-bottom: 4px;
+  }
+  
+  .field {
+    --min-height: 40px; /* Inputs aún más finos */
+    margin-bottom: 4px;
+  }
+  
+  .page-title {
+    font-size: 19px;
+  }
+  
+  .section-label {
+    font-size: 16px;
+  }
+
+  .submit-spacer {
+    height: 10px; /* Reduce el colchón inferior */
   }
 }

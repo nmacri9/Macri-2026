@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { SupabaseService } from './supabase.service';
+import { EmailService } from './email.service';
 
 export type ResolucionCliente = 'APROBADO' | 'RECHAZADO';
 
@@ -15,7 +16,10 @@ export interface ClientePendiente {
 
 @Injectable({ providedIn: 'root' })
 export class ClientesService {
-  constructor(private readonly supabase: SupabaseService) {}
+  constructor(
+    private readonly supabase: SupabaseService,
+    private readonly emailService: EmailService
+  ) {}
 
   async listarPendientes(): Promise<ClientePendiente[]> {
     const { data, error } = await this.supabase.getClient()
@@ -27,7 +31,7 @@ export class ClientesService {
     return data ?? [];
   }
 
-  async resolver(id: number, estado: ResolucionCliente): Promise<void> {
+  async resolver(id: number, estado: ResolucionCliente): Promise<{ correoEnviado: boolean }> {
     if (estado !== 'APROBADO' && estado !== 'RECHAZADO') {
       throw new Error('Estado de resolución inválido.');
     }
@@ -37,12 +41,32 @@ export class ClientesService {
       .update({ estado })
       .eq('id', id)
       .eq('estado', 'PENDIENTE')
-      .select('id, estado')
+      .select('id, estado, nombre, apellido, correo')
       .maybeSingle();
     if (error) throw error;
-    const resultado = data as { id: number; estado: string } | null;
+    const resultado = data as {
+      id: number; estado: string; nombre: string | null; apellido: string | null; correo: string | null;
+    } | null;
     if (!resultado || resultado.id !== id || resultado.estado !== estado) {
       throw new Error('No se confirmó la actualización del cliente.');
+    }
+
+    // El correo solo se envía después de confirmar el cambio de estado.
+    // Si falla, la resolución sigue guardada y la pantalla informa el problema.
+    const correo = resultado.correo?.trim();
+    if (!correo) return { correoEnviado: false };
+    const datosEmail = {
+      nombre: [resultado.nombre, resultado.apellido].filter(Boolean).join(' ').trim() || 'cliente',
+      correo
+    };
+    try {
+      const correoEnviado = estado === 'APROBADO'
+        ? await this.emailService.enviarCorreoAprobado(datosEmail)
+        : await this.emailService.enviarCorreoRechazado(datosEmail);
+      return { correoEnviado };
+    } catch (error) {
+      console.error('No se pudo enviar la notificación al cliente:', error);
+      return { correoEnviado: false };
     }
   }
 }

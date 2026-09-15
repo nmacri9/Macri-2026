@@ -55,7 +55,9 @@ describe('Clientes pendientes', () => {
   it('evita doble envío y retira la solicitud solo tras guardar', async () => {
     vi.spyOn(page, 'pedirConfirmacion').mockResolvedValue(true);
     let completar!: () => void;
-    resolver.mockReturnValue(new Promise<void>(resolve => { completar = resolve; }));
+    resolver.mockReturnValue(new Promise<{ correoEnviado: boolean }>(resolve => {
+      completar = () => resolve({ correoEnviado: true });
+    }));
     const guardado = page.aceptarCliente(1, 'Ana');
     await Promise.resolve();
     await page.aceptarCliente(1, 'Ana');
@@ -65,6 +67,16 @@ describe('Clientes pendientes', () => {
     completar();
     await guardado;
     expect(page.clientesPendientes).toEqual([]);
-    expect(page.mensajeExito).toBe('Cliente aprobado.');
+    expect(page.mensajeExito).toBe('Cliente aprobado. Notificación enviada por correo.');
+  });
+
+  it('retira al cliente resuelto y avisa si falla el correo', async () => {
+    vi.spyOn(page, 'pedirConfirmacion').mockResolvedValue(true);
+    resolver.mockResolvedValue({ correoEnviado: false });
+    await page.rechazarCliente(1, 'Ana');
+    expect(page.clientesPendientes).toEqual([]);
+    expect(page.mensajeExito).toBe('Cliente rechazado.');
+    expect(page.errorMensaje).toContain('La resolución quedó guardada');
+    expect(page.procesandoId).toBeNull();
   });
 });

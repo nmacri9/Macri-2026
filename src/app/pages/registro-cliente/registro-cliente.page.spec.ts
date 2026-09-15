@@ -6,6 +6,7 @@ import { Camera, CameraSource } from '@capacitor/camera';
 import { Capacitor } from '@capacitor/core';
 import { confirmarClaveValidator, RegistroClientePage } from './registro-cliente.page';
 import { AuthService } from '../../services/auth.service';
+import { EmailService } from '../../services/email.service';
 import { DniScannerService } from '../../services/dni-scanner';
 
 vi.mock('@capacitor/camera', () => ({
@@ -33,7 +34,7 @@ describe('Carga de foto de registro', () => {
     vi.spyOn(Capacitor, 'isNativePlatform').mockReturnValue(true);
     page = new RegistroClientePage(new FormBuilder(),
       { detectChanges: vi.fn(), markForCheck: vi.fn() } as unknown as ChangeDetectorRef,
-      {} as AuthService, {} as ModalController, {} as ToastController, {} as DniScannerService);
+      {} as AuthService, {} as EmailService, {} as ModalController, {} as ToastController, {} as DniScannerService);
     page.ngOnInit();
   });
 

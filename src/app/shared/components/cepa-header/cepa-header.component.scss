@@ -1,30 +1,44 @@
-.cepa-header-container {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25); 
+:host {
+    display: block;
+    width: 100%;
 }
 
-.cepa-toolbar {
-    --background: rgba(19, 42, 32, 0.55) !important; 
-    --border-color: transparent;
-    padding: 0 4px;
-    &::part(background) {
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-    }
+.cepa-header {
+    background: #132A20;
+    /* Margen superior para el notch/cámara */
+    padding-top: max(env(safe-area-inset-top), 12px);
+    /* Eliminamos padding lateral para que ocupe todo el ancho */
+    padding-left: 0;
+    padding-right: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+    position: relative;
+    z-index: 10;
 
-    .cepa-menu-btn {
-        --color: #C8B29E !important; 
-        color: #C8B29E !important; 
-    }
+    ion-toolbar {
+        --background: #132A20;
+        --color: #E6D5C3;
+        --border-width: 0 0 1px;
+        --border-color: rgba(0, 0, 0, 0.4);
+        --min-height: 60px;
+        --padding-start: 12px; /* Margen interno para la flecha */
+        --padding-end: 12px;   /* Margen interno para el título/borde derecho */
 
-    .cepa-title {
-        color: #E6D5C3 !important; 
+        ion-title {
         font-family: 'EB Garamond', serif;
-        font-size: 24px;
+        font-size: clamp(20px, 5.5vw, 24px);
         font-weight: 700;
-        letter-spacing: 0.5px;
-    }
+        text-align: right;
+        padding-inline-end: 8px;
+        }
 
-    .cepa-logout-btn {
-        --color: #C8B29E !important;
+        ion-buttons {
+        min-width: 48px;
+        justify-content: center;
+        }
+
+        ion-button,
+        ion-back-button {
+        --color: #C8B29E;
+        }
     }
 }

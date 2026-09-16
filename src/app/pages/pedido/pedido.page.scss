@@ -1,0 +1,275 @@
+ion-content {
+  --background: #132A20; // verde muy oscuro - fondo principal
+  --padding-bottom: 150px; // deja lugar para que el panel fijo no tape el último item
+}
+
+.carrito-section {
+  padding: 0 16px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.section-label {
+  font-family: 'EB Garamond', serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: #dbcbb9; // crema - texto principal
+  margin: 16px 4px 12px;
+}
+
+/*
+  Estado vacío
+ */
+.carrito-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 16px;
+  text-align: center;
+
+  ion-icon {
+    font-size: 48px;
+    color: #C8B29E; // beige oscuro - acento
+    margin-bottom: 12px;
+  }
+
+  p {
+    font-family: 'EB Garamond', serif;
+    color: #dbcbb9; // crema - texto principal
+    font-size: 15px;
+    margin: 0;
+  }
+}
+
+/*
+  Items del carrito
+ */
+.carrito-item {
+  --background: #1B3B2D; // verde oscuro - fondo de tarjeta
+  --border-radius: 16px;
+  --padding-start: 14px;
+  --padding-top: 10px;
+  --padding-bottom: 10px;
+  --inner-padding-end: 10px;
+  border: 1px solid #C8B29E; // beige oscuro - acento
+  border-radius: 16px;
+  margin-bottom: 12px;
+}
+
+.carrito-item-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0; 
+}
+
+.carrito-item-nombre {
+  font-family: 'EB Garamond', serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #dbcbb9; // crema - texto principal
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.carrito-item-precio {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: #C8B29E; // beige oscuro - acento
+  margin-top: 2px;
+}
+
+.carrito-item-controles {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.control-btn {
+  --background: transparent;
+  --background-hover: rgba(200, 178, 158, 0.15);
+  --color: #dbcbb9; // crema - texto principal
+  --padding-start: 6px;
+  --padding-end: 6px;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  margin: 0;
+
+  ion-icon {
+    font-size: 20px;
+  }
+}
+
+.carrito-item-cantidad {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  color: #dbcbb9; // crema - texto principal
+  min-width: 22px;
+  text-align: center;
+}
+
+/*
+  Error general
+ */
+.form-error {
+  text-align: center;
+  margin: 4px 16px 12px;
+
+  small {
+    font-family: 'EB Garamond', serif;
+    color: red;
+    font-weight: 600;
+    font-size: 14px;
+  }
+}
+
+/*
+  Panel de totales — fijo abajo (slot="fixed")
+ */
+.totales-panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #1B3B2D; // verde oscuro - fondo de tarjeta
+  border-top: 1px solid #C8B29E; // beige oscuro - acento
+  border-radius: 20px 20px 0 0;
+  padding: 14px 20px calc(14px + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 -4px 14px rgba(9, 22, 16, 0.35);
+}
+
+.totales-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #C8B29E; // beige oscuro - acento
+  margin-bottom: 6px;
+}
+
+.totales-row-destacado {
+  font-family: 'EB Garamond', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #dbcbb9; // crema - texto principal
+  margin-bottom: 12px;
+}
+
+.btn-submit {
+  --background: #C8B29E; // beige oscuro - fondo de botón
+  --color: #091610; // verde hiper oscuro - texto dentro de botones
+  --border-radius: 16px;
+  --box-shadow: none;
+  height: 50px;
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: none;
+  margin: 0;
+
+  &[disabled] {
+    --background: #C8B29E;
+    opacity: 0.5;
+  }
+}
+
+/* Estados: esperando confirmación / confirmado */
+.estado-espera {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 60px 24px;
+  height: 70vh;
+}
+
+.page-title {
+  font-family: 'EB Garamond', serif;
+  color: #dbcbb9; // crema - texto principal
+  font-weight: 700;
+  font-size: 22px;
+  margin: 20px 0 8px;
+}
+
+.estado-subtitle {
+  font-family: 'Inter', sans-serif;
+  color: #C8B29E; // beige oscuro - acento
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0;
+  max-width: 320px;
+}
+
+.estado-icono-exito {
+  font-size: 64px;
+  color: #C8B29E; // beige oscuro - acento
+}
+
+/*
+  RESPONSIVE
+ */
+@media (max-width: 480px) {
+  .carrito-section {
+    padding: 0 14px;
+  }
+
+  .section-label {
+    font-size: 16px;
+  }
+
+  .carrito-item-nombre {
+    font-size: 15px;
+  }
+
+  .carrito-item-precio {
+    font-size: 12px;
+  }
+
+  .control-btn {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+
+    ion-icon {
+      font-size: 18px;
+    }
+  }
+
+  .totales-panel {
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .totales-row-destacado {
+    font-size: 20px;
+  }
+
+  .btn-submit {
+    height: 46px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 360px) {
+  .carrito-item-nombre {
+    font-size: 14px;
+  }
+
+  .carrito-item-cantidad {
+    font-size: 15px;
+  }
+
+  .totales-row {
+    font-size: 13px;
+  }
+
+  .totales-row-destacado {
+    font-size: 18px;
+  }
+}

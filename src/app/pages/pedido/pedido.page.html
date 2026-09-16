@@ -1,0 +1,81 @@
+<app-cepa-header [titulo]="'Tu Pedido'"></app-cepa-header>
+<ion-content class="ion-padding">
+  <app-cepa-spinner *ngIf="enviando"></app-cepa-spinner>
+
+  <div [hidden]="enviando">
+
+    <!-- Vista: armando el carrito -->
+    <ng-container *ngIf="estadoPedido === 'carrito'">
+
+      <section class="carrito-section">
+        <h3 class="section-label">Productos agregados</h3>
+
+        <div class="carrito-empty" *ngIf="items.length === 0">
+          <ion-icon name="cart-outline"></ion-icon>
+          <p>Todavía no agregaste nada al carrito.</p>
+        </div>
+
+        <ion-item class="carrito-item" lines="none" *ngFor="let item of items">
+          <div class="carrito-item-info">
+            <span class="carrito-item-nombre">{{ item.nombre }}</span>
+            <span class="carrito-item-precio">${{ item.precio }} c/u</span>
+          </div>
+
+          <div class="carrito-item-controles">
+            <ion-button fill="clear" class="control-btn" (click)="restar(item)">
+              <ion-icon name="remove-outline"></ion-icon>
+            </ion-button>
+            <span class="carrito-item-cantidad">{{ item.cantidad }}</span>
+            <ion-button fill="clear" class="control-btn" (click)="sumar(item)">
+              <ion-icon name="add-outline"></ion-icon>
+            </ion-button>
+          </div>
+        </ion-item>
+      </section>
+
+      <div class="form-error" *ngIf="errorPedido">
+        <small>{{ errorPedido }}</small>
+      </div>
+
+      <!-- Panel de totales, siempre visible -->
+      <div class="totales-panel" slot="fixed">
+        <div class="totales-row">
+          <span>Tiempo estimado</span>
+          <span>{{ tiempoEstimado }} min</span>
+        </div>
+        <div class="totales-row totales-row-destacado">
+          <span>Total</span>
+          <span>${{ total }}</span>
+        </div>
+
+        <ion-button
+          class="btn-submit"
+          expand="block"
+          [disabled]="items.length === 0"
+          (click)="enviarPedido()">
+          Enviar Pedido
+        </ion-button>
+      </div>
+
+    </ng-container>
+
+    <!-- Vista: esperando que el mozo confirme -->
+    <ng-container *ngIf="estadoPedido === 'pendiente_confirmacion'">
+      <div class="estado-espera">
+        <app-cepa-spinner></app-cepa-spinner>
+        <h2 class="page-title">Esperando confirmación del mozo...</h2>
+        <p class="estado-subtitle">Tu pedido ya llegó a la mesa del mozo, en cuanto lo confirme vas a ver el estado acá mismo.</p>
+      </div>
+    </ng-container>
+
+    <!-- Vista: pedido confirmado -->
+    <ng-container *ngIf="estadoPedido === 'confirmado'">
+      <div class="estado-espera">
+        <ion-icon name="cart-outline" class="estado-icono-exito"></ion-icon>
+        <h2 class="page-title">¡Pedido confirmado!</h2>
+        <p class="estado-subtitle">Tu pedido ya está en cocina/barra. Te avisamos cuando esté listo.</p>
+      </div>
+    </ng-container>
+
+  </div>
+</ion-content>

@@ -1,4 +1,4 @@
-import { RouterLink } from '@angular/router';
+// import { RouterLink } from '@angular/router';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
@@ -12,6 +12,7 @@ import { CepaSpinnerComponent } from '../../shared/components/cepa-spinner/cepa-
 import { ModalController, ToastController } from '@ionic/angular';
 import { ConfirmModalComponent } from '../../shared/confirm-modal/confirm-modal.component';
 import { DniScannerService } from '../../services/dni-scanner'; 
+import { CepaHeaderComponent } from '../../shared/components/cepa-header/cepa-header.component';
 
 @Component({
   selector: 'app-registro-empleado',
@@ -19,7 +20,7 @@ import { DniScannerService } from '../../services/dni-scanner';
   styleUrls: ['./registro-empleado.page.scss'],
   standalone: true,
   imports: [
-    RouterLink,
+    // RouterLink,
     IonHeader,
     IonToolbar,
     IonButtons,
@@ -33,7 +34,8 @@ import { DniScannerService } from '../../services/dni-scanner';
     IonModal, 
     CommonModule, 
     ReactiveFormsModule,
-    CepaSpinnerComponent
+    CepaSpinnerComponent,
+    CepaHeaderComponent
   ]
 })
 export class RegistroEmpleadoPage implements OnInit {

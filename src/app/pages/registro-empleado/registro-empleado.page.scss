@@ -11,15 +11,6 @@ ion-content {
   --background: var(--color-bg);
 }
 
-ion-header {
-  /* Hace que los clicks atraviesen la caja invisible del header */
-  pointer-events: none; 
-}
-
-ion-header ion-button {
-  /* Reactiva los clicks exclusivamente para el boton de salir */
-  pointer-events: auto; 
-}
 
 
 form {
@@ -35,8 +26,8 @@ avatar + título + escáner
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0 0 10px; 
-  margin-top: -15px; 
+  padding: 40px 0 15px;
+  margin-top: 0px; 
 }
 
 .actions-row {
@@ -85,6 +76,15 @@ avatar + título + escáner
   
   &:active { border-color: var(--color-accent); }
 }
+
+.avatar-error {
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  color: var(--color-error) !important; 
+  margin: 10px 0 8px;
+}
+
+
 
 .scan-bubble {
   transition: transform 0.2s ease;
@@ -402,13 +402,13 @@ Barra fija de guardado
     padding: 16px 0 12px;
   }
 
-  .avatar-ring {
+  .avatar-ring .scan-bubble {
     width: 76px;
     height: 76px;
-    margin: 0 0 10px;
+    margin: 0;
   }
 
-  .avatar-placeholder {
+  .avatar-placeholder, .scan-bubble ion-icon {
     font-size: 30px;
   }
 
@@ -453,9 +453,14 @@ Barra fija de guardado
     padding: 0 12px 8px;
   }
 
-  .avatar-ring {
+  .avatar-ring, .scan-bubble {
     width: 68px;
     height: 68px;
+    margin: 0;
+  }
+
+  .avatar-placeholder, .scan-bubble ion-icon { 
+    font-size: 26px;
   }
 
   .page-title {
@@ -499,10 +504,14 @@ Barra fija de guardado
     padding: 12px 0;
   }
 
-  .avatar-ring {
+  .avatar-ring, .scan-bubble {
     width: 56px;
     height: 56px;
     margin: 0;
+  }
+
+  .avatar-placeholder, .scan-bubble ion-icon { 
+    font-size: 22px;
   }
 
   .page-title {
@@ -525,11 +534,11 @@ Barra fija de guardado
    -------------------------------------------- */
 @media (max-height: 950px) {
   form {
-    /* Sube todo el formulario para absorber el espacio invisible del header */
-    margin-top: -35px; 
+    margin-top: 0px; 
   }
   
   .avatar-hero {
+    padding-top: 10px; 
     padding-bottom: 5px;
   }
   
@@ -557,9 +566,13 @@ Barra fija de guardado
    -------------------------------------------- */
 @media (max-height: 820px) {
   form {
-    margin-top: -45px; 
+    margin-top: 0px; 
   }
-  
+
+  .avatar-hero {
+    padding-top: 5px; 
+  }
+
   /* Achica las burbujas principales */
   .avatar-ring, .scan-bubble {
     width: 65px;

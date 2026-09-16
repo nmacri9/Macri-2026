@@ -55,7 +55,8 @@ export const routes: Routes = [
       import('./pages/alta-mesa/alta-mesa.page').then((m) => m.AltaMesaPage),
     canActivate: [roleGuard],
     data: { roles: ['DUENO', 'SUPERVISOR'] },
-  },  {
+  },
+  {
     path: 'registro-cliente',
     loadComponent: () => import('./pages/registro-cliente/registro-cliente.page').then( m => m.RegistroClientePage)
   },
@@ -64,6 +65,18 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/clientes-pendientes/clientes-pendientes.page').then( m => m.ClientesPendientesPage),
     canActivate: [roleGuard],
     data: { roles: ['DUENO', 'SUPERVISOR'], requireStoredRole: true },
+  },
+  {
+    path: 'metre-asignacion',
+    loadComponent: () => import('./pages/metre-asignacion/metre-asignacion.page').then(m => m.MetreAsignacionPage),
+    canActivate: [roleGuard],
+    data: { roles: ['METRE', 'SUPERVISOR', 'DUENO'] }
+  },
+  {
+    path: 'cliente-escaneo-mesa',
+    loadComponent: () => import('./pages/cliente-escaneo-mesa/cliente-escaneo-mesa.page').then(m => m.ClienteEscaneoMesaPage),
+    canActivate: [roleGuard],
+    data: { roles: ['CLIENTE_REGISTRADO', 'CLIENTE_ANONIMO', 'METRE', 'SUPERVISOR', 'DUENO'] }
   },
 
 ];

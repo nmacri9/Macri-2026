@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { IonContent, IonHeader, IonIcon, IonPopover, IonTitle, IonToolbar, NavController, ToastController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
@@ -13,7 +13,6 @@ import {
   wineOutline
 } from 'ionicons/icons';
 import { AuthService } from '../services/auth.service';
-import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-home',
@@ -21,15 +20,23 @@ import { ChangeDetectorRef } from '@angular/core';
   styleUrls: ['home.page.scss'],
   imports: [RouterLink, IonContent, IonHeader, IonIcon, IonPopover, IonTitle, IonToolbar],
 })
-export class HomePage {
+export class HomePage implements OnInit {
   nombreUsuario = 'Usuario';
   fotoUsuario: string | null = null;
   menuPerfilAbierto = false;
   cerrandoSesion = false;
+  
+  // Controles de visibilidad por Rol
   puedeGestionarClientes = false;
+  esMetre = false;
+  esCliente = false;
 
-  constructor(private cdr: ChangeDetectorRef, private authService: AuthService,
-    private navController: NavController, private toastController: ToastController) {
+  constructor(
+    private cdr: ChangeDetectorRef, 
+    private authService: AuthService,
+    private navController: NavController, 
+    private toastController: ToastController
+  ) {
     addIcons({
       arrowForwardOutline,
       gridOutline,
@@ -92,14 +99,23 @@ export class HomePage {
 
       this.nombreUsuario = nombreCompleto || perfil.email || this.nombreUsuario;
       this.fotoUsuario = perfil.foto_url || this.fotoUsuario;
+      
       const rol = String(perfil.rol ?? '').trim().toUpperCase()
         .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+      // Roles administrativos
       this.puedeGestionarClientes = perfil.estado === 'ACTIVO' && ['DUENO', 'SUPERVISOR'].includes(rol);
+      
+      // Metre o administradores
+      this.esMetre = ['METRE', 'DUENO', 'SUPERVISOR'].includes(rol);
+      
+      // Clientes
+      this.esCliente = ['CLIENTE_REGISTRADO', 'CLIENTE_ANONIMO'].includes(rol);
+
       this.cdr.detectChanges();
 
     } catch (error) {
       console.error('No se pudo cargar el perfil del usuario:', error);
     }
   }
-
 }

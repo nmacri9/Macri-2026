@@ -33,66 +33,98 @@
   <main class="home-container">
     <section class="welcome-section" aria-labelledby="home-title">
       <span class="welcome-eyebrow">Panel de gestión</span>
-      <h1 id="home-title">¿Qué querés cargar?</h1>
-      <p>Elegí una opción para comenzar a organizar tu restaurante.</p>
+      <h1 id="home-title">Bienvenido/a, {{ nombreUsuario }}</h1>
+      <p>Elegí una opción para continuar.</p>
     </section>
 
-    <nav class="menu-grid" aria-label="Opciones de gestión">
-      <a class="menu-option" routerLink="/registro-empleado">
-        <span class="menu-icon">
-          <ion-icon name="person-add-outline"></ion-icon>
-        </span>
-        <span class="menu-copy">
-          <strong>Registrar un empleado</strong>
-          <small>Sumá una persona al equipo</small>
-        </span>
-        <ion-icon name="arrow-forward-outline" class="menu-arrow"></ion-icon>
-      </a>
-
-      <a class="menu-option" routerLink="/alta-plato">
-        <span class="menu-icon">
-          <ion-icon name="restaurant-outline"></ion-icon>
-        </span>
-        <span class="menu-copy">
-          <strong>Nuevo plato</strong>
-          <small>Agregá una propuesta al menú</small>
-        </span>
-        <ion-icon name="arrow-forward-outline" class="menu-arrow"></ion-icon>
-      </a>
-
-      <a class="menu-option" routerLink="/alta-bebida">
-        <span class="menu-icon">
-          <ion-icon name="wine-outline"></ion-icon>
-        </span>
-        <span class="menu-copy">
-          <strong>Nueva bebida</strong>
-          <small>Completá la carta de bebidas</small>
-        </span>
-        <ion-icon name="arrow-forward-outline" class="menu-arrow"></ion-icon>
-      </a>
-
-      <a class="menu-option" routerLink="/alta-mesa">
-        <span class="menu-icon">
-          <ion-icon name="grid-outline"></ion-icon>
-        </span>
-        <span class="menu-copy">
-          <strong>Nueva mesa</strong>
-          <small>Configurá un espacio del salón</small>
-        </span>
-        <ion-icon name="arrow-forward-outline" class="menu-arrow"></ion-icon>
-      </a>
-      @if (puedeGestionarClientes) {
-      <a class="menu-option" routerLink="/clientes-pendientes">
-        <span class="menu-icon">
-          <ion-icon name="people-outline"></ion-icon>
-        </span>
-        <span class="menu-copy">
-          <strong>Clientes pendientes</strong>
-          <small>Revisá las solicitudes de registro</small>
-        </span>
-        <ion-icon name="arrow-forward-outline" class="menu-arrow"></ion-icon>
-      </a>
+    <nav class="menu-grid" aria-label="Opciones principales">
+      
+      <!-- VISTA CLIENTE: Única opción requerida -->
+      @if (esCliente) {
+        <a class="menu-option" routerLink="/cliente-escaneo-mesa">
+          <span class="menu-icon">
+            <ion-icon name="grid-outline"></ion-icon>
+          </span>
+          <span class="menu-copy">
+            <strong>Escanear mesa</strong>
+            <small>Vincular mesa asignada por QR</small>
+          </span>
+          <ion-icon name="arrow-forward-outline" class="menu-arrow"></ion-icon>
+        </a>
       }
+
+      <!-- VISTA METRE: Asignar Mesa + Creación de Mesa -->
+      @if (esMetre) {
+        <a class="menu-option" routerLink="/metre-asignacion">
+          <span class="menu-icon">
+            <ion-icon name="people-outline"></ion-icon>
+          </span>
+          <span class="menu-copy">
+            <strong>Asignar mesa</strong>
+            <small>Gestionar asignaciones a clientes</small>
+          </span>
+          <ion-icon name="arrow-forward-outline" class="menu-arrow"></ion-icon>
+        </a>
+
+        <a class="menu-option" routerLink="/alta-mesa">
+          <span class="menu-icon">
+            <ion-icon name="grid-outline"></ion-icon>
+          </span>
+          <span class="menu-copy">
+            <strong>Nueva mesa</strong>
+            <small>Configurar un nuevo espacio en el salón</small>
+          </span>
+          <ion-icon name="arrow-forward-outline" class="menu-arrow"></ion-icon>
+        </a>
+      }
+
+      <!-- VISTA DUENO / SUPERVISOR (Opciones de administración) -->
+      @if (puedeGestionarClientes) {
+        <a class="menu-option" routerLink="/registro-empleado">
+          <span class="menu-icon">
+            <ion-icon name="person-add-outline"></ion-icon>
+          </span>
+          <span class="menu-copy">
+            <strong>Registrar un empleado</strong>
+            <small>Sumá una persona al equipo</small>
+          </span>
+          <ion-icon name="arrow-forward-outline" class="menu-arrow"></ion-icon>
+        </a>
+
+        <a class="menu-option" routerLink="/alta-plato">
+          <span class="menu-icon">
+            <ion-icon name="restaurant-outline"></ion-icon>
+          </span>
+          <span class="menu-copy">
+            <strong>Nuevo plato</strong>
+            <small>Agregá una propuesta al menú</small>
+          </span>
+          <ion-icon name="arrow-forward-outline" class="menu-arrow"></ion-icon>
+        </a>
+
+        <a class="menu-option" routerLink="/alta-bebida">
+          <span class="menu-icon">
+            <ion-icon name="wine-outline"></ion-icon>
+          </span>
+          <span class="menu-copy">
+            <strong>Nueva bebida</strong>
+            <small>Completá la carta de bebidas</small>
+          </span>
+          <ion-icon name="arrow-forward-outline" class="menu-arrow"></ion-icon>
+        </a>
+
+        <a class="menu-option" routerLink="/clientes-pendientes">
+          <span class="menu-icon">
+            <ion-icon name="people-outline"></ion-icon>
+          </span>
+          <span class="menu-copy">
+            <strong>Clientes pendientes</strong>
+            <small>Revisá las solicitudes de registro</small>
+          </span>
+          <ion-icon name="arrow-forward-outline" class="menu-arrow"></ion-icon>
+        </a>
+      }
+
     </nav>
   </main>
 </ion-content>

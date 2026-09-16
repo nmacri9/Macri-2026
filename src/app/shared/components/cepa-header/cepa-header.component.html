@@ -1,14 +1,9 @@
-<ion-header class="ion-no-border cepa-header-container" translucent="true">
-    <ion-toolbar class="cepa-toolbar">
+<ion-header class="cepa-header">
+    <ion-toolbar>
     <ion-buttons slot="start">
-        <ion-menu-button class="cepa-menu-btn"></ion-menu-button>
+        <ion-back-button [defaultHref]="defaultHref" text="" icon="arrow-back-outline"></ion-back-button>
     </ion-buttons>
-        <ion-title class="cepa-title">{{ titulo }}</ion-title>
 
-        <ion-buttons slot="end">
-        <ion-button class="cepa-logout-btn" (click)="cerrarSesion()">
-            <ion-icon slot="icon-only" name="log-out-outline"></ion-icon>
-        </ion-button>
-        </ion-buttons>
-        </ion-toolbar>
+    <ion-title class="cepa-title">{{ titulo }}</ion-title>
+    </ion-toolbar>
 </ion-header>

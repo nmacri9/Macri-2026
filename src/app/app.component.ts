@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { IonApp, IonRouterOutlet } from '@ionic/angular';
 import { Platform } from '@ionic/angular';
 import { PushNotifications } from '@capacitor/push-notifications';
-
+import { SplashScreen } from '@capacitor/splash-screen'; 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -15,11 +15,17 @@ export class AppComponent {
 
 
 initializeApp() {
-    this.platform.ready().then(() => {
+    // Le agregamos el 'async' acá para poder usar el await adentro
+    this.platform.ready().then(async () => {
+      
       // Chequeamos que estemos en un dispositivo físico (Android/iOS) y no en la web
       if (this.platform.is('capacitor')) {
         this.configurarPushNotifications();
+        
+        // Escondemos el splash nativo a mano justo acá, cuando Angular ya cargó
+        await SplashScreen.hide(); 
       }
+      
     });
   }
 

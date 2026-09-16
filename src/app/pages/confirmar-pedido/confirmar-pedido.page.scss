@@ -1,0 +1,188 @@
+ion-content {
+  --background: #132A20; // verde muy oscuro - fondo principal
+}
+
+/* ============================================
+  Estado vacío
+   ============================================ */
+.lista-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 16px;
+  text-align: center;
+
+  ion-icon {
+    font-size: 48px;
+    color: #C8B29E; // beige oscuro - acento
+    margin-bottom: 12px;
+  }
+
+  p {
+    font-family: 'EB Garamond', serif;
+    color: #dbcbb9; // crema - texto principal
+    font-size: 15px;
+    margin: 0;
+  }
+}
+
+/* ============================================
+  Error general
+   ============================================ */
+.form-error {
+  text-align: center;
+  margin: 4px 4px 15px;
+
+  small {
+    font-family: 'EB Garamond', serif;
+    color: red;
+    font-weight: 600;
+    font-size: 14px;
+  }
+}
+
+/* ============================================
+  Tarjeta de pedido
+   ============================================ */
+.pedido-card {
+  --background: #1B3B2D; // verde oscuro - fondo de tarjeta
+  --border-radius: 16px;
+  --padding-start: 0;
+  --padding-end: 0;
+  --inner-padding-end: 0;
+  border: 1px solid #C8B29E; // beige oscuro - acento
+  border-radius: 16px;
+  margin-bottom: 14px;
+}
+
+.pedido-card-content {
+  width: 100%;
+  padding: 14px 16px;
+}
+
+.pedido-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(200, 178, 158, 0.3);
+}
+
+.pedido-mesa {
+  font-family: 'EB Garamond', serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #dbcbb9; // crema - texto principal
+}
+
+.pedido-tiempo {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: #C8B29E; // beige oscuro - acento
+
+  ion-icon {
+    font-size: 15px;
+  }
+}
+
+.pedido-items {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 12px;
+
+  li {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: #dbcbb9; // crema - texto principal
+    padding: 4px 0;
+  }
+}
+
+.pedido-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.pedido-total {
+  font-family: 'EB Garamond', serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: #dbcbb9; // crema - texto principal
+  white-space: nowrap;
+}
+
+.btn-confirmar {
+  --background: #C8B29E; // beige oscuro - fondo de botón
+  --color: #091610; // verde hiper oscuro - texto dentro de botones
+  --border-radius: 12px;
+  --box-shadow: none;
+  height: 42px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: none;
+  margin: 0;
+  flex-shrink: 0;
+
+  ion-icon {
+    font-size: 16px;
+  }
+
+  &[disabled] {
+    opacity: 0.5;
+  }
+}
+
+/* ============================================
+  RESPONSIVE
+   ============================================ */
+@media (max-width: 480px) {
+  .pedido-card-content {
+    padding: 12px 14px;
+  }
+
+  .pedido-mesa {
+    font-size: 16px;
+  }
+
+  .pedido-items li {
+    font-size: 13px;
+  }
+
+  .pedido-card-footer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .pedido-total {
+    text-align: center;
+  }
+
+  .btn-confirmar {
+    width: 100%;
+  }
+}
+
+@media (max-width: 360px) {
+  .pedido-mesa {
+    font-size: 15px;
+  }
+
+  .pedido-tiempo {
+    font-size: 12px;
+  }
+
+  .pedido-total {
+    font-size: 15px;
+  }
+}

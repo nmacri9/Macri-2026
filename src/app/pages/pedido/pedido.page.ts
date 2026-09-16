@@ -90,9 +90,25 @@ export class PedidoPage implements OnInit, OnDestroy {
     this.cdr.detectChanges();
 
     try {
+      const { data: userData, error: userError } = await this.supabase.getClient().auth.getUser();
+      if (userError || !userData.user) throw new Error('No se pudo identificar al usuario.');
+
+      const { data: asignacion, error: asignacionError } = await this.supabase.getClient()
+        .from('asignaciones_mesa')
+        .select('mesa_id')
+        .eq('cliente_id', userData.user.id)
+        .eq('activa', true)
+        .single();
+
+      if (asignacionError || !asignacion) {
+        throw new Error('No se encontró una mesa asignada. Escaneá el QR de tu mesa antes de pedir.');
+      }
+
       const { data, error } = await this.supabase.getClient()
         .from('pedidos')
         .insert({
+          cliente_id: userData.user.id,
+          mesa_id: asignacion.mesa_id,
           items: this.items, // ajustar si el equipo decide usar una tabla pedido_items en vez de JSON
           total: this.total,
           tiempo_estimado: this.tiempoEstimado,
@@ -110,7 +126,7 @@ export class PedidoPage implements OnInit, OnDestroy {
 
     } catch (error: any) {
       console.error('Error al enviar pedido:', error);
-      this.errorPedido = 'No se pudo enviar el pedido. Intente nuevamente.';
+      this.errorPedido = error?.message || 'No se pudo enviar el pedido. Intente nuevamente.';
       await Haptics.impact({ style: ImpactStyle.Heavy });
     } finally {
       this.enviando = false;

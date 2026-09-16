@@ -1,0 +1,49 @@
+<app-cepa-header [titulo]="'Confirmar Pedidos'"></app-cepa-header>
+<ion-content class="ion-padding">
+  <app-cepa-spinner *ngIf="cargando"></app-cepa-spinner>
+
+  <div [hidden]="cargando">
+
+    <div class="lista-empty" *ngIf="pedidos.length === 0">
+      <ion-icon name="restaurant-outline"></ion-icon>
+      <p>No hay pedidos pendientes por ahora.</p>
+    </div>
+
+    <div class="form-error" *ngIf="errorMsg">
+      <small>{{ errorMsg }}</small>
+    </div>
+
+    <ion-item class="pedido-card" lines="none" *ngFor="let pedido of pedidos">
+      <div class="pedido-card-content">
+
+        <div class="pedido-card-header">
+          <span class="pedido-mesa">Mesa {{ pedido.mesas?.numero ?? pedido.mesa_id }}</span>
+          <span class="pedido-tiempo">
+            <ion-icon name="time-outline"></ion-icon>
+            {{ pedido.tiempo_estimado }} min
+          </span>
+        </div>
+
+        <ul class="pedido-items">
+          <li *ngFor="let item of pedido.items">
+            <span>{{ item.cantidad }}x {{ item.nombre }}</span>
+            <span>${{ item.precio * item.cantidad }}</span>
+          </li>
+        </ul>
+
+        <div class="pedido-card-footer">
+          <span class="pedido-total">Total: ${{ pedido.total }}</span>
+          <ion-button
+            class="btn-confirmar"
+            [disabled]="confirmandoId === pedido.id"
+            (click)="confirmarPedido(pedido)">
+            <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+            Confirmar
+          </ion-button>
+        </div>
+
+      </div>
+    </ion-item>
+
+  </div>
+</ion-content>

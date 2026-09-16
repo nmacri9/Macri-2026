@@ -1,15 +1,6 @@
-<ion-header class="ion-no-border">
-  <ion-toolbar style="--background: transparent;">
-    <ion-buttons slot="end">
-      <!-- Cambiá routerLink por la ruta a la que debe volver -->
-      <ion-button routerLink="/home">
-        <ion-icon name="exit-outline" slot="icon-only" style="color: var(--color-accent); font-size: 36px;"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<app-cepa-header [titulo]="'Registro de Empleados'"></app-cepa-header>
 
-<ion-content [fullscreen]="true">
+<ion-content>
   <app-cepa-spinner *ngIf="cargando"></app-cepa-spinner>
 
   <form [formGroup]="registroForm" (ngSubmit)="confirmarAlta()" [hidden]="cargando">
@@ -36,12 +27,10 @@
           <span class="action-label">Escanear DNI</span>
         </div>
       </div>
-
       <small class="avatar-error" *ngIf="(registroForm.get('foto')?.dirty || formEnviado) && registroForm.get('foto')?.invalid">
         La foto es obligatoria.
       </small>
 
-      <h2 class="page-title">Alta de Empleado</h2>
     </div>
 
     <!-- Campos autocompletables por DNI -->
@@ -91,7 +80,7 @@
 
       <ion-item class="field" lines="none">
         <ion-icon name="briefcase-outline" slot="start"></ion-icon>
-        <ion-select formControlName="perfil" label="Perfil" labelPlacement="floating" [interfaceOptions]="{ cssClass: 'cepa-select-alert' }">
+        <ion-select formControlName="perfil" label="Perfil" labelPlacement="floating" cancelText="Cancelar" okText="OK" [interfaceOptions]="{ cssClass: 'cepa-select-alert' }">
         <ion-select-option value="COCINERO">Cocinero</ion-select-option>
         <ion-select-option value="MOZO">Mozo</ion-select-option>
         <ion-select-option value="CANTINERO">Cantinero</ion-select-option>

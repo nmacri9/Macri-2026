@@ -103,10 +103,10 @@ export class HomePage implements OnInit {
       const rol = String(perfil.rol ?? '').trim().toUpperCase()
         .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
-      // Roles administrativos
+      // Roles administrativos (Dueño / Supervisor)
       this.puedeGestionarClientes = perfil.estado === 'ACTIVO' && ['DUENO', 'SUPERVISOR'].includes(rol);
       
-      // Metre o administradores
+      // Metre
       this.esMetre = ['METRE', 'DUENO', 'SUPERVISOR'].includes(rol);
       
       // Clientes

@@ -1,15 +1,6 @@
-<ion-header class="ion-no-border">
-  <ion-toolbar style="--background: transparent;">
-    <ion-buttons slot="end">
-      <!-- Cambiá routerLink por la ruta a la que debe volver -->
-      <ion-button routerLink="/home">
-        <ion-icon name="exit-outline" slot="icon-only" style="color: var(--color-accent); font-size: 36px;"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<app-cepa-header [titulo]="'Registro de Empleados'"></app-cepa-header>
 
-<ion-content [fullscreen]="true">
+<ion-content>
   <app-cepa-spinner *ngIf="cargando"></app-cepa-spinner>
 
   <form [formGroup]="registroForm" (ngSubmit)="confirmarAlta()" [hidden]="cargando">
@@ -18,7 +9,7 @@
       <div class="actions-row">
         <!-- Grupo Foto -->
         <div class="action-item">
-          <button type="button" class="avatar-ring" (click)="tomarFoto()">
+          <button type="button" class="avatar-ring" (click)="fotoPreview ? abrirModal() : tomarFoto()">
             <img *ngIf="fotoPreview" [src]="fotoPreview" class="avatar-img" alt="Foto empleado">
             <ion-icon *ngIf="!fotoPreview" name="camera-outline" class="avatar-placeholder"></ion-icon>
             <span class="avatar-badge">
@@ -36,12 +27,10 @@
           <span class="action-label">Escanear DNI</span>
         </div>
       </div>
-
       <small class="avatar-error" *ngIf="(registroForm.get('foto')?.dirty || formEnviado) && registroForm.get('foto')?.invalid">
         La foto es obligatoria.
       </small>
 
-      <h2 class="page-title">Alta de Empleado</h2>
     </div>
 
     <!-- Campos autocompletables por DNI -->
@@ -91,7 +80,7 @@
 
       <ion-item class="field" lines="none">
         <ion-icon name="briefcase-outline" slot="start"></ion-icon>
-        <ion-select formControlName="perfil" label="Perfil" labelPlacement="floating" [interfaceOptions]="{ cssClass: 'cepa-select-alert' }">
+        <ion-select formControlName="perfil" label="Perfil" labelPlacement="floating" cancelText="Cancelar" okText="OK" [interfaceOptions]="{ cssClass: 'cepa-select-alert' }">
         <ion-select-option value="COCINERO">Cocinero</ion-select-option>
         <ion-select-option value="MOZO">Mozo</ion-select-option>
         <ion-select-option value="CANTINERO">Cantinero</ion-select-option>
@@ -120,4 +109,32 @@
       {{ cargando ? 'Guardando...' : 'Guardar Empleado' }}
     </ion-button>
   </div>
+  <!-- POPUP PARA VER LA IMAGEN GRANDE -->
+  <ion-modal [isOpen]="modalAbierta" (didDismiss)="cerrarModal()">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar style="--background: var(--color-bg);">
+          <ion-buttons slot="end">
+            <ion-button (click)="cerrarModal()">
+              <ion-icon name="close-outline" style="color: var(--color-accent); font-size: 36px;"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      
+      <ion-content style="--background: var(--color-bg);" class="ion-padding">
+        <div class="modal-foto-container">
+          <img *ngIf="fotoPreview" [src]="fotoPreview" alt="Foto ampliada" class="foto-ampliada">
+        </div>
+        
+        <div style="margin-top: 30px;">
+          <ion-button expand="block" class="btn-submit" (click)="tomarFoto(); cerrarModal()">
+            <ion-icon name="camera-outline" slot="start"></ion-icon>
+            Cambiar Foto
+          </ion-button>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
 </ion-content>

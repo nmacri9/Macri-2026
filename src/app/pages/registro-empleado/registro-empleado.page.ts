@@ -1,9 +1,9 @@
-import { RouterLink } from '@angular/router';
+// import { RouterLink } from '@angular/router';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
-import { IonContent, IonItem, IonInput, IonButton, IonIcon, IonSelect, IonSelectOption, IonHeader, IonToolbar, IonButtons } from '@ionic/angular';
-import { cameraOutline, camera, qrCodeOutline, personOutline, cardOutline, documentTextOutline, mailOutline, lockClosedOutline, briefcaseOutline, exitOutline } from 'ionicons/icons';
+import { IonContent, IonItem, IonInput, IonButton, IonIcon, IonSelect, IonSelectOption, IonHeader, IonToolbar, IonButtons, IonModal } from '@ionic/angular';
+import { cameraOutline, camera, qrCodeOutline, personOutline, cardOutline, documentTextOutline, mailOutline, lockClosedOutline, briefcaseOutline, exitOutline, closeOutline } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
@@ -12,6 +12,7 @@ import { CepaSpinnerComponent } from '../../shared/components/cepa-spinner/cepa-
 import { ModalController, ToastController } from '@ionic/angular';
 import { ConfirmModalComponent } from '../../shared/confirm-modal/confirm-modal.component';
 import { DniScannerService } from '../../services/dni-scanner'; 
+import { CepaHeaderComponent } from '../../shared/components/cepa-header/cepa-header.component';
 
 @Component({
   selector: 'app-registro-empleado',
@@ -19,7 +20,7 @@ import { DniScannerService } from '../../services/dni-scanner';
   styleUrls: ['./registro-empleado.page.scss'],
   standalone: true,
   imports: [
-    RouterLink,
+    // RouterLink,
     IonHeader,
     IonToolbar,
     IonButtons,
@@ -29,10 +30,12 @@ import { DniScannerService } from '../../services/dni-scanner';
     IonButton, 
     IonIcon, 
     IonSelect, 
-    IonSelectOption, 
+    IonSelectOption,
+    IonModal, 
     CommonModule, 
     ReactiveFormsModule,
-    CepaSpinnerComponent
+    CepaSpinnerComponent,
+    CepaHeaderComponent
   ]
 })
 export class RegistroEmpleadoPage implements OnInit {
@@ -42,6 +45,8 @@ export class RegistroEmpleadoPage implements OnInit {
   errorSupabase: string | undefined;
   cargando = false;
 
+modalAbierta = false;
+
   constructor(
     private fb: FormBuilder, 
     private cdr: ChangeDetectorRef,
@@ -50,7 +55,7 @@ export class RegistroEmpleadoPage implements OnInit {
     private toastCtrl: ToastController,
     private dniScanner: DniScannerService
   ) {
-    addIcons({cameraOutline, camera, qrCodeOutline, personOutline, cardOutline, documentTextOutline, mailOutline, lockClosedOutline, briefcaseOutline, exitOutline});
+    addIcons({cameraOutline, camera, qrCodeOutline, personOutline, cardOutline, documentTextOutline, mailOutline, lockClosedOutline, briefcaseOutline, exitOutline, closeOutline});
   }
 
   ngOnInit() {
@@ -72,6 +77,16 @@ export class RegistroEmpleadoPage implements OnInit {
     const clave = group.get('clave')?.value;
     const confirmar = group.get('confirmarClave')?.value;
     return clave === confirmar ? null : { mismatch: true };
+  }
+
+abrirModal() {
+    if (this.fotoPreview) {
+      this.modalAbierta = true;
+    }
+  }
+
+cerrarModal() {
+    this.modalAbierta = false;
   }
 
   async escanearDNI() {

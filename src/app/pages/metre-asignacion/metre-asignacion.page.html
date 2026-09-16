@@ -1,0 +1,27 @@
+<app-cepa-header titulo="Asignar Mesas" defaultHref="/home"></app-cepa-header>
+
+<ion-content class="ion-padding content-bg">
+  <div class="card-container" *ngFor="let cliente of listaEspera">
+    <div class="cliente-info">
+        <h3>{{ cliente.nombre }}</h3>
+        <p>Estado: {{ cliente.estado }}</p>
+        </div>
+
+        <ion-item class="select-item">
+        <ion-label>Mesa disponible:</ion-label>
+        <ion-select [(ngModel)]="cliente.mesaSeleccionadaId" placeholder="Elegir mesa">
+            <ion-select-option *ngFor="let mesa of mesasDisponibles" [value]="mesa.id">
+            Mesa {{ mesa.numero }} (Capacidad: {{ mesa.capacidad }})
+            </ion-select-option>
+        </ion-select>
+        </ion-item>
+
+        <ion-button 
+        expand="block" 
+        class="btn-confirmar"
+        [disabled]="!cliente.mesaSeleccionadaId"
+        (click)="asignarMesa(cliente)">
+        Asignar Mesa
+        </ion-button>
+    </div>
+</ion-content>

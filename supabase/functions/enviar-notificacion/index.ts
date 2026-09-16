@@ -1,10 +1,13 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import admin from "npm:firebase-admin"
+// 1. Importamos las piezas específicas en lugar de todo el "admin"
+import { initializeApp, getApps, cert } from "npm:firebase-admin/app"
+import { getMessaging } from "npm:firebase-admin/messaging"
 
-if (!admin.apps.length) {
+// 2. Usamos getApps() para verificar si ya está inicializado
+if (getApps().length === 0) {
   const serviceAccount = JSON.parse(Deno.env.get('FIREBASE_SERVICE_ACCOUNT') || '{}');
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
+  initializeApp({
+    credential: cert(serviceAccount)
   });
 }
 
@@ -17,7 +20,6 @@ serve(async (req) => {
       return new Response(JSON.stringify({ error: 'No se recibieron datos' }), { status: 400 });
     }
 
-    // Usamos 'nombre' y 'apellido' en singular, tal como están en tu tabla 'clientes'
     const nombre = nuevoRegistro.nombre || 'Un cliente';
     const apellido = nuevoRegistro.apellido || '';
 
@@ -26,15 +28,17 @@ serve(async (req) => {
         title: '¡Nuevo Cliente Registrado!',
         body: `${nombre} ${apellido} está pendiente de aprobación.`
       },
-      topic: 'aprobacion_pendientes'
+      // Este es el tema de notificación. Para este código, envía a todos los suscritos a este "topic"
+      topic: 'aprobacion_pendientes' 
     };
 
-    // Solo adjuntamos la imagen si realmente existe
     if (nuevoRegistro.foto_url) {
         mensaje.notification.image = nuevoRegistro.foto_url;
     }
 
-    const respuestaFirebase = await admin.messaging().send(mensaje);
+    // 3. Usamos getMessaging() en lugar de admin.messaging()
+    const respuestaFirebase = await getMessaging().send(mensaje);
+    
     return new Response(JSON.stringify({ success: true, respuestaFirebase }), {
       headers: { "Content-Type": "application/json" },
       status: 200,

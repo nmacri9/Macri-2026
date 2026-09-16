@@ -13,7 +13,7 @@ import { RouterLink } from '@angular/router';
 import { CepaSpinnerComponent } from '../../shared/components/cepa-spinner/cepa-spinner.component';
 import { ModalController, ToastController } from '@ionic/angular';
 import { ConfirmModalComponent } from '../../shared/confirm-modal/confirm-modal.component';
-
+import { SupabaseService } from '../../services/supabase.service';
 import { DniScannerService } from '../../services/dni-scanner';
 
 export function confirmarClaveValidator(form: AbstractControl) {
@@ -59,9 +59,10 @@ export class RegistroClientePage implements OnInit {
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef,
     private authService: AuthService,
-    private emailService: EmailService, // 👈 2. Inyectar EmailService
+    private emailService: EmailService, 
     private modalCtrl: ModalController,
     private toastCtrl: ToastController,
+    private supabase: SupabaseService,
     private dniScanner: DniScannerService
   ) {
     addIcons({ cameraOutline, camera, qrCodeOutline, personOutline, cardOutline, mailOutline, lockClosedOutline, arrowBackOutline });
@@ -252,6 +253,19 @@ export class RegistroClientePage implements OnInit {
         });
       } catch (emailError) {
         console.warn('El usuario fue creado en Supabase pero falló el envío del correo:', emailError);
+      }
+
+      // --- 3. DISPARAR LA NOTIFICACIÓN PUSH A LOS DUEÑOS/SUPERVISORES  ---
+      try {
+        await this.supabase.getClient().functions.invoke('enviar-notificacion', {
+          body: {
+            titulo: '¡Nuevo Cliente Registrado!',
+            cuerpo: `${nombreCompleto} está pendiente de aprobación.`,
+            topic: 'aprobacion_pendientes'
+          }
+        });
+      } catch (pushError) {
+        console.warn('El cliente se registró pero falló el envío de la push:', pushError);
       }
 
       this.registroExitoso = true;

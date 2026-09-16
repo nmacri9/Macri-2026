@@ -1,3 +1,4 @@
+import { SupabaseService } from '../../services/supabase.service';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms'; 
@@ -9,6 +10,9 @@ import { Haptics, ImpactStyle } from '@capacitor/haptics'; // Requisito de vibra
 import { AuthService, CuentaClienteNoHabilitadaError } from '../../services/auth.service';
 import { CepaSpinnerComponent } from '../../shared/components/cepa-spinner/cepa-spinner.component';
 import { AccesoRapidoComponent } from '../../shared/components/acceso-rapido/acceso-rapido.component';
+import { PushNotifications } from '@capacitor/push-notifications';
+import { FCM } from '@capacitor-community/fcm';
+import { Platform } from '@ionic/angular';
 
 @Component({
   selector: 'app-login',
@@ -29,7 +33,9 @@ export class LoginPage implements OnInit {
     private fb: FormBuilder, 
     private router: Router,
     private authservice: AuthService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private supabase: SupabaseService,
+    private platform: Platform
   ) {
     addIcons({ mailOutline, lockClosedOutline, personOutline, cafeOutline, shieldOutline });
   }
@@ -57,41 +63,76 @@ export class LoginPage implements OnInit {
     });
   }
 
-  // Funcion que se ejecuta al darle al boton principal de "Ingresar"
   async iniciarSesion() {
     this.formEnviado = true;
-
     if (this.loginForm.invalid) {
       this.errorMessage = 'Formato de correo o clave inválidos.';
-      await Haptics.impact({ style: ImpactStyle.Heavy }); // Hace vibrar el celular
-      // this.loginForm.markAllAsTouched();
+      await Haptics.impact({ style: ImpactStyle.Heavy }); 
       return;
     }
-
     this.errorMessage = '';
     const { email, clave } = this.loginForm.value;
-    
+
     try {
-      this.isLoading = true; // Activa el spinner visual
+      this.isLoading = true; 
       this.cdr.detectChanges();
       
       await new Promise(resolve => setTimeout(resolve, 1500));
       await this.authservice.login(email, clave);
       
-      // Si pasa la línea anterior sin errores, el login fue exitoso
-      this.router.navigate(['/home']); // Jaled debe definir esta ruta
+      // --- PASO CORREGIDO: Llamar a las notificaciones si es Dueño/Supervisor ---
+      const perfil = await this.authservice.obtenerPerfil();
+      if (perfil && (perfil.rol === 'DUEÑO' || perfil.rol === 'SUPERVISOR')) {
+        this.activarNotificacionesSeguro();
+      }
+      
+      console.log('Login exitoso, redirigiendo a home...');
+      this.router.navigate(['/home']); 
       
     } catch (error: any) {
-      // Entra acá si el servicio devuelve un error (ej. clave incorrecta)
       this.errorMessage = error instanceof CuentaClienteNoHabilitadaError
         ? error.message
         : 'Credenciales incorrectas o usuario no registrado.';
-      await Haptics.impact({ style: ImpactStyle.Heavy }); // Vibración exigida
+      await Haptics.impact({ style: ImpactStyle.Heavy }); 
       console.error('Error en login:', error);
       
     } finally {
-      this.isLoading = false; // Apaga el spinner sin importar si falló o acertó
+      this.isLoading = false; 
       this.cdr.detectChanges();
     }
   }
+
+async activarNotificacionesSeguro() {
+  try {
+    // Evita que explote si pruebas en la web de la PC
+    if (!this.platform.is('capacitor')) return; 
+
+    // 1. Pedir permisos
+    let permStatus = await PushNotifications.checkPermissions();
+    if (permStatus.receive === 'prompt') {
+      permStatus = await PushNotifications.requestPermissions();
+    }
+    if (permStatus.receive !== 'granted') return;
+
+    // 2. EL PASO CLAVE: Registrar el dispositivo nativo
+    await PushNotifications.register();
+
+    // 3. Escuchar cuando el token esté listo y suscribir al canal
+    PushNotifications.addListener('registration', async (token) => {
+      console.log('Token FCM listo. Suscribiendo al canal...');
+      try {
+        await FCM.subscribeTo({ topic: 'aprobacion_pendientes' });
+        console.log('¡Suscrito al topic de DUEÑOS desde el login!');
+      } catch (err) {
+        console.error('Error al suscribir al topic:', err);
+      }
+    });
+
+  } catch (error) {
+    console.error('Error aislando las notificaciones:', error);
+  }
+}
+
+
+
 }

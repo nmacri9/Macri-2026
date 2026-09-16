@@ -72,3 +72,6 @@ Thumbs.db
 #Env
 /src/environments/
 src/environments/environment.ts
+
+#Supabase
+supabase/.env.local

@@ -128,6 +128,13 @@ async activarNotificacionesSeguro() {
       }
     });
 
+
+    // 👇 --- AGREGÁ ESTO PARA CAZAR EL MENSAJE EN VIVO --- 👇
+    PushNotifications.addListener('pushNotificationReceived', (notification) => {
+      // Esto tira una alerta gigante en la pantalla del celu apenas entra el mensaje
+      alert('LLEGÓ LA PUSH GATO: ' + notification.title);
+    });
+
   } catch (error) {
     console.error('Error aislando las notificaciones:', error);
   }

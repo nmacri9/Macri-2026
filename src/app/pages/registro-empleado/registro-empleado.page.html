@@ -18,7 +18,7 @@
       <div class="actions-row">
         <!-- Grupo Foto -->
         <div class="action-item">
-          <button type="button" class="avatar-ring" (click)="tomarFoto()">
+          <button type="button" class="avatar-ring" (click)="fotoPreview ? abrirModal() : tomarFoto()">
             <img *ngIf="fotoPreview" [src]="fotoPreview" class="avatar-img" alt="Foto empleado">
             <ion-icon *ngIf="!fotoPreview" name="camera-outline" class="avatar-placeholder"></ion-icon>
             <span class="avatar-badge">
@@ -120,4 +120,32 @@
       {{ cargando ? 'Guardando...' : 'Guardar Empleado' }}
     </ion-button>
   </div>
+  <!-- POPUP PARA VER LA IMAGEN GRANDE -->
+  <ion-modal [isOpen]="modalAbierta" (didDismiss)="cerrarModal()">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar style="--background: var(--color-bg);">
+          <ion-buttons slot="end">
+            <ion-button (click)="cerrarModal()">
+              <ion-icon name="close-outline" style="color: var(--color-accent); font-size: 36px;"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      
+      <ion-content style="--background: var(--color-bg);" class="ion-padding">
+        <div class="modal-foto-container">
+          <img *ngIf="fotoPreview" [src]="fotoPreview" alt="Foto ampliada" class="foto-ampliada">
+        </div>
+        
+        <div style="margin-top: 30px;">
+          <ion-button expand="block" class="btn-submit" (click)="tomarFoto(); cerrarModal()">
+            <ion-icon name="camera-outline" slot="start"></ion-icon>
+            Cambiar Foto
+          </ion-button>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
 </ion-content>

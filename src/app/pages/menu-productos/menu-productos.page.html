@@ -1,0 +1,63 @@
+<app-cepa-header titulo="Menú de productos" defaultHref="/home"></app-cepa-header>
+
+<ion-content>
+  <main class="carta">
+    <header class="introduccion">
+      <span class="etiqueta">La carta de Cepa</span>
+      <h1>Elegí tu próximo favorito</h1>
+      <p>Explorá nuestros platos y bebidas. Usá las flechas para ver las tres fotos de cada producto.</p>
+    </header>
+
+    @if (cargando()) {
+      <div class="estado" role="status">
+        <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
+        <p>Cargando el menú…</p>
+      </div>
+    } @else if (error()) {
+      <div class="estado" role="alert">
+        <p>{{ error() }}</p>
+        <button type="button" class="reintentar" (click)="cargarProductos()">Reintentar</button>
+      </div>
+    } @else {
+      <section class="productos" aria-label="Productos disponibles">
+        @for (producto of productos(); track $index) {
+          <article class="producto">
+            <div class="galeria" role="group" [attr.aria-label]="'Fotos de ' + producto.nombre">
+              <div class="foto-contenedor">
+                @for (foto of producto.fotos; track $index) {
+                  @if (producto.fotoActual === $index) {
+                    @if (foto && !producto.fotosFallidas[$index]) {
+                      <img [src]="foto" [alt]="producto.nombre + ', foto ' + ($index + 1) + ' de 3'"
+                        loading="lazy" decoding="async" (error)="producto.fotosFallidas[$index] = true">
+                    } @else {
+                      <p class="sin-foto">Imagen no disponible</p>
+                    }
+                  }
+                }
+              </div>
+              <div class="controles">
+                <button type="button" (click)="cambiarFoto(producto, -1)"
+                  [attr.aria-label]="'Foto anterior de ' + producto.nombre">‹</button>
+                <span aria-live="polite" aria-atomic="true">Foto {{ producto.fotoActual + 1 }} de 3</span>
+                <button type="button" (click)="cambiarFoto(producto, 1)"
+                  [attr.aria-label]="'Foto siguiente de ' + producto.nombre">›</button>
+              </div>
+            </div>
+            <div class="detalle">
+              <span class="etiqueta">{{ tipos[producto.tipo] }}</span>
+              <h2>{{ producto.nombre }}</h2>
+              <p class="descripcion">{{ producto.descripcion }}</p>
+              <p class="precio">{{ precio(producto.precio) }}</p>
+            </div>
+          </article>
+        } @empty {
+          <div class="estado">
+            <h2>La carta se está preparando</h2>
+            <p>Todavía no hay productos disponibles. Volvé a consultar en unos minutos.</p>
+            <button type="button" class="reintentar" (click)="cargarProductos()">Actualizar menú</button>
+          </div>
+        }
+      </section>
+    }
+  </main>
+</ion-content>

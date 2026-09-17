@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { RouterLink, Router } from '@angular/router';
 import { IonContent, IonHeader, IonIcon, IonPopover, IonTitle, IonToolbar, NavController, ToastController,Platform, AlertController } from '@ionic/angular';
 import { SupabaseService } from '../services/supabase.service';
@@ -27,11 +27,12 @@ import { AuthService } from '../services/auth.service';
   styleUrls: ['home.page.scss'],
   imports: [RouterLink, IonContent, IonHeader, IonIcon, IonPopover, IonTitle, IonToolbar],
 })
-export class HomePage implements OnInit {
+export class HomePage {
   nombreUsuario = 'Usuario';
   fotoUsuario: string | null = null;
   menuPerfilAbierto = false;
   cerrandoSesion = false;
+  errorPerfil = '';
   
   usuarioActual: any = null;
 
@@ -70,8 +71,8 @@ export class HomePage implements OnInit {
     });
   }
 
-  ngOnInit() {
-    this.cargarPerfil();
+  ionViewWillEnter() {
+    return this.cargarPerfil();
   }
 
   async cerrarSesion(menu: IonPopover) {
@@ -95,12 +96,24 @@ export class HomePage implements OnInit {
     }
   }
 
-  private async cargarPerfil() {
+  async cargarPerfil() {
+    this.errorPerfil = '';
+    this.usuarioActual = null;
+    this.nombreUsuario = 'Usuario';
+    this.fotoUsuario = null;
+    this.puedeGestionarClientes = false;
+    this.puedeCargarPlatos = false;
+    this.puedeCargarBebidas = false;
+    this.esMetre = false;
+    this.esCliente = false;
+    this.esMozo = false;
+    this.puedeUsarChat = false;
+    this.cdr.markForCheck();
     try {
       const usuario = await this.authService.obtenerUsuarioActual();
 
       if (!usuario) {
-        return;
+        throw new Error('No se pudo obtener el usuario actual.');
       }
 
       this.usuarioActual = usuario;
@@ -113,7 +126,7 @@ export class HomePage implements OnInit {
       const perfil = await this.authService.obtenerPerfil();
 
       if (!perfil) {
-        return;
+        throw new Error('No se pudo obtener el perfil actual.');
       }
 
       const nombreCompleto = [perfil.nombres, perfil.apellidos]
@@ -147,6 +160,9 @@ export class HomePage implements OnInit {
 
     } catch (error) {
       console.error('No se pudo cargar el perfil del usuario:', error);
+      this.errorPerfil = 'No pudimos cargar tus opciones. Volvé a intentar.';
+    } finally {
+      this.cdr.markForCheck();
     }
   }
 

@@ -122,7 +122,7 @@ import {
         componentProps: {
             mensaje: '¿Desea dar de alta esta nueva bebida en la carta?'
         },
-        cssClass: 'modal-confirmacion-custom' // Opcional por si tienen clase CSS global
+        cssClass: 'modal-alerta'
         });
 
         await modal.present();

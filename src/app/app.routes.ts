@@ -120,4 +120,18 @@ export const routes: Routes = [
         (m) => m.RegistroAnonimoPage
       ),
   },
+  {
+    path: 'pedido',
+    loadComponent: () => import('./pages/pedido/pedido.page').then(m => m.PedidoPage),
+    canActivate: [roleGuard],
+    data: { roles: ['CLIENTE_REGISTRADO', 'CLIENTE_ANONIMO'] }
+  },
+  {
+    path: 'confirmar-pedido',
+    loadComponent: () => import('./pages/confirmar-pedido/confirmar-pedido.page').then(m => m.ConfirmarPedidoPage),
+    canActivate: [roleGuard],
+    data: { roles: ['MOZO'] }
+  },
+
 ];
+

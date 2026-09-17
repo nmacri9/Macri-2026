@@ -15,6 +15,8 @@ import {
   personAddOutline,
   restaurantOutline,
   wineOutline,
+  cartOutline,
+  checkmarkCircleOutline,
   qrCodeOutline
 } from 'ionicons/icons';
 import { AuthService } from '../services/auth.service';
@@ -34,7 +36,6 @@ export class HomePage {
   
   usuarioActual: any = null;
 
-
   // Controles de visibilidad por Rol
   puedeGestionarClientes = false;
   puedeCargarPlatos = false;
@@ -42,6 +43,7 @@ export class HomePage {
   esMetre = false;
   esCliente = false;
   puedeUsarChat = false;
+  esMozo = false; 
 
   constructor(
     private cdr: ChangeDetectorRef, 
@@ -63,6 +65,8 @@ export class HomePage {
       personAddOutline,
       restaurantOutline,
       wineOutline,
+      cartOutline,
+      checkmarkCircleOutline,
       qrCodeOutline
     });
   }
@@ -102,6 +106,7 @@ export class HomePage {
     this.puedeCargarBebidas = false;
     this.esMetre = false;
     this.esCliente = false;
+    this.esMozo = false;
     this.puedeUsarChat = false;
     this.cdr.markForCheck();
     try {
@@ -141,9 +146,13 @@ export class HomePage {
       
       // Metre
       this.esMetre = ['METRE', 'DUENO', 'SUPERVISOR'].includes(rol);
+
+      // Mozo
+      this.esMozo = ['MOZO', 'DUENO', 'SUPERVISOR'].includes(rol);
       
       // Clientes
       this.esCliente = ['CLIENTE_REGISTRADO', 'CLIENTE_ANONIMO'].includes(rol);
+      
       this.puedeUsarChat = (rol === 'MOZO' && perfil.estado === 'ACTIVO')
         || (rol === 'CLIENTE_REGISTRADO' && perfil.estado === 'APROBADO');
 
@@ -157,20 +166,18 @@ export class HomePage {
     }
   }
 
-// =========================================================================
+  // =========================================================================
   // PUNTO 9: LÓGICA DE ESCANEO DE INGRESO Y LISTA DE ESPERA
   // =========================================================================
 
- async escanearQRIngreso() {
+  async escanearQRIngreso() {
     let contenidoQR = '';
 
     if (this.platform.is('capacitor')) {
       try {
-        
         const { camera } = await BarcodeScanner.requestPermissions();
         
         if (camera === 'granted' || camera === 'limited') {
-          
           const { barcodes } = await BarcodeScanner.scan({
             formats: [BarcodeFormat.QrCode],
           });
@@ -217,7 +224,6 @@ export class HomePage {
           text: 'Ver Encuestas',
           role: 'cancel',
           handler: () => {
-            
             this.router.navigate(['/graficos-encuestas']); 
           }
         },
@@ -335,7 +341,7 @@ export class HomePage {
     try {
       await this.supabase.getClient().functions.invoke('enviar-notificacion', {
         body: {
-          topic: 'aprobacion_pendientes', // O el topic exclusivo que uses para el Metre
+          topic: 'aprobacion_pendientes', 
           titulo: 'Nuevo cliente en lista de espera',
           cuerpo: `${this.nombreUsuario} está esperando una mesa.`
         }
@@ -345,13 +351,3 @@ export class HomePage {
     }
   }
 }
-
-
-
-
-
-
-
-
-
-

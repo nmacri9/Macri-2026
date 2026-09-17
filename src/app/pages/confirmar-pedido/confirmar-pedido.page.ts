@@ -79,8 +79,6 @@ export class ConfirmarPedidoPage implements OnInit, OnDestroy {
   }
 
   private escucharNuevosPedidos() {
-    // Cualquier cambio en la tabla (nuevo pedido, o uno que cambió de estado) recarga el listado.
-    // Simple y suficiente para el TFI; en un sistema más grande convendría parchear el array a mano.
     this.canal = this.supabase.getClient()
       .channel('pedidos-pendientes')
       .on(
@@ -113,8 +111,6 @@ export class ConfirmarPedidoPage implements OnInit, OnDestroy {
 
       if (error) throw error;
 
-      // El listado se termina de actualizar solo por la suscripción de Realtime,
-      // pero lo sacamos ya mismo de la vista para que se sienta instantáneo.
       this.pedidos = this.pedidos.filter(p => p.id !== pedido.id);
 
       const toast = await this.toastCtrl.create({
@@ -125,6 +121,17 @@ export class ConfirmarPedidoPage implements OnInit, OnDestroy {
         icon: 'checkmark-circle-outline'
       });
       await toast.present();
+
+      try {
+        const numeroMesa = pedido.mesas?.numero ?? pedido.mesa_id;
+        await this.supabase.invocarEdgeFunction('enviar-notificacion', {
+          titulo: '¡Mesa Confirmada!',
+          cuerpo: `Marchando pedido para la Mesa ${numeroMesa}. A preparar todo.`,
+          topic: 'cocina'
+        });
+      } catch (pushError) {
+        console.warn('El pedido se confirmó pero falló la push:', pushError);
+      }
 
     } catch (error: any) {
       console.error('Error al confirmar pedido:', error);

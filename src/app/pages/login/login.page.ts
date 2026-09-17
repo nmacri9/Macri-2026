@@ -9,6 +9,7 @@ import { Haptics, ImpactStyle } from '@capacitor/haptics'; // Requisito de vibra
 import { AuthService, CuentaClienteNoHabilitadaError } from '../../services/auth.service';
 import { CepaSpinnerComponent } from '../../shared/components/cepa-spinner/cepa-spinner.component';
 import { AccesoRapidoComponent } from '../../shared/components/acceso-rapido/acceso-rapido.component';
+import { ModalController } from '@ionic/angular';
 
 @Component({
   selector: 'app-login',
@@ -29,7 +30,8 @@ export class LoginPage implements OnInit {
     private fb: FormBuilder, 
     private router: Router,
     private authservice: AuthService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private modalCtrl: ModalController
   ) {
     addIcons({ mailOutline, lockClosedOutline, personOutline, cafeOutline, shieldOutline });
   }
@@ -43,7 +45,10 @@ export class LoginPage implements OnInit {
   }
 
   // Funcion que se llama al tocar un botón de acceso rápido
-  cargarPerfil(perfil: any) {
+  async cargarPerfil(perfil: any) {
+
+    await this.modalCtrl.dismiss();
+
     if (perfil.rol === 'Anónimo') {
       console.log('Navegando a registro anónimo...');
       this.router.navigate(['/registro-anonimo']);

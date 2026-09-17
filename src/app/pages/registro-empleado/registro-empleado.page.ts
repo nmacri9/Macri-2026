@@ -1,8 +1,8 @@
 // import { RouterLink } from '@angular/router';
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef,ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
-import { IonContent, IonItem, IonInput, IonButton, IonIcon, IonSelect, IonSelectOption, IonHeader, IonToolbar, IonButtons, IonModal } from '@ionic/angular';
+import { IonContent, IonItem, IonInput, IonButton, IonIcon, IonSelect, IonSelectOption, IonHeader, IonToolbar, IonButtons, IonModal, Platform } from '@ionic/angular';
 import { cameraOutline, camera, qrCodeOutline, personOutline, cardOutline, documentTextOutline, mailOutline, lockClosedOutline, briefcaseOutline, exitOutline, closeOutline } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
@@ -39,13 +39,13 @@ import { CepaHeaderComponent } from '../../shared/components/cepa-header/cepa-he
   ]
 })
 export class RegistroEmpleadoPage implements OnInit {
+  @ViewChild('fileInput', { static: false }) fileInput?: ElementRef;
   registroForm!: FormGroup;
   fotoPreview: string | undefined;
   formEnviado = false;
   errorSupabase: string | undefined;
   cargando = false;
-
-modalAbierta = false;
+  modalAbierta = false;
 
   constructor(
     private fb: FormBuilder, 
@@ -53,7 +53,8 @@ modalAbierta = false;
     private supabase: SupabaseService,
     private modalCtrl: ModalController,
     private toastCtrl: ToastController,
-    private dniScanner: DniScannerService
+    private dniScanner: DniScannerService,
+    private platform: Platform
   ) {
     addIcons({cameraOutline, camera, qrCodeOutline, personOutline, cardOutline, documentTextOutline, mailOutline, lockClosedOutline, briefcaseOutline, exitOutline, closeOutline});
   }
@@ -111,18 +112,38 @@ cerrarModal() {
   }
 
   async tomarFoto() {
-    try {
-      const image = await Camera.getPhoto({
-        quality: 80,
-        allowEditing: false,
-        resultType: CameraResultType.DataUrl,
-        source: CameraSource.Prompt 
-      });
-      this.fotoPreview = image.dataUrl;
-      this.registroForm.patchValue({ foto: this.fotoPreview });
-      this.cdr.detectChanges();
-    } catch (error: any) {
-      alert('Hubo un error al abrir la cámara: ' + error.message);
+    // Si estamos en un celular físico (Android/iOS), abrimos la cámara nativa
+    if (this.platform.is('capacitor')) {
+      try {
+        const image = await Camera.getPhoto({
+          quality: 80,
+          allowEditing: false,
+          resultType: CameraResultType.DataUrl,
+          source: CameraSource.Prompt 
+        });
+        this.fotoPreview = image.dataUrl;
+        this.registroForm.patchValue({ foto: this.fotoPreview });
+        this.cdr.detectChanges();
+      } catch (error: any) {
+        console.log('Hubo un error al abrir la cámara: ' + error.message);
+      }
+    } else {
+      // Si estamos en la WEB (PC), disparamos el input oculto de HTML
+      this.fileInput?.nativeElement.click();
+    }
+  }
+
+  // <-- Agregamos esta función para capturar el archivo en la PC
+  onFileSelected(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.fotoPreview = reader.result as string; 
+        this.registroForm.patchValue({ foto: this.fotoPreview });
+        this.cdr.detectChanges();
+      };
+      reader.readAsDataURL(file);
     }
   }
 

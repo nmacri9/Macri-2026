@@ -29,7 +29,7 @@ export class AccesoRapidoComponent {
     { rol: 'Mozo', email: 'mozo@cepa.com', clave: '123456', foto: 'assets/perfiles/mozo.png' },
     { rol: 'Cocinero', email: 'cocinero@cepa.com', clave: '123456', foto: 'assets/perfiles/cocinero.png' },
     { rol: 'Cantinero', email: 'cantinero@cepa.com', clave: '123456', foto: 'assets/perfiles/cantinero.png'},
-    { rol: 'Cliente Registrado', email: 'cliente@cepa.com', clave: '123456', foto: 'assets/perfiles/cliente.png' },
+    { rol: 'Cliente Registrado', email: 'clientegenerico@gmail.com', clave: 'Generico22', foto: 'assets/perfiles/cliente.png' },
     { rol: 'Anónimo', email: '', clave: '', foto: 'assets/perfiles/anonimo.png' }
   ];
 

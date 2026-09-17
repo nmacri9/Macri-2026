@@ -3,6 +3,12 @@ import { roleGuard } from './role.guard';
 
 export const routes: Routes = [
   {
+    path: 'chat-cliente',
+    loadComponent: () => import('./pages/chat-cliente/chat-cliente.page').then(m => m.ChatClientePage),
+    canActivate: [roleGuard],
+    data: { roles: ['MOZO', 'CLIENTE_REGISTRADO'] },
+  },
+  {
     path: 'register',
     loadComponent: () => import('./pages/registro-cliente/registro-cliente.page').then(m => m.RegistroClientePage),
   },

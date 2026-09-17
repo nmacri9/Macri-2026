@@ -1,0 +1,114 @@
+<ion-header class="chat-header">
+  <ion-toolbar>
+    <ion-buttons slot="start"><ion-back-button defaultHref="/home" text="" aria-label="Volver al inicio"></ion-back-button></ion-buttons>
+    <ion-title>Chat del salón</ion-title>
+    <span slot="end" class="brand">Cepa</span>
+  </ion-toolbar>
+  <div class="room-info">
+    <span class="room-icon"><ion-icon name="chatbubbles-outline" aria-hidden="true"></ion-icon></span>
+    <div>
+      <strong>Hacele tu consulta a los mozos</strong>
+      <span class="connection" role="status">
+        <i [class.online]="estado() === 'conectado'" aria-hidden="true"></i>
+        {{ error() && !participante() ? 'Sala no disponible' : estado() === 'conectado' ? 'En línea' : estado() === 'conectando' ? 'Conectando…' : 'Sin conexión' }}
+        <span aria-hidden="true"> · </span> Sala compartida
+      </span>
+    </div>
+    @if (participante(); as persona) {
+      <span class="table-tag">{{ persona.rol === 'MOZO' ? 'Mozo' : mesaValida() ? 'Mesa ' + numeroMesa() : 'Cliente' }}</span>
+    }
+  </div>
+</ion-header>
+
+<ion-content class="chat-content" [scrollEvents]="true" (ionScroll)="alDesplazar()">
+  <main class="conversation" aria-label="Conversación del salón">
+    <p class="room-notice">Todos los clientes y mozos pueden leer esta conversación.</p>
+
+    @if (error()) {
+      <div class="notice error" role="alert">
+        <p>{{ error() }}</p><button type="button" (click)="iniciar()">Reintentar</button>
+      </div>
+    }
+    @if (cargando()) {
+      <p class="loading" role="status">Cargando conversación…</p>
+    } @else if (!error() && mensajes().length === 0) {
+      <div class="empty-state">
+        <ion-icon name="chatbubbles-outline" aria-hidden="true"></ion-icon>
+        <h1>La atención sigue por acá</h1>
+        <p>Consultá por un plato, pedí lo que falta en tu mesa o llamá a un mozo.</p>
+        <span>Tu consulta la puede responder cualquier mozo.</span>
+      </div>
+    }
+
+    @if (hayAnteriores()) {
+      <button class="history-button" type="button" (click)="cargarAnteriores()" [disabled]="cargandoAnteriores()">
+        {{ cargandoAnteriores() ? 'Cargando…' : 'Ver mensajes anteriores' }}
+      </button>
+    }
+
+    <div role="log" aria-label="Mensajes" aria-live="polite" aria-relevant="additions" [attr.aria-busy]="cargando()">
+      @for (mensaje of mensajes(); track mensaje.id; let indice = $index) {
+        @if (nuevoDia(indice)) {
+          <div class="day-divider"><time [attr.datetime]="mensaje.creado_en">{{ mensaje.creado_en | date:'dd/MM/yyyy' }}</time></div>
+        }
+        <article class="message-row" [class.mine]="mensaje.autor_id === participante()?.id">
+          <div class="bubble" [class.waiter]="mensaje.autor_rol === 'MOZO'">
+            <div class="message-heading">
+              <strong>{{ mensaje.autor_id === participante()?.id ? 'Vos' : mensaje.autor_nombre }}</strong>
+              <span>{{ mensaje.autor_rol === 'MOZO' ? 'Mozo' : 'Cliente' }}</span>
+            </div>
+            <span class="message-table">{{ mensaje.numero_mesa !== null ? 'Mesa ' + mensaje.numero_mesa : 'Salón' }}</span>
+            @if (mensaje.respuesta_a) {
+              <blockquote><strong>{{ mensaje.respuesta_autor }}</strong><p>{{ mensaje.respuesta_texto }}</p></blockquote>
+            }
+            <p class="message-text">{{ mensaje.texto }}</p>
+            <div class="message-bottom">
+              @if (puedeEscribir()) {
+                <button type="button" (click)="responder(mensaje)" [disabled]="enviando()" [attr.aria-label]="'Responder a ' + mensaje.autor_nombre">
+                  <ion-icon name="arrow-undo-outline" aria-hidden="true"></ion-icon> Responder
+                </button>
+              }
+              <time [attr.datetime]="mensaje.creado_en" [attr.title]="mensaje.creado_en | date:'dd/MM/yyyy HH:mm'">{{ mensaje.creado_en | date:'HH:mm' }}</time>
+            </div>
+          </div>
+        </article>
+      }
+    </div>
+  </main>
+  @if (nuevos() > 0) {
+    <button slot="fixed" class="new-messages" type="button" (click)="irAlFinal()">
+      {{ nuevos() }} {{ nuevos() === 1 ? 'mensaje nuevo' : 'mensajes nuevos' }}
+      <ion-icon name="arrow-down-outline" aria-hidden="true"></ion-icon>
+    </button>
+  }
+</ion-content>
+
+<ion-footer class="chat-footer">
+  <div class="composer-wrap">
+    @if (participante()?.rol === 'CLIENTE_REGISTRADO') {
+      <div class="table-entry">
+        <label for="chat-table">Tu mesa</label>
+        <input id="chat-table" type="number" inputmode="numeric" min="1" max="9999" step="1"
+          [ngModel]="numeroMesa()" (ngModelChange)="numeroMesa.set($event)" [disabled]="enviando()"
+          placeholder="N.º" aria-describedby="table-help">
+        <span id="table-help">{{ mesaValida() ? 'Este número acompaña tus consultas.' : 'Ingresá el número de tu mesa para escribir.' }}</span>
+      </div>
+    }
+    @if (errorEnvio()) { <p class="send-error" role="alert">{{ errorEnvio() }}</p> }
+    @if (respuesta(); as mensaje) {
+      <div class="reply-preview">
+        <div><strong>Respondiendo a {{ mensaje.autor_nombre }}{{ mensaje.numero_mesa !== null ? ' · Mesa ' + mensaje.numero_mesa : '' }}</strong><p>{{ mensaje.texto }}</p></div>
+        <button type="button" aria-label="Cancelar respuesta" [disabled]="enviando()" (click)="respuesta.set(null)"><ion-icon name="close-outline" aria-hidden="true"></ion-icon></button>
+      </div>
+    }
+    <form class="composer" (ngSubmit)="enviar()">
+      <label for="chat-message" class="sr-only">Escribí tu mensaje</label>
+      <textarea id="chat-message" name="mensaje" [(ngModel)]="borrador" rows="2" maxlength="2000"
+        placeholder="Escribí tu consulta…" [disabled]="!puedeEscribir() || enviando()" (keydown.control.enter)="enviar()"></textarea>
+      <button class="send-button" type="submit" [disabled]="!puedeEscribir() || !borrador.trim() || enviando()" [attr.aria-label]="enviando() ? 'Enviando mensaje' : 'Enviar mensaje'">
+        <ion-icon name="send-outline" aria-hidden="true"></ion-icon>
+      </button>
+    </form>
+    <div class="composer-caption"><span>{{ enviando() ? 'Enviando…' : 'Una consulta, todos los mozos disponibles.' }}</span><span>{{ borrador.length }}/2000</span></div>
+  </div>
+</ion-footer>

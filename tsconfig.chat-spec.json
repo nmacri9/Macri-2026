@@ -1,0 +1,8 @@
+{
+  "extends": "./tsconfig.spec.json",
+  "include": [
+    "src/app/services/chat.service.spec.ts",
+    "src/app/pages/chat-cliente/chat-cliente.page.spec.ts",
+    "src/test-setup.ts"
+  ]
+}

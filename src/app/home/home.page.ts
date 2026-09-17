@@ -4,6 +4,7 @@ import { IonContent, IonHeader, IonIcon, IonPopover, IonTitle, IonToolbar, NavCo
 import { addIcons } from 'ionicons';
 import {
   arrowForwardOutline,
+  chatbubblesOutline,
   gridOutline,
   logOutOutline,
   peopleOutline,
@@ -30,6 +31,7 @@ export class HomePage implements OnInit {
   puedeGestionarClientes = false;
   esMetre = false;
   esCliente = false;
+  puedeUsarChat = false;
 
   constructor(
     private cdr: ChangeDetectorRef, 
@@ -39,6 +41,7 @@ export class HomePage implements OnInit {
   ) {
     addIcons({
       arrowForwardOutline,
+      chatbubblesOutline,
       gridOutline,
       logOutOutline,
       peopleOutline,
@@ -111,6 +114,8 @@ export class HomePage implements OnInit {
       
       // Clientes
       this.esCliente = ['CLIENTE_REGISTRADO', 'CLIENTE_ANONIMO'].includes(rol);
+      this.puedeUsarChat = (rol === 'MOZO' && perfil.estado === 'ACTIVO')
+        || (rol === 'CLIENTE_REGISTRADO' && perfil.estado === 'APROBADO');
 
       this.cdr.detectChanges();
 

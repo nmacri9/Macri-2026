@@ -46,6 +46,16 @@
     </section>
 
     <nav class="menu-grid" aria-label="Opciones principales">
+      @if (puedeUsarChat) {
+        <a class="menu-option" routerLink="/chat-cliente">
+          <span class="menu-icon"><ion-icon name="chatbubbles-outline" aria-hidden="true"></ion-icon></span>
+          <span class="menu-copy">
+            <strong>Chat del salón</strong>
+            <small>Consultas y respuestas entre clientes y mozos</small>
+          </span>
+          <ion-icon name="arrow-forward-outline" class="menu-arrow" aria-hidden="true"></ion-icon>
+        </a>
+      }
       
       <!-- VISTA CLIENTE: Escaneo de mesa -->
       @if (esCliente) {

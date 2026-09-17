@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonContent, IonItem, IonIcon, IonButton } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { addOutline, removeOutline, cartOutline } from 'ionicons/icons';
+import { addOutline, removeOutline, cartOutline, timeOutline } from 'ionicons/icons';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { Subscription } from 'rxjs';
 import { CarritoService } from '../../services/carrito.service';
@@ -22,6 +22,10 @@ type EstadoPedido = 'carrito' | 'pendiente_confirmacion' | 'confirmado';
 })
 export class PedidoPage implements OnInit, OnDestroy {
 
+  // Variables para el menú real
+  productosMenu: any[] = [];
+  cargandoMenu = true;
+
   items: ProductoCarrito[] = [];
   total = 0;
   tiempoEstimado = 0;
@@ -39,10 +43,12 @@ export class PedidoPage implements OnInit, OnDestroy {
     private supabase: SupabaseService,
     private cdr: ChangeDetectorRef
   ) {
-    addIcons({ addOutline, removeOutline, cartOutline });
+    addIcons({ addOutline, removeOutline, cartOutline, timeOutline });
   }
 
   ngOnInit() {
+    this.cargarMenuReal();
+
     this.subs.push(
       this.carritoService.items$.subscribe(items => {
         this.items = items;
@@ -70,6 +76,40 @@ export class PedidoPage implements OnInit, OnDestroy {
     this.canalRealtime?.unsubscribe();
   }
 
+  // --- CARGA DEL MENÚ DESDE SUPABASE ---
+  async cargarMenuReal() {
+    this.cargandoMenu = true;
+    try {
+      // Ajustá el nombre de la tabla si en tu BD se llama distinto (ej. 'platos', 'productos')
+      const { data, error } = await this.supabase.getClient()
+        .from('productos') 
+        .select('*');
+        // .eq('activo', true); // Descomentá esto si tenés una columna para ocultar productos agotados
+
+      if (error) throw error;
+      this.productosMenu = data || [];
+    } catch (error) {
+      console.error('Error al cargar el menú:', error);
+    } finally {
+      this.cargandoMenu = false;
+      this.cdr.detectChanges();
+    }
+  }
+
+  agregarAlCarrito(productoDB: any) {
+    // Mapeamos los datos de la base de datos a la interfaz ProductoCarrito
+    const item: ProductoCarrito = {
+      id: productoDB.id,
+      nombre: productoDB.nombre,
+      precio: productoDB.precio,
+      tiempoElaboracion: productoDB.tiempo_elaboracion || productoDB.tiempoElaboracion || 0, 
+      fotos: productoDB.fotos || [],
+      cantidad: 1,
+    };
+    this.carritoService.agregarProducto(item);
+  }
+  // -------------------------------------
+
   sumar(item: ProductoCarrito) {
     this.carritoService.agregarProducto(item);
   }
@@ -95,7 +135,7 @@ export class PedidoPage implements OnInit, OnDestroy {
 
       const { data: asignacion, error: asignacionError } = await this.supabase.getClient()
         .from('asignaciones_mesa')
-        .select('mesa_id')
+        .select('mesa_id, mesas(numero)')
         .eq('cliente_id', userData.user.id)
         .eq('activa', true)
         .single();
@@ -109,7 +149,7 @@ export class PedidoPage implements OnInit, OnDestroy {
         .insert({
           cliente_id: userData.user.id,
           mesa_id: asignacion.mesa_id,
-          items: this.items, // ajustar si el equipo decide usar una tabla pedido_items en vez de JSON
+          items: this.items, 
           total: this.total,
           tiempo_estimado: this.tiempoEstimado,
           estado: 'pendiente_confirmacion'
@@ -123,6 +163,19 @@ export class PedidoPage implements OnInit, OnDestroy {
       this.estadoPedido = 'pendiente_confirmacion';
       this.carritoService.vaciar();
       this.escucharCambiosDeEstado(data.id);
+
+      // Aviso Push
+      try {
+        await this.supabase.getClient().functions.invoke('enviar-notificacion', {
+          body: {
+            titulo: '¡Nuevo Pedido en Espera!',
+            cuerpo: `La Mesa ${(asignacion as any).mesas?.numero ?? asignacion.mesa_id} mandó su pedido. ¡A revisar!`,
+            topic: 'mozos' 
+          }
+        });
+      } catch (pushError) {
+        console.warn('El pedido se guardó pero falló la push:', pushError);
+      }
 
     } catch (error: any) {
       console.error('Error al enviar pedido:', error);

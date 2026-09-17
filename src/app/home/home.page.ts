@@ -11,7 +11,9 @@ import {
   personCircleOutline,
   personAddOutline,
   restaurantOutline,
-  wineOutline
+  wineOutline,
+  cartOutline,
+  checkmarkCircleOutline
 } from 'ionicons/icons';
 import { AuthService } from '../services/auth.service';
 
@@ -32,6 +34,7 @@ export class HomePage implements OnInit {
   esMetre = false;
   esCliente = false;
   puedeUsarChat = false;
+  esMozo = false; 
 
   constructor(
     private cdr: ChangeDetectorRef, 
@@ -48,7 +51,9 @@ export class HomePage implements OnInit {
       personCircleOutline,
       personAddOutline,
       restaurantOutline,
-      wineOutline
+      wineOutline,
+      cartOutline,
+      checkmarkCircleOutline
     });
   }
 
@@ -111,9 +116,13 @@ export class HomePage implements OnInit {
       
       // Metre
       this.esMetre = ['METRE', 'DUENO', 'SUPERVISOR'].includes(rol);
+
+      // Mozo
+      this.esMozo = ['MOZO', 'DUENO', 'SUPERVISOR'].includes(rol);
       
       // Clientes
       this.esCliente = ['CLIENTE_REGISTRADO', 'CLIENTE_ANONIMO'].includes(rol);
+      
       this.puedeUsarChat = (rol === 'MOZO' && perfil.estado === 'ACTIVO')
         || (rol === 'CLIENTE_REGISTRADO' && perfil.estado === 'APROBADO');
 

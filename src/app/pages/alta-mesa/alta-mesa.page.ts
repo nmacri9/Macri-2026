@@ -114,7 +114,7 @@ export class AltaMesaPage implements OnInit {
 
     try {
       const { data: mesaExistente, error: errorBusqueda } = await supabase
-        .from('Mesa')
+        .from('mesas')
         .select('id')
         .eq('numero_mesa', numero)
         .limit(1);

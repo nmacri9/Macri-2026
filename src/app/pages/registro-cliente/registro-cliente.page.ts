@@ -112,7 +112,6 @@ export class RegistroClientePage implements OnInit {
     this.errorFoto = '';
     
     try {
-      // Usamos CameraSource.Camera para forzar la apertura de la cámara sin pasar por la galería
       const image = await Camera.getPhoto({
         quality: 80,
         allowEditing: false,

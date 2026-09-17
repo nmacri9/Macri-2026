@@ -1,10 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
-import { IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton, IonContent, IonItem, IonIcon, IonInput, IonButton } from '@ionic/angular';
+import { IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton, IonContent, IonItem, IonIcon, IonInput, IonButton, Platform } from '@ionic/angular';
 
 import { SupabaseService } from '../../services/supabase.service';
 import { FotosPerfilService } from '../../services/fotos-perfil.service';
@@ -17,6 +17,8 @@ import { FotosPerfilService } from '../../services/fotos-perfil.service';
   imports: [CommonModule, ReactiveFormsModule, IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton, IonContent, IonItem, IonIcon, IonInput, IonButton]
 })
 export class RegistroAnonimoPage {
+  @ViewChild('fileInput', { static: false }) fileInput?: ElementRef;
+
   anonimoForm: FormGroup;
   fotoBase64: string | null = null;
   isLoading = false;
@@ -25,26 +27,52 @@ export class RegistroAnonimoPage {
     private fb: FormBuilder,
     private router: Router,
     private supabase: SupabaseService,
-    private fotosPerfilService: FotosPerfilService
+    private fotosPerfilService: FotosPerfilService,
+    private platform: Platform,
+    private cdr: ChangeDetectorRef
   ) {
     this.anonimoForm = this.fb.group({
-      nombre: ['', [Validators.required, Validators.minLength(2)]]
+      nombre: ['', 
+        [Validators.required, 
+        Validators.minLength(2),
+        Validators.pattern(/^[a-zA-ZÁÉÍÓÚáéíóúÑñ\s]+$/)
+      ]]
     });
   }
 
   async tomarFoto() {
-    try {
-      const image = await Camera.getPhoto({
-        quality: 80,
-        allowEditing: false,
-        resultType: CameraResultType.DataUrl,
-        source: CameraSource.Prompt 
-      });
-      
-    } catch (error: any) {
-      alert('Hubo un error al abrir la cámara: ' + error.message);
+    if (this.platform.is('capacitor')) {
+      try {
+        const image = await Camera.getPhoto({
+          quality: 90,
+          allowEditing: false,
+          resultType: CameraResultType.DataUrl,
+          source: CameraSource.Prompt
+        });
+        this.fotoBase64 = image.dataUrl ?? null;
+      } catch (error) {
+        console.log('El usuario canceló la foto', error);
+      }
+    } else {
+      // Disparamos el input nativo en la PC
+      this.fileInput?.nativeElement.click();
     }
   }
+
+  // Capturamos el archivo de la PC
+  onFileSelected(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.fotoBase64 = reader.result as string; 
+        this.cdr.detectChanges();
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  
 
 
   async registrarAnonimo() {
@@ -53,13 +81,13 @@ export class RegistroAnonimoPage {
     this.isLoading = true;
     const nombre = this.anonimoForm.value.nombre;
 
-    // 1. Generamos credenciales falsas pero únicas
+    // 1. Generamos credenciales falsas pero unicas
     const timestamp = Date.now();
     const emailFalso = `anonimo_${timestamp}@cepa.com`;
     const claveFalsa = 'CepaAnonimo123!';
 
     try {
-      // 2. Registramos la sesión en Supabase Auth (inicia sesión automáticamente)
+      // 2. Registramos la sesión en Supabase Auth (inicia sesion automáticamente)
       const { data, error } = await this.supabase.getClient().auth.signUp({
         email: emailFalso,
         password: claveFalsa
@@ -68,17 +96,17 @@ export class RegistroAnonimoPage {
       if (error) throw error;
 
       if (data.user) {
-        // 3. Subimos la foto usando tu servicio existente
+        // 3. Subo la foto usando el servicio existente
         const fotoSubida = await this.fotosPerfilService.subir(
           this.supabase.getClient(),
           data.user.id,
           this.fotoBase64
         );
 
-        // 4. Lo insertamos en tu tabla 'usuarios' con estado ACTIVO
+        // 4. Lo inserto en la tabla 'usuarios' con estado ACTIVO
         const { error: errorInsert } = await this.supabase.getClient()
           .from('usuarios')
-          .insert({
+          .upsert({
             id: data.user.id,
             nombres: nombre,
             apellidos: '', // El anónimo no tiene apellido

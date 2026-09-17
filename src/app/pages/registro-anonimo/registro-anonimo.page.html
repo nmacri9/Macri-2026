@@ -1,45 +1,60 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Ingreso Anónimo</ion-title>
+<ion-header class="ion-no-border">
+  <ion-toolbar class="transparent-toolbar">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/login"></ion-back-button>
+      <ion-back-button defaultHref="/login" class="btn-back-cepa"></ion-back-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding login-content">
-  <!-- Podés reutilizar tu spinner acá si querés -->
-  <div *ngIf="!isLoading" class="login-container">
-    <h2 class="login-title">Modo Anónimo</h2>
-    <p class="login-subtitle">Ingresá tu nombre y una foto</p>
+<ion-content class="cepa-bg">
+  <div *ngIf="!isLoading" class="login-container animate-fade-in-up">
+    
+    <!-- Logo -->
+    <div class="logo-container">
+      <img src="assets/icono.png" alt="Cepa Logo" class="cepa-logo" />
+    </div>
+
+    <!-- Títulos alineados a la izquierda -->
+    <h2 class="cepa-title">Modo Anónimo</h2>
+    <p class="cepa-subtitle">Ingresá tus datos para continuar</p>
 
     <form [formGroup]="anonimoForm" (ngSubmit)="registrarAnonimo()">
       
-      <!-- Input de Nombre -->
-      <ion-item lines="none" class="login-item">
+      <!-- Input unificado -->
+      <ion-item class="cepa-input-item" lines="none">
         <ion-icon name="person-outline" slot="start"></ion-icon>
         <ion-input 
           formControlName="nombre" 
           label="Tu Nombre" 
           labelPlacement="floating" 
-          type="text" 
-          placeholder="Ej: Matías">
+          type="text">
         </ion-input>
       </ion-item>
 
-      <!-- Captura de Foto -->
-      <div class="ion-text-center" style="margin: 20px 0;">
-        <img *ngIf="fotoBase64" [src]="fotoBase64" style="width: 150px; height: 150px; border-radius: 12px; object-fit: cover; margin-bottom: 15px; border: 2px solid #C8B29E;" />
+      <!-- Mensaje de error en rojo -->
+      <div class="form-error animate-fade-in-up" *ngIf="anonimoForm.get('nombre')?.hasError('pattern') && anonimoForm.get('nombre')?.touched">
+        <small>Solo se permiten letras y espacios.</small>
+      </div>
+
+      
+      <div class="foto-container">
+        <!-- Input oculto para la PC -->
+        <input type="file" accept="image/*" #fileInput (change)="onFileSelected($event)" style="display: none;" />
+
+        <div class="foto-preview-wrapper" [class.has-foto]="fotoBase64">
+          <img *ngIf="fotoBase64" [src]="fotoBase64" class="foto-preview animate-scale-in" />
+          <ion-icon *ngIf="!fotoBase64" name="camera-outline" class="camera-placeholder animate-pulse"></ion-icon>
+        </div>
         
-        <ion-button expand="block" fill="outline" (click)="tomarFoto()" style="--color: #dbcbb9; --border-color: #C8B29E;">
-          <ion-icon slot="start" name="camera-outline"></ion-icon>
-          {{ fotoBase64 ? 'Cambiar Foto' : 'Tomar Foto' }}
+        <!-- Botón para la foto sin borde invasivo, tipo enlace o outline sutil -->
+        <ion-button fill="clear" class="btn-clear-cepa" (click)="tomarFoto()">
+          {{ fotoBase64 ? 'CAMBIAR FOTO' : 'TOMAR FOTO' }}
         </ion-button>
       </div>
 
-      <!-- Botón de Ingreso -->
-      <ion-button expand="block" type="submit" [disabled]="anonimoForm.invalid || !fotoBase64" class="login-submit">
-        Ingresar al Local
+      <!-- Botón principal sólido -->
+      <ion-button expand="block" type="submit" [disabled]="anonimoForm.invalid || !fotoBase64" class="btn-solid-cepa">
+        INGRESAR AL LOCAL
       </ion-button>
     </form>
   </div>

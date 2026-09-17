@@ -1,0 +1,220 @@
+/* Fondo y barra transparente */
+.transparent-toolbar {
+  --background: transparent;
+  --ion-color-base: transparent !important;
+}
+
+.cepa-bg {
+  --background: #182B20; 
+}
+
+/* Contenedor principal */
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 30px 20px 30px; 
+  
+}
+
+/* Logo */
+.logo-container {
+  margin-bottom: 30px;
+  
+  .cepa-logo {
+    width: 200px;
+    height: auto;
+    filter: drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.3));
+  }
+}
+
+
+.cepa-title {
+  font-family: 'Playfair Display', serif; 
+  color: #DBCBB9;
+  font-size: 2rem;
+  margin-bottom: 5px;
+  text-align: left;
+  width: 100%;
+}
+
+.cepa-subtitle {
+  color: #DBCBB9;
+  font-size: 0.95rem;
+  margin-bottom: 30px;
+  text-align: left;
+  width: 100%;
+  opacity: 0.8;
+}
+
+
+form {
+  width: 100%;
+}
+
+
+.cepa-input-item {
+  --background: transparent;
+  --padding-start: 15px;
+  
+  
+  --highlight-color-focused: #DBCBB9 !important;
+  --highlight-color-valid: #DBCBB9 !important;
+  --highlight-color-invalid: #DBCBB9 !important;
+  
+  
+  --ion-color-danger: #DBCBB9 !important;
+  
+  margin-bottom: 25px;
+  border: 1px solid #374F3E;
+  border-radius: 8px;
+  transition: border-color 0.3s ease;
+
+  ion-icon {
+    color: #DBCBB9 !important;
+    opacity: 0.7;
+  }
+
+  ion-input {
+    --color: #DBCBB9 !important; 
+    --placeholder-color: #7E9485 !important;
+    
+    
+    &::part(label) {
+      color: #DBCBB9 !important;
+    }
+  }
+}
+
+ion-back-button {
+  --color: #DBCBB9 !important;
+}
+
+/* Mensaje de error del formulario */
+.form-error {
+  color: #ff6b6b; 
+  font-size: 0.9rem;
+  width: 100%;
+  text-align: left;
+  padding-left: 10px;
+  margin-top: -15px; 
+  margin-bottom: 20px;
+  letter-spacing: 0.3px;
+}
+
+
+
+/* Botones */
+.btn-solid-cepa {
+  --background: #C8B29E;
+  --color: #182B20;
+  --border-radius: 8px;
+  --box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  margin-top: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  height: 48px;
+}
+
+.btn-clear-cepa {
+  --color: #DBCBB9;
+  font-weight: 600;
+  letter-spacing: 1px;
+  font-size: 0.85rem;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* Estructura circular de la foto */
+.foto-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 25px;
+  width: 100%;
+}
+
+.foto-preview-wrapper {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  border: 2px dashed #374F3E;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+  overflow: hidden;
+  background-color: rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+
+  &.has-foto {
+    border-style: solid;
+    border-color: #C8B29E;
+    box-shadow: 0 0 15px rgba(200, 178, 158, 0.2);
+  }
+
+  .camera-placeholder {
+    font-size: 38px;
+    color: #7E9485;
+  }
+
+  .foto-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.btn-back-cepa {
+  --color: #DBCBB9 !important;
+  color: #DBCBB9 !important;
+}
+
+
+.btn-back-cepa::part(icon) {
+  color: #DBCBB9 !important;
+}
+
+
+/* ------------------------------
+  ANIMACIONES
+------------------------------ */
+.animate-fade-in-up {
+  animation: fadeInUp 0.7s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+}
+
+.animate-pulse {
+  animation: pulse 2.5s infinite ease-in-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.15); opacity: 1; color: #DBCBB9; }
+  100% { transform: scale(1); opacity: 0.6; }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8) rotate(-5deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+}

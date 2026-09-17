@@ -50,7 +50,7 @@ import {
         private cdr: ChangeDetectorRef,
         private fb: FormBuilder,
         private productosService: ProductosService,
-        private modalCtrl: ModalController // 👈 3. Inyectar ModalController
+        private modalCtrl: ModalController 
     ) {
         addIcons({
         'camera-outline': cameraOutline,
@@ -63,11 +63,13 @@ import {
     }
 
     ngOnInit() {
+        const soloLetrasPattern = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+
         this.formBebida = this.fb.group({
-        nombre: ['', [Validators.required, Validators.minLength(2)]],
-        descripcion: ['', [Validators.required, Validators.minLength(5)]],
-        tiempo_elaboracion: ['', [Validators.required, Validators.min(1)]],
-        precio: ['', [Validators.required, Validators.min(1)]]
+            nombre: ['', [Validators.required, Validators.minLength(2), Validators.pattern(soloLetrasPattern)]],
+            descripcion: ['', [Validators.required, Validators.minLength(5), Validators.pattern(soloLetrasPattern)]],
+            tiempo_elaboracion: ['', [Validators.required, Validators.min(1)]],
+            precio: ['', [Validators.required, Validators.min(1)]]
         });
     }
 
@@ -102,6 +104,12 @@ import {
     async guardar() {
         this.mensajeError = '';
         this.mensajeExito = '';
+
+        // Atajamos el error específico del patrón de texto primero
+        if (this.formBebida.get('nombre')?.hasError('pattern') || this.formBebida.get('descripcion')?.hasError('pattern')) {
+            await this.notificarError('El nombre y la descripción solo pueden contener letras y espacios. Los números van en el campo de tiempo.');
+            return;
+        }
 
         // 1. Validaciones de formulario y fotos
         if (this.formBebida.invalid) {

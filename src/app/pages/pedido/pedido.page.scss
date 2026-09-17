@@ -3,6 +3,32 @@ ion-content {
   --padding-bottom: 150px; // deja lugar para que el panel fijo no tape el último item
 }
 
+/* 🧪 SOLO PARA TESTING — sacar junto con el bloque del HTML */
+.testing-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 16px;
+  margin: 16px 16px 0;
+  border: 1px dashed #C8B29E;
+  border-radius: 12px;
+  max-width: 480px;
+
+  ion-button {
+    --color: #dbcbb9;
+    --border-color: #C8B29E;
+    font-size: 12px;
+  }
+}
+
+.testing-label {
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  color: #C8B29E;
+  margin: 0 0 4px;
+}
+
 .carrito-section {
   padding: 0 16px;
   max-width: 480px;
@@ -17,9 +43,9 @@ ion-content {
   margin: 16px 4px 12px;
 }
 
-/*
+/* ============================================
   Estado vacío
- */
+   ============================================ */
 .carrito-empty {
   display: flex;
   flex-direction: column;
@@ -42,9 +68,9 @@ ion-content {
   }
 }
 
-/*
+/* ============================================
   Items del carrito
- */
+   ============================================ */
 .carrito-item {
   --background: #1B3B2D; // verde oscuro - fondo de tarjeta
   --border-radius: 16px;
@@ -61,7 +87,7 @@ ion-content {
   display: flex;
   flex-direction: column;
   flex: 1;
-  min-width: 0; 
+  min-width: 0; // permite que el nombre largo truncar en vez de romper el layout
 }
 
 .carrito-item-nombre {
@@ -113,9 +139,9 @@ ion-content {
   text-align: center;
 }
 
-/*
+/* ============================================
   Error general
- */
+   ============================================ */
 .form-error {
   text-align: center;
   margin: 4px 16px 12px;
@@ -128,9 +154,9 @@ ion-content {
   }
 }
 
-/*
+/* ============================================
   Panel de totales — fijo abajo (slot="fixed")
- */
+   ============================================ */
 .totales-panel {
   position: absolute;
   left: 0;
@@ -179,7 +205,9 @@ ion-content {
   }
 }
 
-/* Estados: esperando confirmación / confirmado */
+/* ============================================
+  Estados: esperando confirmación / confirmado
+   ============================================ */
 .estado-espera {
   display: flex;
   flex-direction: column;
@@ -212,9 +240,9 @@ ion-content {
   color: #C8B29E; // beige oscuro - acento
 }
 
-/*
+/* ============================================
   RESPONSIVE
- */
+   ============================================ */
 @media (max-width: 480px) {
   .carrito-section {
     padding: 0 14px;

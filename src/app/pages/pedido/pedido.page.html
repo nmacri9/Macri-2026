@@ -4,6 +4,34 @@
 
   <div [hidden]="enviando">
 
+    <!-- MENÚ REAL DESDE SUPABASE -->
+    <section class="carrito-section" *ngIf="estadoPedido === 'carrito'">
+      <h3 class="section-label">Nuestro Menú</h3>
+      
+      <div *ngIf="cargandoMenu" style="text-align: center; padding: 20px;">
+        <app-cepa-spinner></app-cepa-spinner>
+      </div>
+
+      <div *ngIf="!cargandoMenu && productosMenu.length === 0" style="color: #ccc; font-size: 14px;">
+        No hay platos disponibles en este momento.
+      </div>
+
+      <ion-item class="carrito-item" lines="none" *ngFor="let prod of productosMenu">
+        <div class="carrito-item-info">
+          <span class="carrito-item-nombre">{{ prod.nombre }}</span>
+          <span class="carrito-item-precio">${{ prod.precio }}</span>
+          <small style="color: #999; display: flex; align-items: center; gap: 4px; margin-top: 4px;">
+            <ion-icon name="time-outline"></ion-icon> 
+            {{ prod.tiempo_elaboracion || prod.tiempoElaboracion || 0 }} min
+          </small>
+        </div>
+        <ion-button fill="outline" slot="end" size="small" (click)="agregarAlCarrito(prod)" style="--color: #d1b075; --border-color: #d1b075;">
+          Agregar
+        </ion-button>
+      </ion-item>
+    </section>
+    <!-- FIN MENÚ REAL -->
+
     <!-- Vista: armando el carrito -->
     <ng-container *ngIf="estadoPedido === 'carrito'">
 

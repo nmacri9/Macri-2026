@@ -3,12 +3,6 @@ import { roleGuard } from './role.guard';
 
 export const routes: Routes = [
   {
-    path: 'chat-cliente',
-    loadComponent: () => import('./pages/chat-cliente/chat-cliente.page').then(m => m.ChatClientePage),
-    canActivate: [roleGuard],
-    data: { roles: ['MOZO', 'CLIENTE_REGISTRADO'] },
-  },
-  {
     path: 'register',
     loadComponent: () =>
       import('./pages/registro-cliente/registro-cliente.page').then(
@@ -114,4 +108,18 @@ export const routes: Routes = [
         (m) => m.RegistroAnonimoPage
       ),
   },
+  {
+    path: 'pedido',
+    loadComponent: () => import('./pages/pedido/pedido.page').then(m => m.PedidoPage),
+    canActivate: [roleGuard],
+    data: { roles: ['CLIENTE_REGISTRADO', 'CLIENTE_ANONIMO'] }
+  },
+  {
+    path: 'confirmar-pedido',
+    loadComponent: () => import('./pages/confirmar-pedido/confirmar-pedido.page').then(m => m.ConfirmarPedidoPage),
+    canActivate: [roleGuard],
+    data: { roles: ['MOZO'] }
+  },
+
 ];
+

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
@@ -11,6 +11,7 @@ import {
   IonSelectOption
 } from '@ionic/angular';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { Capacitor } from '@capacitor/core';
 import { Haptics, NotificationType } from '@capacitor/haptics';
 import { addIcons } from 'ionicons';
 import { cameraOutline, closeOutline, gridOutline, peopleOutline, listOutline } from 'ionicons/icons';
@@ -26,12 +27,14 @@ interface Mesa {
   tipo: TipoMesa;
   disponibilidad: DisponibilidadMesa;
   foto: string;
+  qr_token?: string;
 }
 
 @Component({
   selector: 'app-alta-mesa',
   templateUrl: './alta-mesa.page.html',
   styleUrls: ['./alta-mesa.page.scss'],
+  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -55,7 +58,8 @@ export class AltaMesaPage implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private supabaseService: SupabaseService
+    private supabaseService: SupabaseService,
+    private cdr: ChangeDetectorRef
   ) {
     addIcons({ cameraOutline, closeOutline, gridOutline, peopleOutline, listOutline });
 
@@ -72,21 +76,50 @@ export class AltaMesaPage implements OnInit {
   }
 
   async seleccionarFoto() {
+    // Si se ejecuta en la PC / Navegador Web, usamos la API del navegador
+    if (Capacitor.getPlatform() === 'web') {
+      this.seleccionarFotoWeb();
+      return;
+    }
+
+    // Si se ejecuta en un dispositivo nativo (Android/iOS), usa la cámara nativa
     try {
       const imagen = await Camera.getPhoto({
         quality: 80,
         allowEditing: false,
         resultType: CameraResultType.DataUrl,
-        source: CameraSource.Camera,
-        promptLabelHeader: 'Foto de la mesa',
-        promptLabelPicture: 'Tomar foto'
+        source: CameraSource.Camera
       });
 
-      this.fotoPreview = imagen.dataUrl ?? null;
-      this.errorGeneral = '';
+      if (imagen?.dataUrl) {
+        this.fotoPreview = imagen.dataUrl;
+        this.errorGeneral = '';
+        this.cdr.detectChanges();
+      }
     } catch (error) {
-      console.log('Captura de foto cancelada o fallida:', error);
+      console.log('Captura cancelada o fallida:', error);
     }
+  }
+
+  private seleccionarFotoWeb() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+
+    input.onchange = (event: any) => {
+      const file = event.target.files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          this.fotoPreview = reader.result as string;
+          this.errorGeneral = '';
+          this.cdr.detectChanges();
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+
+    input.click();
   }
 
   quitarFoto(event: Event) {
@@ -113,10 +146,11 @@ export class AltaMesaPage implements OnInit {
     this.guardando = true;
 
     try {
+      // 1. Verificar duplicado en la tabla 'mesas'
       const { data: mesaExistente, error: errorBusqueda } = await supabase
         .from('mesas')
         .select('id')
-        .eq('numero_mesa', numero)
+        .eq('numero', numero)
         .limit(1);
 
       if (errorBusqueda) throw errorBusqueda;
@@ -127,6 +161,7 @@ export class AltaMesaPage implements OnInit {
         return;
       }
 
+      // 2. Subir imagen
       const fotoFile = this.dataUrlAFile(this.fotoPreview, `mesa-${numero}.jpg`);
       const rutaFoto = `mesa/mesa-${numero}-${Date.now()}.jpg`;
       const { error: errorUpload } = await supabase.storage
@@ -139,16 +174,21 @@ export class AltaMesaPage implements OnInit {
         .from('productos')
         .getPublicUrl(rutaFoto);
 
+      // 3. Generar token UUID único para el código QR de esta mesa
+      const qrTokenGenerado = crypto.randomUUID();
+
+      // 4. Insertar en la tabla unificada 'mesas'
       const { data: mesaCreada, error: errorInsert } = await supabase
-        .from('Mesa')
+        .from('mesas')
         .insert({
-          numero_mesa: numero,
-          tipo_mesa: this.mesaForm.value.tipo,
+          numero: numero,
+          tipo: this.mesaForm.value.tipo,
           capacidad: Number(this.mesaForm.value.comensales),
           foto_url: fotoData.publicUrl,
-          disponibilidad: this.normalizarDisponibilidad(this.mesaForm.value.disponibilidad)
+          disponibilidad: this.normalizarDisponibilidad(this.mesaForm.value.disponibilidad),
+          qr_token: qrTokenGenerado
         })
-        .select('id, numero_mesa, tipo_mesa, capacidad, foto_url, disponibilidad')
+        .select('id, numero, tipo, capacidad, foto_url, disponibilidad, qr_token')
         .single();
 
       if (errorInsert) throw errorInsert;
@@ -177,9 +217,9 @@ export class AltaMesaPage implements OnInit {
 
     try {
       const { data, error } = await supabase
-        .from('Mesa')
-        .select('id, numero_mesa, tipo_mesa, capacidad, foto_url, disponibilidad')
-        .order('numero_mesa', { ascending: true });
+        .from('mesas')
+        .select('id, numero, tipo, capacidad, foto_url, disponibilidad, qr_token')
+        .order('numero', { ascending: true });
 
       if (error) throw error;
       this.mesas = (data ?? []).map(mesa => this.mapearMesa(mesa));
@@ -201,7 +241,7 @@ export class AltaMesaPage implements OnInit {
 
     try {
       const { error } = await this.supabaseService.getClient()
-        .from('Mesa')
+        .from('mesas')
         .update({ disponibilidad })
         .eq('id', mesa.id);
 
@@ -224,11 +264,12 @@ export class AltaMesaPage implements OnInit {
   private mapearMesa(mesa: any): Mesa {
     return {
       id: mesa.id,
-      numero: mesa.numero_mesa,
+      numero: mesa.numero,
       comensales: mesa.capacidad ?? 0,
-      tipo: mesa.tipo_mesa,
+      tipo: mesa.tipo,
       disponibilidad: this.normalizarDisponibilidad(mesa.disponibilidad),
-      foto: mesa.foto_url
+      foto: mesa.foto_url,
+      qr_token: mesa.qr_token
     };
   }
 

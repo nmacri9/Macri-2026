@@ -9,6 +9,7 @@
       <div class="actions-row">
         <!-- Grupo Foto -->
         <div class="action-item">
+          <input type="file" accept="image/*" #fileInput (change)="onFileSelected($event)" style="display: none;" />
           <button type="button" class="avatar-ring" (click)="fotoPreview ? abrirModal() : tomarFoto()">
             <img *ngIf="fotoPreview" [src]="fotoPreview" class="avatar-img" alt="Foto empleado">
             <ion-icon *ngIf="!fotoPreview" name="camera-outline" class="avatar-placeholder"></ion-icon>

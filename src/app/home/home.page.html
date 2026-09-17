@@ -60,7 +60,20 @@
       
       <!-- VISTA CLIENTE: Escaneo de mesa y Pedido -->
       @if (esCliente) {
-        <a class="menu-option" routerLink="/cliente-escaneo-mesa">
+        <!-- Botón para escanear el ingreso al local -->
+        <a class="menu-option" (click)="escanearQRIngreso()" style="cursor: pointer;">
+          <span class="menu-icon">
+            <ion-icon name="qr-code-outline"></ion-icon>
+          </span>
+          <span class="menu-copy">
+            <strong>Ingreso al local</strong>
+            <small>Escanear QR de entrada</small>
+          </span>
+          <ion-icon name="arrow-forward-outline" class="menu-arrow"></ion-icon>
+        </a>
+
+        <!-- Validar el acceso a la mesa -->
+        <a class="menu-option" (click)="verificarAccesoMesa()" style="cursor: pointer;">
           <span class="menu-icon">
             <ion-icon name="grid-outline" aria-hidden="true"></ion-icon>
           </span>
@@ -135,6 +148,9 @@
           <ion-icon name="arrow-forward-outline" class="menu-arrow" aria-hidden="true"></ion-icon>
         </a>
 
+      }
+
+      @if (puedeCargarPlatos) {
         <a class="menu-option" routerLink="/alta-plato">
           <span class="menu-icon">
             <ion-icon name="restaurant-outline" aria-hidden="true"></ion-icon>
@@ -146,6 +162,9 @@
           <ion-icon name="arrow-forward-outline" class="menu-arrow" aria-hidden="true"></ion-icon>
         </a>
 
+      }
+
+      @if (puedeCargarBebidas) {
         <a class="menu-option" routerLink="/alta-bebida">
           <span class="menu-icon">
             <ion-icon name="wine-outline" aria-hidden="true"></ion-icon>
@@ -157,6 +176,9 @@
           <ion-icon name="arrow-forward-outline" class="menu-arrow" aria-hidden="true"></ion-icon>
         </a>
 
+      }
+
+      @if (puedeGestionarClientes) {
         <a class="menu-option" routerLink="/clientes-pendientes">
           <span class="menu-icon">
             <ion-icon name="people-outline" aria-hidden="true"></ion-icon>

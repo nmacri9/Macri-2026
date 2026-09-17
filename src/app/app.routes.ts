@@ -55,14 +55,14 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/alta-plato/alta-plato.page').then((m) => m.AltaPlatoPage),
     canActivate: [roleGuard],
-    data: { roles: ['DUENO', 'SUPERVISOR', 'COCINERO'] },
+    data: { roles: ['COCINERO'] },
   },
   {
     path: 'alta-bebida',
     loadComponent: () =>
       import('./pages/alta-bebida/alta-bebida').then((m) => m.AltaBebidaPage),
     canActivate: [roleGuard],
-    data: { roles: ['DUENO', 'SUPERVISOR', 'CANTINERO'] },
+    data: { roles: ['CANTINERO'] },
   },
   {
     path: 'alta-mesa',
@@ -74,9 +74,9 @@ export const routes: Routes = [
   {
     path: 'registro-cliente',
     loadComponent: () =>
-      import('./pages/registro-cliente/registro-cliente.page').then(
-        (m) => m.RegistroClientePage
-      ),
+      import('./pages/registro-cliente/registro-cliente.page').then((m) => m.RegistroClientePage),
+    canActivate: [roleGuard],
+    data: { roles: ['DUENO', 'SUPERVISOR'] },
   },
   {
     path: 'clientes-pendientes',

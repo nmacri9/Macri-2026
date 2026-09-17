@@ -22,7 +22,6 @@ import { CepaHeaderComponent } from '../../shared/components/cepa-header/cepa-he
 import { ModalController } from '@ionic/angular';
 import { ConfirmModalComponent } from '../../shared/confirm-modal/confirm-modal.component';
 
-
 @Component({
   selector: 'app-alta-plato',
   templateUrl: './alta-plato.page.html',
@@ -67,9 +66,12 @@ export class AltaPlatoPage implements OnInit {
   }
 
   ngOnInit() {
+    // Patrón que permite solo letras, acentos, la ñ y espacios.
+    const soloLetrasPattern = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+
     this.platoForm = this.fb.group({
-      nombre: ['', [Validators.required, Validators.minLength(2)]],
-      descripcion: ['', [Validators.required, Validators.minLength(5)]],
+      nombre: ['', [Validators.required, Validators.minLength(2), Validators.pattern(soloLetrasPattern)]],
+      descripcion: ['', [Validators.required, Validators.minLength(5), Validators.pattern(soloLetrasPattern)]],
       tiempo_elaboracion: ['', [Validators.required, Validators.min(1)]],
       precio: ['', [Validators.required, Validators.min(1)]]
     });
@@ -104,64 +106,70 @@ export class AltaPlatoPage implements OnInit {
   }
 
   async confirmarGuardado() {
-  this.mensajeError = '';
-  this.mensajeExito = '';
+    this.mensajeError = '';
+    this.mensajeExito = '';
 
-  if (this.platoForm.invalid) {
-    this.platoForm.markAllAsTouched();
-    await this.notificarError('Por favor complete todos los campos requeridos con valores válidos.');
-    return;
+    // Atajamos el error específico del patrón de texto primero
+    if (this.platoForm.get('nombre')?.hasError('pattern') || this.platoForm.get('descripcion')?.hasError('pattern')) {
+      await this.notificarError('El nombre y la descripción solo pueden contener letras y espacios. Los números van en el campo de tiempo.');
+      return;
+    }
+
+    if (this.platoForm.invalid) {
+      this.platoForm.markAllAsTouched();
+      await this.notificarError('Por favor complete todos los campos requeridos con valores válidos.');
+      return;
+    }
+
+    const fotosCompletas = this.fotos.filter(f => f !== null) as File[];
+    if (fotosCompletas.length !== 3) {
+      await this.notificarError('Debe ingresar obligatoriamente las 3 fotografías requeridas.');
+      return;
+    }
+
+    const modal = await this.modalCtrl.create({
+      component: ConfirmModalComponent,
+      componentProps: { mensaje: '¿Desea confirmar el alta de este plato?' },
+      cssClass: 'modal-alerta'
+    });
+
+    await modal.present();
+    const { data } = await modal.onDidDismiss();
+
+    if (data) {
+      this.guardar(fotosCompletas);
+    }
   }
 
-  const fotosCompletas = this.fotos.filter(f => f !== null) as File[];
-  if (fotosCompletas.length !== 3) {
-    await this.notificarError('Debe ingresar obligatoriamente las 3 fotografías requeridas.');
-    return;
-  }
-
-  const modal = await this.modalCtrl.create({
-    component: ConfirmModalComponent,
-    componentProps: { mensaje: '¿Desea confirmar el alta de este plato?' },
-    cssClass: 'modal-alerta'
-  });
-
-  await modal.present();
-  const { data } = await modal.onDidDismiss();
-
-  if (data) {
-    this.guardar(fotosCompletas);
-  }
-}
-
-async guardar(fotosCompletas: File[]) {
-  this.cargando = true;
-  this.cdr.detectChanges();
-
-  try {
-    const nuevoPlato: Producto = {
-      nombre: this.platoForm.value.nombre,
-      descripcion: this.platoForm.value.descripcion,
-      tipo: 'PLATO',
-      precio: Number(this.platoForm.value.precio),
-      tiempo_elaboracion: Number(this.platoForm.value.tiempo_elaboracion),
-      activo: true
-    };
-
-    await this.productosService.crearProductoConImagenes(nuevoPlato, fotosCompletas);
-
-    this.mensajeExito = '¡Plato registrado con éxito en el menú!';
-
-    this.platoForm.reset();
-    this.fotos = [null, null, null];
-    this.previews = [null, null, null];
-
-  } catch (err: any) {
-    await this.notificarError(err.message || 'Ocurrió un error al guardar el plato.');
-  } finally {
-    this.cargando = false;
+  async guardar(fotosCompletas: File[]) {
+    this.cargando = true;
     this.cdr.detectChanges();
+
+    try {
+      const nuevoPlato: Producto = {
+        nombre: this.platoForm.value.nombre,
+        descripcion: this.platoForm.value.descripcion,
+        tipo: 'PLATO',
+        precio: Number(this.platoForm.value.precio),
+        tiempo_elaboracion: Number(this.platoForm.value.tiempo_elaboracion),
+        activo: true
+      };
+
+      await this.productosService.crearProductoConImagenes(nuevoPlato, fotosCompletas);
+
+      this.mensajeExito = '¡Plato registrado con éxito en el menú!';
+
+      this.platoForm.reset();
+      this.fotos = [null, null, null];
+      this.previews = [null, null, null];
+
+    } catch (err: any) {
+      await this.notificarError(err.message || 'Ocurrió un error al guardar el plato.');
+    } finally {
+      this.cargando = false;
+      this.cdr.detectChanges();
+    }
   }
-}
 
   private async notificarError(mensaje: string) {
     this.mensajeError = mensaje;

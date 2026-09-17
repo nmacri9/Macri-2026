@@ -46,6 +46,12 @@
     </section>
 
     <nav class="menu-grid" aria-label="Opciones principales">
+      @if (errorPerfil) {
+        <div role="alert">
+          <p>{{ errorPerfil }}</p>
+          <button class="menu-option" type="button" (click)="cargarPerfil()">Reintentar</button>
+        </div>
+      }
       @if (puedeUsarChat) {
         <a class="menu-option" routerLink="/chat-cliente">
           <span class="menu-icon"><ion-icon name="chatbubbles-outline" aria-hidden="true"></ion-icon></span>
@@ -59,6 +65,14 @@
       
       <!-- VISTA CLIENTE: Escaneo de mesa -->
       @if (esCliente) {
+        <a class="menu-option" routerLink="/menu-productos">
+          <span class="menu-icon"><ion-icon name="restaurant-outline" aria-hidden="true"></ion-icon></span>
+          <span class="menu-copy">
+            <strong>Menú de productos</strong>
+            <small>Conocé los platos, bebidas y sus precios</small>
+          </span>
+          <ion-icon name="arrow-forward-outline" class="menu-arrow" aria-hidden="true"></ion-icon>
+        </a>
         <!-- Botón para escanear el ingreso al local -->
         <a class="menu-option" (click)="escanearQRIngreso()" style="cursor: pointer;">
           <span class="menu-icon">

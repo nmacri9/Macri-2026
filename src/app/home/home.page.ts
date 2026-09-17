@@ -139,16 +139,20 @@ export class HomePage {
       const rol = String(perfil.rol ?? '').trim().toUpperCase()
         .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
-      // Roles administrativos (Dueño / Supervisor)
+      // Roles alineados estrictamente con app.routes.ts
       this.puedeGestionarClientes = perfil.estado === 'ACTIVO' && ['DUENO', 'SUPERVISOR'].includes(rol);
-      this.puedeCargarPlatos = perfil.estado === 'ACTIVO' && ['DUENO', 'SUPERVISOR', 'COCINERO'].includes(rol);
-      this.puedeCargarBebidas = perfil.estado === 'ACTIVO' && ['DUENO', 'SUPERVISOR', 'CANTINERO'].includes(rol);
+      
+      // Platos (Exclusivo para Cocinero según app.routes.ts)
+      this.puedeCargarPlatos = perfil.estado === 'ACTIVO' && rol === 'COCINERO'; 
+
+      // Bebidas (Exclusivo para Cantinero según app.routes.ts)
+      this.puedeCargarBebidas = perfil.estado === 'ACTIVO' && rol === 'CANTINERO'; 
       
       // Metre
-      this.esMetre = ['METRE', 'DUENO', 'SUPERVISOR'].includes(rol);
+      this.esMetre = ['METRE', 'SUPERVISOR', 'DUENO'].includes(rol);
 
-      // Mozo
-      this.esMozo = ['MOZO', 'DUENO', 'SUPERVISOR'].includes(rol);
+      // Mozo (Exclusivo para Mozo según app.routes.ts)
+      this.esMozo = (rol === 'MOZO' && perfil.estado === 'ACTIVO');
       
       // Clientes
       this.esCliente = ['CLIENTE_REGISTRADO', 'CLIENTE_ANONIMO'].includes(rol);
@@ -351,13 +355,3 @@ export class HomePage {
     }
   }
 }
-
-
-
-
-
-
-
-
-
-

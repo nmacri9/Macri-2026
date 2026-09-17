@@ -7,11 +7,11 @@ Trabajo Final Integrador (TFI) — Aplicación móvil desarrollada con Angular, 
 ## 👥 Equipo y Ramas de Trabajo
 
 | Apellido y Nombre     | Rama Principal (Branch)     |
-| :-------------------- | :--------------------------- |
+| :-------------------- | :-------------------------- |
 | **Garcia, Mateo**     | Backend y Base de Datos     |
-| **Macri, Nicolas**    | UI/UX y Vistas Frontend      |
+| **Macri, Nicolas**    | UI/UX y Vistas Frontend     |
 | **Goncalves, Matias** | Formularios y Autenticación |
-| **Breyaui, Jaled**    | Arquitectura y Ruteo         |
+| **Breyaui, Jaled**    | Arquitectura y Ruteo        |
 
 ---
 
@@ -66,6 +66,11 @@ Trabajo Final Integrador (TFI) — Aplicación móvil desarrollada con Angular, 
   - [x] **Loading Global:** Creación de `CepaSpinnerComponent`, un componente standalone reutilizable con animación y texto dinámico.
   - [x] **Pantalla Home:** Menu inicial desde donde se redirige a los formularios.
   - [x] **Módulo de Alta de Mesas**.
+  - [x] **Registro de nuevos clientes**
+  - [x] **Aceptación o rechazo de clientes por parte del supervisor**
+  - [x] **Chat entre mozos y clientes**
+  - [x] **Configuración RealTime Channel en Supabase**
+  - [x] **Listado de productos con imágenes y demás información solicitada por las consignas**
 
 ---
 
@@ -103,7 +108,7 @@ Se implementó de manera integral el módulo de carga de bebidas para la carta, 
 
 **2. Automatización del Flujo de Registro y Aprobación:**
 
-- **Registro Pendiente (`RegistroClientePage`):** Al completar el formulario e ingresar la solicitud en Supabase, se gatilla automáticamente el correo de confirmación en recepción. *(Pendiente: inyectar el `EmailService`, que hoy no está conectado a la lógica.)*
+- **Registro Pendiente (`RegistroClientePage`):** Al completar el formulario e ingresar la solicitud en Supabase, se gatilla automáticamente el correo de confirmación en recepción. _(Pendiente: inyectar el `EmailService`, que hoy no está conectado a la lógica.)_
 
 **3. Optimización de Assets en Envíos Nativos:**
 
@@ -170,7 +175,7 @@ Se implementó de manera integral el módulo de carga de bebidas para la carta, 
 
 - Migración completa de Login, Splash, Registro de Cliente, Alta de Plato y el `CepaHeaderComponent` compartido, desde la paleta bordó/crema original a la nueva paleta verde institucional (`#132A20`, `#1B3B2D`, `#dbcbb9`, `#C8B29E`, `#091610`).
 - Definición de una convención de uso por rol de color (fondo principal, fondo de tarjetas, texto principal, acentos, texto de botones) aplicada de forma consistente en las cinco pantallas.
-- Ajustes de jerarquía visual: mayor peso tipográfico en los títulos, radios de borde más generosos (de `12px` a `16-18px`) acordes a la tipografía serif *EB Garamond*, e iconografía de acento diferenciada para la acción principal de cada pantalla (cámara/foto).
+- Ajustes de jerarquía visual: mayor peso tipográfico en los títulos, radios de borde más generosos (de `12px` a `16-18px`) acordes a la tipografía serif _EB Garamond_, e iconografía de acento diferenciada para la acción principal de cada pantalla (cámara/foto).
 
 **3. Splash Screen (mejoras adicionales):**
 
@@ -192,19 +197,20 @@ Se implementó de manera integral el módulo de carga de bebidas para la carta, 
 - `resources/icon.png`, `resources/splash.png`
 
 ---
+
 ---
 
 ## 📸 Índice de Imágenes del Proyecto
 
 > _A continuación se detallan todas las capturas correspondientes a íconos, pantallas de presentación, formularios y listados del proyecto._
 
-|   #   | Componente / Pantalla     | Enlace de visualización                          |
-| :---: | :------------------------ | :----------------------------------------------- |
-| **1** | Ícono de la aplicación    | [Ver imagen](./resources/icon.png)               |
-| **2** | Spinner Dinámico          | [Ver imagen](./capturas/spinner.jpeg)            |
-| **3** | Login: Pantalla principal | [Ver imagen](./capturas/login.jpeg)              |
-| **4** | Pantalla principal        | [Ver imagen](./capturas/home.jpeg) |
-| **5** | Alta de Mesa: Vista       | [Ver imagen](./capturas/alta-mesa.jpeg)          |
-| **6** | Alta de Plato: Vista      | [Ver imagen](./capturas/alta-plato.jpeg)         |
-| **7** | Alta de Bebida: Vista     | [Ver imagen](./capturas/alta-bebida.jpeg)       |
-| **8** | Alta de Empleado: Vista   | [Ver imagen](./capturas/alta-empleado.jpeg)      |
+|   #   | Componente / Pantalla     | Enlace de visualización                     |
+| :---: | :------------------------ | :------------------------------------------ |
+| **1** | Ícono de la aplicación    | [Ver imagen](./resources/icon.png)          |
+| **2** | Spinner Dinámico          | [Ver imagen](./capturas/spinner.jpeg)       |
+| **3** | Login: Pantalla principal | [Ver imagen](./capturas/login.jpeg)         |
+| **4** | Pantalla principal        | [Ver imagen](./capturas/home.jpeg)          |
+| **5** | Alta de Mesa: Vista       | [Ver imagen](./capturas/alta-mesa.jpeg)     |
+| **6** | Alta de Plato: Vista      | [Ver imagen](./capturas/alta-plato.jpeg)    |
+| **7** | Alta de Bebida: Vista     | [Ver imagen](./capturas/alta-bebida.jpeg)   |
+| **8** | Alta de Empleado: Vista   | [Ver imagen](./capturas/alta-empleado.jpeg) |

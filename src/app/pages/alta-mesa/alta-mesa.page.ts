@@ -16,6 +16,7 @@ import { Haptics, NotificationType } from '@capacitor/haptics';
 import { addIcons } from 'ionicons';
 import { cameraOutline, closeOutline, gridOutline, peopleOutline, listOutline } from 'ionicons/icons';
 import { SupabaseService } from '../../services/supabase.service';
+import { CepaHeaderComponent } from '../../shared/components/cepa-header/cepa-header.component';
 
 type TipoMesa = 'VIP' | 'ESTANDAR' | 'MOVILIDAD_REDUCIDA';
 type DisponibilidadMesa = 'VACIA' | 'OCUPADA' | 'RESERVADA';
@@ -44,7 +45,8 @@ interface Mesa {
     IonInput,
     IonItem,
     IonSelect,
-    IonSelectOption
+    IonSelectOption,
+    CepaHeaderComponent
   ]
 })
 export class AltaMesaPage implements OnInit {

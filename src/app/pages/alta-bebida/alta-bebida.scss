@@ -16,12 +16,10 @@
 }
 
 .alta-title {
-    font-size: 19px;
+    font-size: 30px;
     font-family: 'EB Garamond', serif;
-    font-weight: 700;
-    letter-spacing: 0.4px;
     color: #dbcbb9; // crema - texto principal
-    margin: 4px 0 2px;
+    margin: 5px 0 8px;
 }
 
 .alta-divider {
@@ -176,7 +174,7 @@ form {
     height: 70vh;
 
     p {
-        color: #dbcbb9;
+        color: #dbcbb9; // crema - texto principal
         font-family: 'EB Garamond', serif;
         font-size: 15px;
         margin-top: 12px;

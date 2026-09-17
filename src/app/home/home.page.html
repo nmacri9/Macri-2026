@@ -60,7 +60,20 @@
       
       <!-- VISTA CLIENTE: Escaneo de mesa y Pedido -->
       @if (esCliente) {
-        <a class="menu-option" routerLink="/cliente-escaneo-mesa">
+        <!-- Botón para escanear el ingreso al local -->
+        <a class="menu-option" (click)="escanearQRIngreso()" style="cursor: pointer;">
+          <span class="menu-icon">
+            <ion-icon name="qr-code-outline"></ion-icon>
+          </span>
+          <span class="menu-copy">
+            <strong>Ingreso al local</strong>
+            <small>Escanear QR de entrada</small>
+          </span>
+          <ion-icon name="arrow-forward-outline" class="menu-arrow"></ion-icon>
+        </a>
+
+        <!-- Validar el acceso a la mesa -->
+        <a class="menu-option" (click)="verificarAccesoMesa()" style="cursor: pointer;">
           <span class="menu-icon">
             <ion-icon name="grid-outline" aria-hidden="true"></ion-icon>
           </span>

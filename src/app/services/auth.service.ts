@@ -11,7 +11,8 @@ export type RolUsuario =
   | 'CANTINERO'
   | 'MOZO'
   | 'METRE'
-  | 'CLIENTE_REGISTRADO';
+  | 'CLIENTE_REGISTRADO'
+  | 'CLIENTE_ANONIMO';
 
 export class CuentaClienteNoHabilitadaError extends Error {}
 
@@ -182,6 +183,7 @@ export class AuthService {
         'CANTINERO',
         'MOZO',
         'METRE',
+        'CLIENTE_ANONIMO'
       ].includes(empleado.rol)
     ) {
       return null;

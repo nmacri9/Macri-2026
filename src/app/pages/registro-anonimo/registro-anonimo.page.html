@@ -1,0 +1,46 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Ingreso Anónimo</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/login"></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding login-content">
+  <!-- Podés reutilizar tu spinner acá si querés -->
+  <div *ngIf="!isLoading" class="login-container">
+    <h2 class="login-title">Modo Anónimo</h2>
+    <p class="login-subtitle">Ingresá tu nombre y una foto</p>
+
+    <form [formGroup]="anonimoForm" (ngSubmit)="registrarAnonimo()">
+      
+      <!-- Input de Nombre -->
+      <ion-item lines="none" class="login-item">
+        <ion-icon name="person-outline" slot="start"></ion-icon>
+        <ion-input 
+          formControlName="nombre" 
+          label="Tu Nombre" 
+          labelPlacement="floating" 
+          type="text" 
+          placeholder="Ej: Matías">
+        </ion-input>
+      </ion-item>
+
+      <!-- Captura de Foto -->
+      <div class="ion-text-center" style="margin: 20px 0;">
+        <img *ngIf="fotoBase64" [src]="fotoBase64" style="width: 150px; height: 150px; border-radius: 12px; object-fit: cover; margin-bottom: 15px; border: 2px solid #C8B29E;" />
+        
+        <ion-button expand="block" fill="outline" (click)="tomarFoto()" style="--color: #dbcbb9; --border-color: #C8B29E;">
+          <ion-icon slot="start" name="camera-outline"></ion-icon>
+          {{ fotoBase64 ? 'Cambiar Foto' : 'Tomar Foto' }}
+        </ion-button>
+      </div>
+
+      <!-- Botón de Ingreso -->
+      <ion-button expand="block" type="submit" [disabled]="anonimoForm.invalid || !fotoBase64" class="login-submit">
+        Ingresar al Local
+      </ion-button>
+    </form>
+  </div>
+</ion-content>

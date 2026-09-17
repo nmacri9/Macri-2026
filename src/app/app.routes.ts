@@ -4,7 +4,10 @@ import { roleGuard } from './role.guard';
 export const routes: Routes = [
   {
     path: 'register',
-    loadComponent: () => import('./pages/registro-cliente/registro-cliente.page').then(m => m.RegistroClientePage),
+    loadComponent: () =>
+      import('./pages/registro-cliente/registro-cliente.page').then(
+        (m) => m.RegistroClientePage
+      ),
   },
   {
     path: 'home',
@@ -30,7 +33,7 @@ export const routes: Routes = [
     path: 'registro-empleado',
     loadComponent: () =>
       import('./pages/registro-empleado/registro-empleado.page').then(
-        (m) => m.RegistroEmpleadoPage,
+        (m) => m.RegistroEmpleadoPage
       ),
     canActivate: [roleGuard],
     data: { roles: ['DUENO', 'SUPERVISOR'] },
@@ -58,25 +61,51 @@ export const routes: Routes = [
   },
   {
     path: 'registro-cliente',
-    loadComponent: () => import('./pages/registro-cliente/registro-cliente.page').then( m => m.RegistroClientePage)
+    loadComponent: () =>
+      import('./pages/registro-cliente/registro-cliente.page').then(
+        (m) => m.RegistroClientePage
+      ),
   },
   {
     path: 'clientes-pendientes',
-    loadComponent: () => import('./pages/clientes-pendientes/clientes-pendientes.page').then( m => m.ClientesPendientesPage),
+    loadComponent: () =>
+      import('./pages/clientes-pendientes/clientes-pendientes.page').then(
+        (m) => m.ClientesPendientesPage
+      ),
     canActivate: [roleGuard],
     data: { roles: ['DUENO', 'SUPERVISOR'], requireStoredRole: true },
   },
   {
     path: 'metre-asignacion',
-    loadComponent: () => import('./pages/metre-asignacion/metre-asignacion.page').then(m => m.MetreAsignacionPage),
+    loadComponent: () =>
+      import('./pages/metre-asignacion/metre-asignacion.page').then(
+        (m) => m.MetreAsignacionPage
+      ),
     canActivate: [roleGuard],
-    data: { roles: ['METRE', 'SUPERVISOR', 'DUENO'] }
+    data: { roles: ['METRE', 'SUPERVISOR', 'DUENO'] },
   },
   {
     path: 'cliente-escaneo-mesa',
-    loadComponent: () => import('./pages/cliente-escaneo-mesa/cliente-escaneo-mesa.page').then(m => m.ClienteEscaneoMesaPage),
+    loadComponent: () =>
+      import('./pages/cliente-escaneo-mesa/cliente-escaneo-mesa.page').then(
+        (m) => m.ClienteEscaneoMesaPage
+      ),
     canActivate: [roleGuard],
-    data: { roles: ['CLIENTE_REGISTRADO', 'CLIENTE_ANONIMO', 'METRE', 'SUPERVISOR', 'DUENO'] }
+    data: {
+      roles: [
+        'CLIENTE_REGISTRADO',
+        'CLIENTE_ANONIMO',
+        'METRE',
+        'SUPERVISOR',
+        'DUENO',
+      ],
+    },
   },
-
+  {
+    path: 'registro-anonimo',
+    loadComponent: () =>
+      import('./pages/registro-anonimo/registro-anonimo.page').then(
+        (m) => m.RegistroAnonimoPage
+      ),
+  },
 ];

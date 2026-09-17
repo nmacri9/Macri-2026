@@ -148,6 +148,9 @@
           <ion-icon name="arrow-forward-outline" class="menu-arrow" aria-hidden="true"></ion-icon>
         </a>
 
+      }
+
+      @if (puedeCargarPlatos) {
         <a class="menu-option" routerLink="/alta-plato">
           <span class="menu-icon">
             <ion-icon name="restaurant-outline" aria-hidden="true"></ion-icon>
@@ -159,6 +162,9 @@
           <ion-icon name="arrow-forward-outline" class="menu-arrow" aria-hidden="true"></ion-icon>
         </a>
 
+      }
+
+      @if (puedeCargarBebidas) {
         <a class="menu-option" routerLink="/alta-bebida">
           <span class="menu-icon">
             <ion-icon name="wine-outline" aria-hidden="true"></ion-icon>
@@ -170,6 +176,9 @@
           <ion-icon name="arrow-forward-outline" class="menu-arrow" aria-hidden="true"></ion-icon>
         </a>
 
+      }
+
+      @if (puedeGestionarClientes) {
         <a class="menu-option" routerLink="/clientes-pendientes">
           <span class="menu-icon">
             <ion-icon name="people-outline" aria-hidden="true"></ion-icon>

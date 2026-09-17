@@ -307,7 +307,7 @@ export class HomePage {
       const { data, error } = await this.supabase.getClient()
         .from('lista_espera')
         .select('*')
-        .eq('id_cliente', this.usuarioActual.id)
+        .eq('cliente_id', this.usuarioActual.id)
         .single();
 
       // Si no está en la lista o da error (porque no existe el registro)

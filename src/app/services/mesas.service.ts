@@ -4,8 +4,8 @@ import { Mesa } from '../interfaces/mesa';
 
 @Injectable({
     providedIn: 'root'
-    })
-    export class MesasService {
+})
+export class MesasService {
     private supabase;
 
     constructor(private supabaseService: SupabaseService) {
@@ -13,8 +13,8 @@ import { Mesa } from '../interfaces/mesa';
     }
 
     // 1. Obtener mesas que NO tienen una asignación activa actualmente
-    async obtenerMesasDisponibles() {
-        // Traemos las asignaciones activas
+    async obtenerMesasDisponibles(): Promise<Mesa[]> {
+        // A) Traemos los IDs de las mesas que actualmente están asignadas y activas
         const { data: ocupadas, error: errOcupadas } = await this.supabase
         .from('asignaciones_mesa')
         .select('mesa_id')
@@ -24,7 +24,7 @@ import { Mesa } from '../interfaces/mesa';
 
         const idsOcupados = ocupadas ? ocupadas.map(a => a.mesa_id) : [];
 
-        // Traemos todas las mesas
+        // B) Traemos todas las mesas de la tabla unificada 'mesas'
         const { data: todasLasMesas, error: errMesas } = await this.supabase
         .from('mesas')
         .select('*')
@@ -32,13 +32,13 @@ import { Mesa } from '../interfaces/mesa';
 
         if (errMesas) throw errMesas;
 
-        // Filtramos las que no estén ocupadas
-        return (todasLasMesas as Mesa[]).filter(m => !idsOcupados.includes(m.id));
+        // C) Filtramos las mesas disponibles excluyendo las ocupadas
+        return (todasLasMesas as Mesa[]).filter(m => !idsOcupados.includes(m.id!));
     }
 
-    // 2. El Metre asigna la mesa
+    // 2. El Metre asigna la mesa a un cliente de la lista de espera
     async asignarMesaACliente(clienteId: string, mesaId: number, metreId: string) {
-        // A) Verificar que la mesa no se haya asignado justo a otro cliente
+        // A) Verificar que la mesa no se haya asignado justo a otro cliente en paralelo
         const { data: asignacionExistente } = await this.supabase
         .from('asignaciones_mesa')
         .select('id')
@@ -50,7 +50,7 @@ import { Mesa } from '../interfaces/mesa';
         throw new Error('Esta mesa acaba de ser asignada a otro cliente.');
         }
 
-        // B) Insertar en asignaciones_mesa usando el esquema real de Supabase
+        // B) Insertar en asignaciones_mesa con estado pendiente de escaneo
         const { error } = await this.supabase
         .from('asignaciones_mesa')
         .insert({
@@ -64,9 +64,9 @@ import { Mesa } from '../interfaces/mesa';
         if (error) throw error;
     }
 
-    // 3. Validación y escaneo del QR físico por parte del Cliente
+    // 3. Validación y escaneo del QR físico por parte del Cliente (Punto 10)
     async validarYVincularMesaQR(clienteId: string, qrTokenLeido: string) {
-        // A) Buscar la asignación activa que el Metre le dio a este cliente
+        // A) Buscar la asignación activa que el Metre le otorgó a este cliente
         const { data: asignacion, error } = await this.supabase
         .from('asignaciones_mesa')
         .select('*, mesas(*)')
@@ -80,14 +80,17 @@ import { Mesa } from '../interfaces/mesa';
         throw new Error('Aún no tenés ninguna mesa asignada por el Metre.');
         }
 
-        // B) VALIDACIÓN CRUCIAL (Consigna): Verificar si el QR leído coincide con su mesa
         const mesaAsignada = asignacion.mesas as Mesa;
 
-        if (mesaAsignada.qr_token !== qrTokenLeido) {
+        // B) VALIDACIÓN CRUCIAL: Comparar el qr_token leído con el de la mesa asignada o por número
+        const coincideToken = mesaAsignada.qr_token === qrTokenLeido;
+        const coincideNumero = `MESA_${mesaAsignada.numero}` === qrTokenLeido;
+
+        if (!coincideToken && !coincideNumero) {
         throw new Error(`Mesa equivocada. Debes vincularte a tu mesa asignada: Mesa N° ${mesaAsignada.numero}.`);
         }
 
-        // C) Marcar que el cliente ya escaneó su mesa física correctamente
+        // C) Actualizar estado a OCUPADA tras escanear con éxito
         await this.supabase
         .from('asignaciones_mesa')
         .update({ estado_escaneo: 'OCUPADA' })
@@ -95,4 +98,5 @@ import { Mesa } from '../interfaces/mesa';
 
         return asignacion;
     }
+
 }

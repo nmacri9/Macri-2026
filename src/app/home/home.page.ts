@@ -36,6 +36,8 @@ export class HomePage implements OnInit {
 
   // Controles de visibilidad por Rol
   puedeGestionarClientes = false;
+  puedeCargarPlatos = false;
+  puedeCargarBebidas = false;
   esMetre = false;
   esCliente = false;
   puedeUsarChat = false;
@@ -121,6 +123,8 @@ export class HomePage implements OnInit {
 
       // Roles administrativos (Dueño / Supervisor)
       this.puedeGestionarClientes = perfil.estado === 'ACTIVO' && ['DUENO', 'SUPERVISOR'].includes(rol);
+      this.puedeCargarPlatos = perfil.estado === 'ACTIVO' && ['DUENO', 'SUPERVISOR', 'COCINERO'].includes(rol);
+      this.puedeCargarBebidas = perfil.estado === 'ACTIVO' && ['DUENO', 'SUPERVISOR', 'CANTINERO'].includes(rol);
       
       // Metre
       this.esMetre = ['METRE', 'DUENO', 'SUPERVISOR'].includes(rol);

@@ -21,27 +21,34 @@
       <p>Tu lugar en la mesa empieza acá.</p>
     </header>
     <div class="avatar-hero">
-      <input #archivoFoto class="photo-input" type="file" accept="image/*" capture="environment"
-        (change)="cargarArchivoFoto($event)" aria-hidden="true" tabindex="-1">
-      <button type="button" class="avatar-ring" aria-label="Cargar foto de perfil" [disabled]="cargandoFoto || cargando" (click)="tomarFoto()">
-        <img *ngIf="fotoPreview" [src]="fotoPreview" class="avatar-img" alt="Foto cliente">
-        <ion-icon *ngIf="!fotoPreview" name="camera-outline" class="avatar-placeholder"></ion-icon>
-        <span class="avatar-badge">
-          <ion-icon name="camera"></ion-icon>
-        </span>
-      </button>
+      <div class="actions-row">
+        <!-- Grupo Foto -->
+        <div class="action-item">
+          <input #archivoFoto class="photo-input" type="file" accept="image/*" capture="environment" (change)="cargarArchivoFoto($event)" aria-hidden="true" tabindex="-1">
+          <button type="button" class="avatar-ring" aria-label="Cargar foto de perfil" [disabled]="cargandoFoto || cargando" (click)="tomarFoto()">
+            <img *ngIf="fotoPreview" [src]="fotoPreview" class="avatar-img" alt="Foto cliente">
+            <ion-icon *ngIf="!fotoPreview" name="camera-outline" class="avatar-placeholder"></ion-icon>
+            <span class="avatar-badge">
+              <ion-icon name="camera"></ion-icon>
+            </span>
+          </button>
+          <span class="action-label">Foto</span>
+        </div>
 
+        <!-- Grupo Escáner -->
+        <div class="action-item">
+          <button type="button" class="scan-bubble" (click)="escanearDNI()">
+            <ion-icon name="qr-code-outline"></ion-icon>
+          </button>
+          <span class="action-label">Escanear DNI</span>
+        </div>
+      </div>
+
+      <!-- Mensajes de error -->
       <small class="avatar-error" *ngIf="(registroForm.get('foto')?.dirty || formEnviado) && registroForm.get('foto')?.invalid">
         La foto es obligatoria.
       </small>
-
-      <span class="photo-label">{{ cargandoFoto ? 'Cargando foto...' : fotoPreview ? 'Tocá para cambiar tu foto' : 'Tocá para agregar tu foto' }}</span>
       <small class="avatar-error" *ngIf="errorFoto" role="alert">{{ errorFoto }}</small>
-
-      <ion-button type="button" fill="clear" size="small" class="scan-link" (click)="escanearDNI()">
-        <ion-icon name="qr-code-outline" slot="start"></ion-icon>
-        Escanear DNI
-      </ion-button>
     </div>
 
     <div class="form-fields">

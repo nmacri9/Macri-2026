@@ -4,8 +4,8 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
-import { IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton, IonContent, IonItem, IonIcon, IonInput, IonButton, Platform } from '@ionic/angular';
-
+import { IonContent, IonItem, IonIcon, IonInput, IonButton, Platform } from '@ionic/angular';
+import { CepaHeaderComponent } from '../../shared/components/cepa-header/cepa-header.component';
 import { SupabaseService } from '../../services/supabase.service';
 import { FotosPerfilService } from '../../services/fotos-perfil.service';
 
@@ -14,7 +14,15 @@ import { FotosPerfilService } from '../../services/fotos-perfil.service';
   templateUrl: './registro-anonimo.page.html',
   styleUrls: ['./registro-anonimo.page.scss'],
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton, IonContent, IonItem, IonIcon, IonInput, IonButton]
+  imports: [CommonModule, 
+    ReactiveFormsModule,   
+    IonContent, 
+    IonItem, 
+    IonIcon, 
+    IonInput, 
+    IonButton,
+    CepaHeaderComponent
+  ]
 })
 export class RegistroAnonimoPage {
   @ViewChild('fileInput', { static: false }) fileInput?: ElementRef;

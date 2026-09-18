@@ -12,7 +12,7 @@
     <h2 class="cepa-title">Modo Anónimo</h2>
     <p class="cepa-subtitle">Ingresá tus datos para continuar</p>
 
-    <form [formGroup]="anonimoForm" (ngSubmit)="registrarAnonimo()">
+    <form [formGroup]="anonimoForm" (ngSubmit)="confirmarAlta()">
       
       <!-- Input unificado -->
       <ion-item class="cepa-input-item" lines="none">
@@ -32,15 +32,14 @@
 
       
       <div class="foto-container">
-        <!-- Input oculto para la PC -->
         <input type="file" accept="image/*" #fileInput (change)="onFileSelected($event)" style="display: none;" />
 
-        <div class="foto-preview-wrapper" [class.has-foto]="fotoBase64">
+        <!-- 2. AGREGAR EVENTO CLICK A LA BURBUJA PARA ABRIR EL MODAL -->
+        <div class="foto-preview-wrapper" [class.has-foto]="fotoBase64" (click)="fotoBase64 ? abrirModal() : tomarFoto()" style="cursor: pointer;">
           <img *ngIf="fotoBase64" [src]="fotoBase64" class="foto-preview animate-scale-in" />
           <ion-icon *ngIf="!fotoBase64" name="camera-outline" class="camera-placeholder animate-pulse"></ion-icon>
         </div>
         
-        <!-- Botón para la foto sin borde invasivo, tipo enlace o outline sutil -->
         <ion-button fill="clear" class="btn-clear-cepa" (click)="tomarFoto()">
           {{ fotoBase64 ? 'CAMBIAR FOTO' : 'TOMAR FOTO' }}
         </ion-button>
@@ -52,4 +51,34 @@
       </ion-button>
     </form>
   </div>
+
+<!-- 3. POPUP PARA VER LA IMAGEN GRANDE  -->
+  <ion-modal [isOpen]="modalAbierta" (didDismiss)="cerrarModal()">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar style="--background: #132A20;">
+          <ion-buttons slot="end">
+            <ion-button (click)="cerrarModal()">
+              <ion-icon name="close-outline" style="color: #C8B29E; font-size: 36px;"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      
+      <ion-content style="--background: #132A20;" class="ion-padding">
+        <div class="modal-foto-container">
+          <img *ngIf="fotoBase64" [src]="fotoBase64" alt="Foto ampliada" class="foto-ampliada">
+        </div>
+        
+        <div style="margin-top: 30px;">
+          
+          <ion-button expand="block" class="btn-solid-cepa" (click)="tomarFoto(); cerrarModal()">
+            <ion-icon name="camera-outline" slot="start"></ion-icon>
+            Cambiar Foto
+          </ion-button>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
 </ion-content>

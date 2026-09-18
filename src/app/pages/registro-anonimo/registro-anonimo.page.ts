@@ -4,10 +4,15 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
-import { IonContent, IonItem, IonIcon, IonInput, IonButton, Platform } from '@ionic/angular';
+import { IonContent, IonItem, IonIcon, IonInput, IonButton, Platform, ModalController, IonHeader, IonToolbar, IonButtons, IonModal } from '@ionic/angular';
 import { CepaHeaderComponent } from '../../shared/components/cepa-header/cepa-header.component';
 import { SupabaseService } from '../../services/supabase.service';
 import { FotosPerfilService } from '../../services/fotos-perfil.service';
+import { addIcons } from 'ionicons';
+import { closeOutline, personOutline, cameraOutline } from 'ionicons/icons';
+import { ConfirmModalComponent } from '../../shared/confirm-modal/confirm-modal.component';
+
+
 
 @Component({
   selector: 'app-registro-anonimo',
@@ -21,7 +26,8 @@ import { FotosPerfilService } from '../../services/fotos-perfil.service';
     IonIcon, 
     IonInput, 
     IonButton,
-    CepaHeaderComponent
+    CepaHeaderComponent,
+    IonHeader, IonToolbar, IonButtons, IonModal
   ]
 })
 export class RegistroAnonimoPage {
@@ -30,6 +36,7 @@ export class RegistroAnonimoPage {
   anonimoForm: FormGroup;
   fotoBase64: string | null = null;
   isLoading = false;
+  modalAbierta = false;
 
   constructor(
     private fb: FormBuilder,
@@ -37,8 +44,10 @@ export class RegistroAnonimoPage {
     private supabase: SupabaseService,
     private fotosPerfilService: FotosPerfilService,
     private platform: Platform,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private modalCtrl: ModalController
   ) {
+    addIcons({personOutline,cameraOutline,closeOutline});
     this.anonimoForm = this.fb.group({
       nombre: ['', 
         [Validators.required, 
@@ -47,6 +56,35 @@ export class RegistroAnonimoPage {
       ]]
     });
   }
+
+abrirModal() {
+    if (this.fotoBase64) {
+      this.modalAbierta = true;
+    }
+  }
+
+  cerrarModal() {
+    this.modalAbierta = false;
+  }
+
+  async confirmarAlta() {
+    if (this.anonimoForm.invalid || !this.fotoBase64) return;
+
+    const modal = await this.modalCtrl.create({
+      component: ConfirmModalComponent,
+      componentProps: { mensaje: '¿Desea ingresar al local como cliente anónimo?' },
+      cssClass: 'modal-alerta'
+    });
+
+    await modal.present();
+
+    const { data } = await modal.onDidDismiss();
+    // Si el usuario toca "Confirmar", data es true y disparamos el registro
+    if (data) {
+      this.registrarAnonimo();
+    }
+  }
+
 
   async tomarFoto() {
     if (this.platform.is('capacitor')) {

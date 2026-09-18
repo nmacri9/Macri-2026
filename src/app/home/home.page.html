@@ -51,6 +51,12 @@
 </ion-header>
 
 <ion-content class="home-content">
+  
+  <!-- REFRESHER PARA ACTUALIZAR ESTADOS EN TIEMPO REAL TIRANDO PARA ABAJO -->
+  <ion-refresher slot="fixed" (ionRefresh)="recargarPantalla($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
   <main class="home-container">
     <!-- Encabezado dinámico según perfil -->
     <section class="welcome-section" aria-labelledby="home-title">

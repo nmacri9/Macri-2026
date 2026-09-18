@@ -13,24 +13,36 @@ Trabajo Final Integrador (TFI) — Aplicación móvil desarrollada con Angular, 
 | **Goncalves, Matias** | Formularios y Autenticación |
 | **Breyaui, Jaled**    | Arquitectura y Ruteo        |
 
----
 
-## 🚀 Seguimiento de Módulos y Objetivos
+## Seguimiento de Módulos y Objetivos
 
-### 👨‍💻 Macri, Nicolas
+### 👨‍💻 Macri, Nicolas — Módulos UI/UX, Registro y Control de Accesos
 
-- **Branch:** `nico-alta-platos`
-- **Período de tarea:** 27/08/2026 — 07/09/2026
-- **Observaciones / Reasignaciones:** Tareas completadas en tiempo y forma. _(Modificaciones por corrección del profesor)._
-- **Módulos asignados:**
-  - [x] **UI/UX y Assets:** Diseño de ícono, definición de paleta de colores global (`variables.scss`) y generación de assets nativos (Capacitor).
-  - [x] **Splash Screen:** Integración estática y dinámica con animación de entrada (fade-in) y ruteo automático.
-  - [x] **Login:** Maquetado responsive validado para móviles, con botones de acceso rápido.
-  - [x] **Alta de Plato:** Contenedores adaptables para 3 fotos simultáneas sin scroll nativo, cumpliendo pautas UI de la cátedra.
-  - [x] **Registro de Cliente (Punto 5):** Pantalla completa de registro de cliente para Dispositivo 2, con lectura de QR/DNI vía `DniScannerService`, cámara nativa forzada (bloqueo de galería) y alta a Supabase con estado inicial `PENDIENTE`.
-  - [x] **Rediseño de Paleta Institucional:** Migración de Login, Splash, Registro de Cliente, Alta de Plato y `CepaHeaderComponent` desde la paleta bordó/crema original a la nueva paleta verde oficial del proyecto.
-  - [x] **Pulido de UI:** Jerarquía tipográfica, acentos de color en iconografía clave, radios de borde y espaciado consistente entre pantallas.
-
+- **Branch:** `nico-alta-platos` / `feature/arreglos`
+- **Período general de tareas:** 27/08/2026 — 18/09/2026
+#### 🔹 1. UI/UX Global, Assets y Rediseño de Paleta Institucional
+- **Período:** 27/08/2026 — 01/09/2026
+- **Detalle:** 
+  - Diseño de ícono corporativo, definición de la paleta de colores global (`variables.scss`) adaptada a la identidad visual verde institucional (`#132A20`, `#1B3B2D`, `#dbcbb9`, `#C8B29E`).
+  - Generación de assets nativos con Capacitor y configuración de tipografías (`EB Garamond` e `Inter`).
+#### 🔹 2. Splash Screen Dinámico y Animaciones de Entrada
+- **Período:** 02/09/2026 — 05/09/2026
+- **Detalle:** 
+  - Integración de animación de entrada propia (`logoEntrance`) con efecto fade-in, separada del pulso continuo.
+  - Implementación de barra de progreso indeterminada y sincronización del timing de navegación hacia el login.
+#### 🔹 3. Registro de Cliente (Punto 5) y Cámara Forzada
+- **Período:** 06/09/2026 — 12/09/2026
+- **Detalle:** 
+  - Desarrollo del formulario adaptado para el perfil cliente, extrayendo la lógica de lectura de DNI/QR a un servicio reutilizable (`DniScannerService`).
+  - Configuración estricta de la cámara nativa mediante `CameraSource.Camera` para **bloquear por completo el acceso a la galería de fotos**, cumpliendo el requerimiento de la cátedra.
+  - Alta contra Supabase (`auth.signUp`) configurando estado inicial `PENDIENTE`.
+#### 🔹 4. Validaciones de Formularios y Sincronización de Roles (Home / Routes)
+- **Período:** 13/09/2026 — 18/09/2026
+- **Detalle:** 
+  - Incorporación de expresiones regulares (`Validators.pattern`) en los campos de nombre y descripción de platos y bebidas para admitir exclusivamente letras, acentos y espacios.
+  - Sincronización estricta entre el sistema de ruteo (`app.routes.ts`) y la lógica de perfiles en `HomePage`, ocultando y mostrando dinámicamente botones según el rol activo (Dueño, Supervisor, Cocinero, Cantinero, Mozo, Metre y Clientes).
+ 
+  - 
 ### 👨‍💻 Garcia, Mateo
 
 - **Período de tarea:** 27/08/2026 — 04/09/2026
@@ -43,18 +55,28 @@ Trabajo Final Integrador (TFI) — Aplicación móvil desarrollada con Angular, 
   - [x] **Sistema de Notificaciones por Correo Automático (EmailJS):** Integración del `EmailService` centralizado, automatización del flujo de registro/aprobación y plantilla HTML única con paleta diferenciada por estado.
   - [x] **Modal de Confirmación Interactivo (`ConfirmModalComponent`):** Reemplazo de los diálogos nativos por modales Ionic personalizados en los flujos de alta y de gestión de clientes.
 
-### 👨‍💻 Goncalves, Matias
+### 👨‍💻 Goncalves, Matias — Punto 9: Ingreso Anónimo, QR y Lista de Espera
 
-- **Período de tarea:** 27/08/2026 — 04/09/2026
-- **Observaciones / Reasignaciones:** Tareas completadas en tiempo y forma. \*(No hubo necesidad de reasignar plazos ni módulos).
-- **Módulos asignados:**
-  - [x] Formularios Reactivos y validaciones (correo/clave).
-  - [x] **Lógica de Autenticación (`AuthService`):** Métodos de registro, inicio de sesión y gestión de roles con Supabase Auth.
-  - [x] **Sesiones y Flujo de Empleados:** Registro de nuevos empleados sin bloqueo de validación por correo y restauración automática de la sesión del administrador al finalizar el proceso.
-  - [x] Conexión lógica de botones de ingreso rápido.
-  - [x] **Frontend de Administración (Punto 6):** Maquetado del listado de clientes pendientes de aprobación para la vista Dueño/Supervisor (Dispositivo 1), con controles de Aceptar/Rechazar y actualización en tiempo real vía Push Notifications.
-  - [x] **Componente de Alerta Global Reutilizable:** Modal de confirmación dinámico e importable, estilizado con botones de acción en colores neón (Confirmar en verde, Cancelar en rojo).
-  - [x] **Refactorización de Login:** Reemplazo de los múltiples botones de roles por un único botón de "Acceso Rápido" que redirige a una vista dedicada por perfil.
+- **Branch:** `rama-matias-goncalves` *(o la que corresponda)*
+- **Período general de tareas:** 10/09/2026 — 18/09/2026
+
+#### 🔹 1. Pantalla de Registro Anónimo y Validaciones
+- **Período:** 10/09/2026 — 12/09/2026
+- **Detalle:** 
+  - Formulario simplificado que solicita el nombre del usuario y una fotografía personal capturada en caliente desde el dispositivo, con soporte híbrido de compatibilidad para pruebas en PC mediante `FileReader`.
+  - Validación estricta en tiempo real mediante expresiones regulares para permitir únicamente letras, espacios y acentos, bloqueando números y símbolos.
+  - Sincronización de perfiles con rol `CLIENTE_ANONIMO` en Supabase utilizando la estrategia `.upsert()` para prevenir conflictos ante triggers automáticos.
+#### 🔹 2. Escaneo de Código QR de Ingreso
+- **Período:** 13/09/2026 — 15/09/2026
+- **Detalle:** 
+  - Integración del plugin `@capacitor-mlkit/barcode-scanning` para lectura nativa y optimizada del QR de entrada al establecimiento.
+  - Implementación de un puente de desarrollo web para simular la lectura de códigos desde entornos de escritorio sin hardware de cámara físico.
+#### 🔹 3. Gestión de Lista de Espera y Restricciones de Acceso
+- **Período:** 16/09/2026 — 18/09/2026
+- **Detalle:** 
+  - Inserción automatizada del cliente en la tabla `lista_espera` de Supabase al validar con éxito el QR de entrada.
+  - Lógica de prevención de duplicados que comprueba si el usuario ya posee un registro activo con estado en espera antes de permitir nuevas inserciones.
+  - Configuración de guardas lógicas de seguridad para bloquear el acceso de clientes anónimos al escaneo de mesas o sectores operativos si no completaron el circuito de ingreso y asignación por parte del Metre.
 
 ### 👨‍💻 Breyaui, Jaled
 

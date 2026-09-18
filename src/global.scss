@@ -211,3 +211,63 @@
     background-color: #C8B29E !important;
   }
 }
+
+
+/* =========================================================
+  ESTILOS GLOBALES PARA CONTROLES DE ALERTA CEPA (HOME VISTA DE CLIENTE ANONIMO!)
+========================================================= */
+
+/* Action Sheet de Ingreso */
+.cepa-action-sheet {
+  --background: #1B3B2D !important;
+  --button-background: #1B3B2D !important;
+  --button-background-selected: #132A20 !important;
+  --button-background-activated: #132A20 !important;
+  --button-background-hover: #00ff91 !important;
+  --button-color: #E6D5C3 !important;
+  --color: #C8B29E !important;
+
+  
+  .action-sheet-group {
+    background: #1B3B2D !important;
+  }
+
+  .action-sheet-title {
+    color: #E6D5C3 !important;
+    font-family: 'EB Garamond', serif !important;
+    font-size: 1.4rem !important;
+    font-weight: 700 !important;
+  }
+
+  .action-sheet-sub-title {
+    color: #C8B29E !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 1rem !important;
+  }
+
+  .action-sheet-button {
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 500 !important;
+    
+    &.action-sheet-cancel {
+      color: #ff6b6b !important;
+      font-weight: 700 !important;
+    }
+  }
+}
+
+/* Toast de Acceso Denegado */
+.toast-denegado-cepa {
+  --background: #132A20; 
+  --color: #E6D5C3;
+  --border-color: #ff6b6b;
+  --border-width: 2px;
+  --border-style: solid;
+  --border-radius: 12px;
+  --box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  
+  text-align: center;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 1.05rem;
+}

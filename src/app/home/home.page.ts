@@ -1,6 +1,6 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
 import { RouterLink, Router } from '@angular/router';
-import { IonContent, IonHeader, IonIcon, IonPopover, IonTitle, IonToolbar, NavController, ToastController,Platform, AlertController } from '@ionic/angular';
+import { IonContent, IonHeader, IonIcon, IonPopover, IonTitle, IonToolbar, NavController, ToastController, Platform, ActionSheetController } from '@ionic/angular';
 import { SupabaseService } from '../services/supabase.service';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { BarcodeScanner, BarcodeFormat } from '@capacitor-mlkit/barcode-scanning';
@@ -52,7 +52,7 @@ export class HomePage {
     private navController: NavController, 
     private toastController: ToastController,
     private platform: Platform,
-    private alertCtrl: AlertController,
+    private actionSheetCtrl: ActionSheetController,
     private router: Router,
     private supabase: SupabaseService
   ) {
@@ -153,7 +153,7 @@ export class HomePage {
       this.esCliente = ['CLIENTE_REGISTRADO', 'CLIENTE_ANONIMO'].includes(rol);
 
       // =========================================================================
-      // BLOQUEO TFI: Solo se habilita el menú si ya escaneó una mesa asignada
+      // Solo se habilita el menú si ya escaneó una mesa asignada
       // =========================================================================
       if (this.esCliente) {
         const { data } = await this.supabase.getClient()
@@ -162,7 +162,7 @@ export class HomePage {
           .eq('cliente_id', this.usuarioActual.id)
           .maybeSingle();
 
-        // Asegurate de ajustar 'MESA_VINCULADA' al estado exacto que use el Integrante 2
+        // Ajustar 'MESA_VINCULADA' al estado exacto que use el Integrante 2!!
         if (data && (data.estado === 'SENTADO' || data.estado === 'MESA_VINCULADA')) {
           this.clienteVinculadoAMesa = true;
         }
@@ -230,28 +230,35 @@ export class HomePage {
   }
 
   async mostrarOpcionesIngreso() {
-    const alert = await this.alertCtrl.create({
+    const actionSheet = await this.actionSheetCtrl.create({
       header: '¡Bienvenido a Cepa!',
-      message: '¿Qué querés hacer?',
-      cssClass: 'cepa-alert',
+      subHeader: '¿Qué querés hacer?',
+      cssClass: 'cepa-action-sheet',
       buttons: [
         {
-          text: 'Ver Encuestas',
-          role: 'cancel',
-          handler: () => {
-            this.router.navigate(['/graficos-encuestas']); 
-          }
-        },
-        {
           text: 'Lista de Espera',
+          icon: 'list-outline',
           handler: () => {
             this.anotarseEnLista();
           }
+        },
+        {
+          text: 'Ver Encuestas',
+          icon: 'pie-chart-outline',
+          handler: () => {
+            this.router.navigate(['/graficos-encuestas']);
+          }
+        },
+        {
+          text: 'Cancelar',
+          icon: 'close-outline',
+          role: 'cancel'
         }
       ]
     });
-    await alert.present();
+    await actionSheet.present();
   }
+
 
   async anotarseEnLista() {
     if (!this.usuarioActual) return;
@@ -325,14 +332,15 @@ export class HomePage {
         .eq('cliente_id', this.usuarioActual.id)
         .single();
 
-      // Si no está en la lista o da error (porque no existe el registro)
       if (error || !data) {
-        const alert = await this.alertCtrl.create({
-          header: 'Acceso Denegado',
-          message: 'No podés escanear una mesa si antes no escaneaste el QR de ingreso y te anotaste en la lista de espera.',
-          buttons: ['OK']
+        const toast = await this.toastController.create({
+          message: '⛔ Acceso Denegado: No podés escanear una mesa si antes no te anotaste en la lista de espera.',
+          duration: 4000,
+          position: 'middle',
+          color: 'danger',
+          cssClass: 'toast-denegado-cepa'
         });
-        await alert.present();
+        await toast.present();
         return;
       }
 

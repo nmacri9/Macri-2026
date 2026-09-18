@@ -190,6 +190,11 @@ export class HomePage {
 
     if (this.platform.is('capacitor')) {
       try {
+        const { available } = await BarcodeScanner.isGoogleBarcodeScannerModuleAvailable();
+        if (!available) {
+          await BarcodeScanner.installGoogleBarcodeScannerModule();
+        }
+
         const { camera } = await BarcodeScanner.requestPermissions();
         
         if (camera === 'granted' || camera === 'limited') {

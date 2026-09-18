@@ -62,7 +62,7 @@ export class AppComponent {
 
       PushNotifications.addListener('pushNotificationReceived', (notification) => {
         console.log('¡Notificación recibida en primer plano!', notification);
-        alert('Llegó la push: ' + notification.title); 
+        // alert('Llegó la push: ' + notification.title); 
       });
 
     } catch (error) {

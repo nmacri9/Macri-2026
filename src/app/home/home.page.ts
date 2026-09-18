@@ -1,6 +1,6 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
 import { RouterLink, Router } from '@angular/router';
-import { IonContent, IonHeader, IonIcon, IonPopover, IonTitle, IonToolbar, NavController, ToastController, Platform, ActionSheetController } from '@ionic/angular';
+import { IonContent, IonHeader, IonIcon, IonPopover, IonTitle, IonToolbar, NavController, ToastController, Platform, ActionSheetController, IonRefresher, IonRefresherContent } from '@ionic/angular';
 import { SupabaseService } from '../services/supabase.service';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { FCM } from '@capacitor-community/fcm';
@@ -18,7 +18,10 @@ import {
   wineOutline,
   cartOutline,
   checkmarkCircleOutline,
-  qrCodeOutline
+  qrCodeOutline,
+  listOutline,
+  pieChartOutline,
+  closeOutline
 } from 'ionicons/icons';
 import { AuthService } from '../services/auth.service';
 
@@ -26,7 +29,7 @@ import { AuthService } from '../services/auth.service';
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
-  imports: [RouterLink, IonContent, IonHeader, IonIcon, IonPopover, IonTitle, IonToolbar],
+  imports: [RouterLink, IonContent, IonHeader, IonIcon, IonPopover, IonTitle, IonToolbar, IonRefresher, IonRefresherContent],
 })
 export class HomePage {
   nombreUsuario = 'Usuario';
@@ -69,12 +72,21 @@ export class HomePage {
       wineOutline,
       cartOutline,
       checkmarkCircleOutline,
-      qrCodeOutline
+      qrCodeOutline,
+      listOutline,
+      pieChartOutline,
+      closeOutline
     });
   }
 
   ionViewWillEnter() {
     return this.cargarPerfil();
+  }
+
+  // Función para el pull-to-refresh
+  async recargarPantalla(event: any) {
+    await this.cargarPerfil();
+    event.target.complete();
   }
 
   async cerrarSesion(menu: IonPopover) {
@@ -132,31 +144,25 @@ export class HomePage {
       const rol = String(perfil.rol ?? '').trim().toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
       // =========================================================================
-      // GESTIÓN DINÁMICA DE CANALES PUSH (Evita que le lleguen a todos)
+      // GESTIÓN DINÁMICA DE CANALES PUSH
       // =========================================================================
       if (this.platform.is('capacitor')) {
         try {
-          // 1. Limpiamos cualquier suscripción vieja (clave para el Acceso Rápido)
           await FCM.unsubscribeFrom({ topic: 'aprobacion_pendientes' });
           await FCM.unsubscribeFrom({ topic: 'metre_lista_espera' });
 
-          // 2. Suscribimos solo al canal que le corresponde a su rol
           if (['DUENO', 'SUPERVISOR'].includes(rol)) {
             await FCM.subscribeTo({ topic: 'aprobacion_pendientes' });
-            console.log('Suscrito a aprobacion_pendientes');
           }
           
           if (['METRE'].includes(rol)) { 
             await FCM.subscribeTo({ topic: 'metre_lista_espera' });
-            console.log('Suscrito a metre_lista_espera');
           }
         } catch (err) {
           console.error('Error configurando topics de FCM:', err);
         }
       }
       // =========================================================================
-
-
 
       // Fallback de fotos locales para el acceso rápido
       if (!this.fotoUsuario) {
@@ -181,7 +187,7 @@ export class HomePage {
       this.esCliente = ['CLIENTE_REGISTRADO', 'CLIENTE_ANONIMO'].includes(rol);
 
       // =========================================================================
-      // Solo se habilita el menú si ya escaneó una mesa asignada
+      // Lógica robusta de estado de mesa
       // =========================================================================
       if (this.esCliente) {
         const { data } = await this.supabase.getClient()
@@ -190,9 +196,12 @@ export class HomePage {
           .eq('cliente_id', this.usuarioActual.id)
           .maybeSingle();
 
-        // Ajustar 'MESA_VINCULADA' al estado exacto que use el Integrante 2!!
-        if (data && (data.estado === 'SENTADO' || data.estado === 'MESA_VINCULADA')) {
-          this.clienteVinculadoAMesa = true;
+        if (data && data.estado) {
+          const estadoMesa = data.estado.toUpperCase();
+          // Validamos múltiples posibles estados que haya puesto tu compañero
+          if (['SENTADO', 'MESA_VINCULADA', 'ASIGNADA', 'ASIGNADO', 'OCUPADA'].includes(estadoMesa)) {
+            this.clienteVinculadoAMesa = true;
+          }
         }
       }
 
@@ -247,7 +256,6 @@ export class HomePage {
       contenidoQR = 'QR_INGRESO_CEPA';
     }
 
-    // Validamos lo que leyó el escáner
     if (contenidoQR === 'QR_INGRESO_CEPA') {
       await Haptics.impact({ style: ImpactStyle.Light });
       this.mostrarOpcionesIngreso();
@@ -292,12 +300,10 @@ export class HomePage {
     await actionSheet.present();
   }
 
-
   async anotarseEnLista() {
     if (!this.usuarioActual) return;
 
     try {
-      // 1. Validar si el cliente ya está en la lista de espera
       const { data: existente, error: errorConsulta } = await this.supabase.getClient()
         .from('lista_espera')
         .select('*')
@@ -308,7 +314,6 @@ export class HomePage {
       if (errorConsulta) throw errorConsulta;
 
       if (existente) {
-        // Si ya existe, le avisamos y cortamos la ejecución
         const toast = await this.toastController.create({
           message: 'Ya te encuentras anotado en la lista de espera.',
           duration: 3000,
@@ -319,7 +324,6 @@ export class HomePage {
         return;
       }
 
-      // 2. Si no existe, procedo a insertarlo
       const { error: errorInsert } = await this.supabase.getClient()
         .from('lista_espera')
         .insert({
@@ -353,12 +357,10 @@ export class HomePage {
     }
   }
 
-  // VALIDACION!! No dejo entrar a mesas sin estar en lista o asignado
   async verificarAccesoMesa() {
     if (!this.usuarioActual) return;
 
     try {
-      // Consultamos si el cliente figura en la lista de espera o si ya tiene mesa asignada
       const { data, error } = await this.supabase.getClient()
         .from('lista_espera')
         .select('*')
@@ -377,12 +379,10 @@ export class HomePage {
         return;
       }
 
-      // Si paso la validación, lo dejamos pasar a la pantalla de escaneo de mesa
       this.router.navigate(['/cliente-escaneo-mesa']);
 
     } catch (err) {
       console.error('Error al verificar acceso a mesa:', err);
-      // Por seguridad, bloqueamos el acceso
       const toast = await this.toastController.create({
         message: 'Debes estar en la lista de espera para acceder a las mesas.',
         duration: 3000,

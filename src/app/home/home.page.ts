@@ -43,7 +43,8 @@ export class HomePage {
   esMetre = false;
   esCliente = false;
   puedeUsarChat = false;
-  esMozo = false; 
+  esMozo = false;
+  clienteVinculadoAMesa = false;
 
   constructor(
     private cdr: ChangeDetectorRef, 
@@ -108,41 +109,28 @@ export class HomePage {
     this.esCliente = false;
     this.esMozo = false;
     this.puedeUsarChat = false;
+    this.clienteVinculadoAMesa = false; // <--- REINICIAR LA VARIABLE
     this.cdr.markForCheck();
+
     try {
       const usuario = await this.authService.obtenerUsuarioActual();
-
-      if (!usuario) {
-        throw new Error('No se pudo obtener el usuario actual.');
-      }
-
+      if (!usuario) throw new Error('No se pudo obtener el usuario actual.');
+      
       this.usuarioActual = usuario;
-
       this.nombreUsuario = usuario.email || 'Usuario';
       this.fotoUsuario = usuario.user_metadata?.['foto_url'] || null;
-
       this.cdr.detectChanges();
 
       const perfil = await this.authService.obtenerPerfil();
-
-      if (!perfil) {
-        throw new Error('No se pudo obtener el perfil actual.');
-      }
-
-      const nombreCompleto = [perfil.nombres, perfil.apellidos]
-        .filter(Boolean)
-        .join(' ');
-
+      if (!perfil) throw new Error('No se pudo obtener el perfil actual.');
+      
+      const nombreCompleto = [perfil.nombres, perfil.apellidos].filter(Boolean).join(' ');
       this.nombreUsuario = nombreCompleto || perfil.email || this.nombreUsuario;
       this.fotoUsuario = perfil.foto_url || this.fotoUsuario;
       
-      const rol = String(perfil.rol ?? '').trim().toUpperCase()
-        .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      const rol = String(perfil.rol ?? '').trim().toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
-
-      // =========================================================================
-      // Cargar fotos locales del acceso rápido si la BD no tiene foto
-      // =========================================================================
+      // Fallback de fotos locales para el acceso rápido
       if (!this.fotoUsuario) {
         const fotosPorDefecto: Record<string, string> = {
           'DUENO': 'assets/perfiles/Dueño.png',
@@ -154,35 +142,37 @@ export class HomePage {
           'CLIENTE_REGISTRADO': 'assets/perfiles/cliente.png',
           'CLIENTE_ANONIMO': 'assets/perfiles/anonimo.png'
         };
-        // Asigna la foto correspondiente al rol o lo deja en null si no coincide
         this.fotoUsuario = fotosPorDefecto[rol] || null;
       }
-      // =========================================================================
 
-
-      // Roles alineados estrictamente con app.routes.ts
       this.puedeGestionarClientes = perfil.estado === 'ACTIVO' && ['DUENO', 'SUPERVISOR'].includes(rol);
-      
-      // Platos (Exclusivo para Cocinero según app.routes.ts)
-      this.puedeCargarPlatos = perfil.estado === 'ACTIVO' && rol === 'COCINERO'; 
-
-      // Bebidas (Exclusivo para Cantinero según app.routes.ts)
-      this.puedeCargarBebidas = perfil.estado === 'ACTIVO' && rol === 'CANTINERO'; 
-      
-      // Metre
+      this.puedeCargarPlatos = perfil.estado === 'ACTIVO' && rol === 'COCINERO';
+      this.puedeCargarBebidas = perfil.estado === 'ACTIVO' && rol === 'CANTINERO';
       this.esMetre = ['METRE', 'SUPERVISOR', 'DUENO'].includes(rol);
-
-      // Mozo (Exclusivo para Mozo según app.routes.ts)
       this.esMozo = (rol === 'MOZO' && perfil.estado === 'ACTIVO');
-      
-      // Clientes
       this.esCliente = ['CLIENTE_REGISTRADO', 'CLIENTE_ANONIMO'].includes(rol);
-      
+
+      // =========================================================================
+      // BLOQUEO TFI: Solo se habilita el menú si ya escaneó una mesa asignada
+      // =========================================================================
+      if (this.esCliente) {
+        const { data } = await this.supabase.getClient()
+          .from('lista_espera')
+          .select('estado')
+          .eq('cliente_id', this.usuarioActual.id)
+          .maybeSingle();
+
+        // Asegurate de ajustar 'MESA_VINCULADA' al estado exacto que use el Integrante 2
+        if (data && (data.estado === 'SENTADO' || data.estado === 'MESA_VINCULADA')) {
+          this.clienteVinculadoAMesa = true;
+        }
+      }
+
+      // El chat requiere que el cliente tenga la mesa vinculada
       this.puedeUsarChat = (rol === 'MOZO' && perfil.estado === 'ACTIVO')
-        || (rol === 'CLIENTE_REGISTRADO' && perfil.estado === 'APROBADO');
+        || (this.esCliente && this.clienteVinculadoAMesa && (rol === 'CLIENTE_ANONIMO' || perfil.estado === 'APROBADO'));
 
       this.cdr.detectChanges();
-
     } catch (error) {
       console.error('No se pudo cargar el perfil del usuario:', error);
       this.errorPerfil = 'No pudimos cargar tus opciones. Volvé a intentar.';

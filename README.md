@@ -207,10 +207,24 @@ Se implementó de manera integral el módulo de carga de bebidas para la carta, 
 |   #   | Componente / Pantalla     | Enlace de visualización                     |
 | :---: | :------------------------ | :------------------------------------------ |
 | **1** | Ícono de la aplicación    | [Ver imagen](./resources/icon.png)          |
-| **2** | Spinner Dinámico          | [Ver imagen](./capturas/spinner.jpeg)       |
+| **2** | Splash Dinámico     AGREGAR SPLASH DINAMICO     | [Ver imagen](./capturas/.jpeg)       |
+| **3** | Spinner                   | [Ver imagen](./capturas/spinner.jpeg)       |
 | **3** | Login: Pantalla principal | [Ver imagen](./capturas/login.jpeg)         |
 | **4** | Pantalla principal        | [Ver imagen](./capturas/home.jpeg)          |
 | **5** | Alta de Mesa: Vista       | [Ver imagen](./capturas/alta-mesa.jpeg)     |
 | **6** | Alta de Plato: Vista      | [Ver imagen](./capturas/alta-plato.jpeg)    |
 | **7** | Alta de Bebida: Vista     | [Ver imagen](./capturas/alta-bebida.jpeg)   |
 | **8** | Alta de Empleado: Vista   | [Ver imagen](./capturas/alta-empleado.jpeg) |
+| **9** | Registro de Empleado: Vista  AGREGAR | [Ver imagen](./capturas/.jpeg) |
+| **10** | Clientes pendientes: Vista  AGREGAR | [Ver imagen](./capturas/.jpeg) |
+| **11** | Asignacion de mesa (metre): Vista  AGREGAR  | [Ver imagen](./capturas/.jpeg) |
+| **12** | Realizar pedido (Cliente) : Vista  AGREGAR  | [Ver imagen](./capturas/.jpeg) |
+| **13** | Menu de pedidos (Cliente) : Vista  AGREGAR  | [Ver imagen](./capturas/.jpeg) |
+| **14** | Escanear mesa (Cliente) : Vista  AGREGAR  | [Ver imagen](./capturas/.jpeg) |
+| **15** | Ingreso al local (Cliente) : Vista  AGREGAR  | [Ver imagen](./capturas/.jpeg) |
+| **16** | Confirmar pedido (mozo) : Vista  AGREGAR  | [Ver imagen](./capturas/.jpeg) |
+
+
+
+
+

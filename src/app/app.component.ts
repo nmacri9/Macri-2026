@@ -3,7 +3,6 @@ import { IonApp, IonRouterOutlet } from '@ionic/angular';
 import { Platform } from '@ionic/angular';
 import { PushNotifications } from '@capacitor/push-notifications';
 import { SplashScreen } from '@capacitor/splash-screen'; 
-import { FCM } from '@capacitor-community/fcm';
 
 @Component({
   selector: 'app-root',
@@ -44,16 +43,9 @@ export class AppComponent {
       // 2. Registrar el dispositivo con Google/Apple
       await PushNotifications.register();
 
-      // 3. Escuchar el evento de registro exitoso para obtener el Token
       PushNotifications.addListener('registration', async (token) => {
         console.log('El dispositivo se registró con éxito. Token:', token.value);
-        
-        try {
-          await FCM.subscribeTo({ topic: 'aprobacion_pendientes' });
-          console.log('¡Suscrito al topic aprobacion_pendientes con éxito!');
-        } catch (err) {
-          console.error('Error al suscribir al topic:', err);
-        }
+        // ¡Eliminamos la suscripción hardcodeada de acá!
       });
 
       PushNotifications.addListener('registrationError', (error: any) => {
@@ -62,11 +54,11 @@ export class AppComponent {
 
       PushNotifications.addListener('pushNotificationReceived', (notification) => {
         console.log('¡Notificación recibida en primer plano!', notification);
-        // alert('Llegó la push: ' + notification.title); 
       });
 
     } catch (error) {
+      // ESTE CATCH FALTABA
       console.error('Error general configurando las push:', error);
     }
-  }
+  } 
 }

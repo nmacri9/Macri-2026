@@ -3,6 +3,7 @@ import { RouterLink, Router } from '@angular/router';
 import { IonContent, IonHeader, IonIcon, IonPopover, IonTitle, IonToolbar, NavController, ToastController, Platform, ActionSheetController } from '@ionic/angular';
 import { SupabaseService } from '../services/supabase.service';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { FCM } from '@capacitor-community/fcm';
 import { BarcodeScanner, BarcodeFormat } from '@capacitor-mlkit/barcode-scanning';
 import { addIcons } from 'ionicons';
 import {
@@ -129,6 +130,33 @@ export class HomePage {
       this.fotoUsuario = perfil.foto_url || this.fotoUsuario;
       
       const rol = String(perfil.rol ?? '').trim().toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+      // =========================================================================
+      // GESTIÓN DINÁMICA DE CANALES PUSH (Evita que le lleguen a todos)
+      // =========================================================================
+      if (this.platform.is('capacitor')) {
+        try {
+          // 1. Limpiamos cualquier suscripción vieja (clave para el Acceso Rápido)
+          await FCM.unsubscribeFrom({ topic: 'aprobacion_pendientes' });
+          await FCM.unsubscribeFrom({ topic: 'metre_lista_espera' });
+
+          // 2. Suscribimos solo al canal que le corresponde a su rol
+          if (['DUENO', 'SUPERVISOR'].includes(rol)) {
+            await FCM.subscribeTo({ topic: 'aprobacion_pendientes' });
+            console.log('Suscrito a aprobacion_pendientes');
+          }
+          
+          if (['METRE'].includes(rol)) { 
+            await FCM.subscribeTo({ topic: 'metre_lista_espera' });
+            console.log('Suscrito a metre_lista_espera');
+          }
+        } catch (err) {
+          console.error('Error configurando topics de FCM:', err);
+        }
+      }
+      // =========================================================================
+
+
 
       // Fallback de fotos locales para el acceso rápido
       if (!this.fotoUsuario) {
@@ -369,7 +397,7 @@ export class HomePage {
     try {
       await this.supabase.getClient().functions.invoke('enviar-notificacion', {
         body: {
-          topic: 'aprobacion_pendientes', 
+          topic: 'metre_lista_espera', 
           titulo: 'Nuevo cliente en lista de espera',
           cuerpo: `${this.nombreUsuario} está esperando una mesa.`
         }

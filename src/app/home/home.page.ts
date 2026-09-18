@@ -139,6 +139,27 @@ export class HomePage {
       const rol = String(perfil.rol ?? '').trim().toUpperCase()
         .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
+
+      // =========================================================================
+      // Cargar fotos locales del acceso rápido si la BD no tiene foto
+      // =========================================================================
+      if (!this.fotoUsuario) {
+        const fotosPorDefecto: Record<string, string> = {
+          'DUENO': 'assets/perfiles/Dueño.png',
+          'SUPERVISOR': 'assets/perfiles/Supervisor.png',
+          'METRE': 'assets/perfiles/Metre.png',
+          'MOZO': 'assets/perfiles/mozo.png',
+          'COCINERO': 'assets/perfiles/cocinero.png',
+          'CANTINERO': 'assets/perfiles/cantinero.png',
+          'CLIENTE_REGISTRADO': 'assets/perfiles/cliente.png',
+          'CLIENTE_ANONIMO': 'assets/perfiles/anonimo.png'
+        };
+        // Asigna la foto correspondiente al rol o lo deja en null si no coincide
+        this.fotoUsuario = fotosPorDefecto[rol] || null;
+      }
+      // =========================================================================
+
+
       // Roles alineados estrictamente con app.routes.ts
       this.puedeGestionarClientes = perfil.estado === 'ACTIVO' && ['DUENO', 'SUPERVISOR'].includes(rol);
       

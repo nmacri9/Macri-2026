@@ -1,0 +1,50 @@
+.comanda-card {
+  margin-bottom: 24px; 
+  border-radius: 12px;
+  background-color: #1B3B2D;
+  border: 1px solid #C8B29E;
+
+  ion-card-title {
+    color: #E6D5C3;
+    font-size: 1.8rem;
+    font-weight: 700;
+  }
+
+  .header-comanda {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    ion-badge {
+      font-size: 1.2rem;
+      padding: 8px 12px;
+    }
+  }
+
+  .lista-items {
+    background: transparent;
+    
+    ion-item {
+      --background: transparent;
+      --color: #C8B29E;
+      
+      h3 {
+        font-size: 1.2rem;
+        font-weight: 600;
+      }
+    }
+  }
+
+  .btn-listo {
+    margin-top: 16px;
+    height: 50px;
+    font-weight: bold;
+    font-size: 1.1rem;
+  }
+}
+
+.sin-pedidos {
+  text-align: center;
+  color: #C8B29E;
+  margin-top: 50px;
+}

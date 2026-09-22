@@ -190,18 +190,17 @@ export class HomePage {
       // Lógica robusta de estado de mesa
       // =========================================================================
       if (this.esCliente) {
+        // Consultamos la tabla de asignaciones directamente
         const { data } = await this.supabase.getClient()
-          .from('lista_espera')
-          .select('estado')
+          .from('asignaciones_mesa')
+          .select('estado_escaneo')
           .eq('cliente_id', this.usuarioActual.id)
+          .eq('activa', true)
           .maybeSingle();
 
-        if (data && data.estado) {
-          const estadoMesa = data.estado.toUpperCase();
-          // Validamos múltiples posibles estados que haya puesto tu compañero
-          if (['SENTADO', 'MESA_VINCULADA', 'ASIGNADA', 'ASIGNADO', 'OCUPADA'].includes(estadoMesa)) {
-            this.clienteVinculadoAMesa = true;
-          }
+        // Si existe una asignación activa y el estado ya es OCUPADA (ya escaneó)
+        if (data && data.estado_escaneo === 'OCUPADA') {
+          this.clienteVinculadoAMesa = true;
         }
       }
 

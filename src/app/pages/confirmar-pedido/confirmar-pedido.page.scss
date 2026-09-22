@@ -120,6 +120,13 @@ ion-content {
   white-space: nowrap;
 }
 
+/* Contenedor nuevo para agrupar botones */
+.botones-accion {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
 .btn-confirmar {
   --background: #C8B29E; // beige oscuro - fondo de botón
   --color: #091610; // verde hiper oscuro - texto dentro de botones
@@ -135,6 +142,31 @@ ion-content {
 
   ion-icon {
     font-size: 16px;
+  }
+
+  &[disabled] {
+    opacity: 0.5;
+  }
+}
+
+.btn-rechazar {
+  --background: transparent; 
+  --border-color: #ff6b6b; // Borde rojo alerta
+  --border-style: solid;
+  --border-width: 1px;
+  --color: #ff6b6b; // Texto rojo alerta
+  --border-radius: 12px;
+  --box-shadow: none;
+  height: 42px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: none;
+  margin: 0;
+  flex-shrink: 0;
+
+  ion-icon {
+    font-size: 18px;
   }
 
   &[disabled] {
@@ -161,15 +193,23 @@ ion-content {
   .pedido-card-footer {
     flex-direction: column;
     align-items: stretch;
-    gap: 10px;
+    gap: 12px;
   }
 
   .pedido-total {
     text-align: center;
   }
 
-  .btn-confirmar {
+  .botones-accion {
     width: 100%;
+    
+    ion-button {
+      flex: 1; /* Hace que ambos botones midan 50% exacto */
+    }
+  }
+
+  .btn-confirmar, .btn-rechazar {
+    width: auto;
   }
 }
 

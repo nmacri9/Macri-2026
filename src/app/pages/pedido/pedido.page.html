@@ -5,7 +5,7 @@
   <div [hidden]="enviando">
 
     <!-- MENÚ REAL DESDE SUPABASE -->
-    <section class="carrito-section" *ngIf="estadoPedido === 'carrito'">
+    <section class="carrito-section" *ngIf="estadoPedido === 'carrito' || estadoPedido === 'rechazado_mozo'">
       <h3 class="section-label">Nuestro Menú</h3>
       
       <div *ngIf="cargandoMenu" style="text-align: center; padding: 20px;">
@@ -33,7 +33,16 @@
     <!-- FIN MENÚ REAL -->
 
     <!-- Vista: armando el carrito -->
-    <ng-container *ngIf="estadoPedido === 'carrito'">
+    <ng-container *ngIf="estadoPedido === 'carrito' || estadoPedido === 'rechazado_mozo'">
+
+      <!-- BANNER NUEVO: Solo sale si el mozo lo rebotó -->
+      <div class="banner-rechazo" *ngIf="estadoPedido === 'rechazado_mozo'">
+        <ion-icon name="alert-circle-outline"></ion-icon>
+        <div class="texto-banner">
+          <h3>El mozo solicitó revisar tu pedido</h3>
+          <p>Modificá las cantidades o cambiá los platos y volvé a enviarlo.</p>
+        </div>
+      </div>
 
       <section class="carrito-section">
         <h3 class="section-label">Productos agregados</h3>
@@ -79,9 +88,10 @@
         <ion-button
           class="btn-submit"
           expand="block"
+          color="success"
           [disabled]="items.length === 0"
           (click)="enviarPedido()">
-          Enviar Pedido
+          {{ estadoPedido === 'rechazado_mozo' ? 'Volver a Enviar Pedido' : 'Enviar Pedido' }}
         </ion-button>
       </div>
 

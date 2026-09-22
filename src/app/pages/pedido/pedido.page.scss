@@ -44,7 +44,52 @@ ion-content {
 }
 
 /* ============================================
-  Estado vacío
+ Banner de Rechazo (Punto 13)
+   ============================================ */
+.banner-rechazo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background-color: rgba(211, 47, 47, 0.15); // Fondo rojizo translúcido
+  border: 1px solid #d32f2f; // Rojo semántico
+  border-radius: 16px; // Match con las otras tarjetas
+  padding: 16px;
+  
+  /* Centrado calcado de carrito-section */
+  width: calc(100% - 32px);
+  max-width: 448px; 
+  margin: 0 auto 20px;
+  
+  ion-icon {
+    font-size: 36px;
+    color: #ff6b6b;
+    min-width: 36px;
+  }
+
+  .texto-banner {
+    display: flex;
+    flex-direction: column;
+
+    h3 {
+      margin: 0 0 4px 0;
+      font-family: 'EB Garamond', serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: #ff6b6b; 
+    }
+
+    p {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      font-size: 13px;
+      color: #dbcbb9; // crema - texto principal
+      line-height: 1.4;
+    }
+  }
+}
+
+/* ============================================
+ Estado vacío
    ============================================ */
 .carrito-empty {
   display: flex;
@@ -69,7 +114,7 @@ ion-content {
 }
 
 /* ============================================
-  Items del carrito
+ Items del carrito
    ============================================ */
 .carrito-item {
   --background: #1B3B2D; // verde oscuro - fondo de tarjeta
@@ -140,7 +185,7 @@ ion-content {
 }
 
 /* ============================================
-  Error general
+ Error general
    ============================================ */
 .form-error {
   text-align: center;
@@ -155,7 +200,7 @@ ion-content {
 }
 
 /* ============================================
-  Panel de totales — fijo abajo (slot="fixed")
+ Panel de totales — fijo abajo (slot="fixed")
    ============================================ */
 .totales-panel {
   position: absolute;
@@ -206,7 +251,7 @@ ion-content {
 }
 
 /* ============================================
-  Estados: esperando confirmación / confirmado
+ Estados: esperando confirmación / confirmado
    ============================================ */
 .estado-espera {
   display: flex;
@@ -241,11 +286,15 @@ ion-content {
 }
 
 /* ============================================
-  RESPONSIVE
+ RESPONSIVE
    ============================================ */
 @media (max-width: 480px) {
   .carrito-section {
     padding: 0 14px;
+  }
+
+  .banner-rechazo {
+    width: calc(100% - 28px);
   }
 
   .section-label {

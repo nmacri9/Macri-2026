@@ -2,7 +2,14 @@
   "extends": "./tsconfig.spec.json",
   "include": [
     "src/app/services/chat.service.spec.ts",
+    "src/app/services/mesas.service.spec.ts",
+    "src/app/pages/metre-asignacion/metre-asignacion.page.spec.ts",
+    "src/app/services/chat-push.service.spec.ts",
+    "src/app/pages/cliente-escaneo-mesa/cliente-escaneo-mesa.page.spec.ts",
     "src/app/pages/chat-cliente/chat-cliente.page.spec.ts",
+    "src/app/mesa.guard.spec.ts",
+    "src/app/role.guard.spec.ts",
+    "src/app/pages/menu-productos/menu-productos.page.spec.ts",
     "src/test-setup.ts"
   ]
 }

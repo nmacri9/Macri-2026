@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { initializeApp, getApps, cert } from "npm:firebase-admin/app"
 import { getMessaging } from "npm:firebase-admin/messaging"
+import { notificacionChat } from './chat.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -21,6 +22,12 @@ serve(async (req) => {
 
   try {
     const payload = await req.json();
+    const chat = payload.mensaje_id ? await notificacionChat(req, payload.mensaje_id) : undefined;
+    if (chat === null) {
+      return new Response(JSON.stringify({ success: true, omitida: true }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200
+      });
+    }
     const titulo = payload.titulo || 'Notificación';
     const cuerpo = payload.cuerpo || 'Tienes un nuevo aviso';
     const topic = payload.topic || 'aprobacion_pendientes';
@@ -47,7 +54,8 @@ serve(async (req) => {
           }
         }
       },
-      topic: topic 
+      topic: topic,
+      ...(chat ?? {})
     };
 
     const respuestaFirebase = await getMessaging().send(mensaje);

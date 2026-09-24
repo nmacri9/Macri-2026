@@ -11,9 +11,39 @@ const mensaje: ChatMensaje = {
 };
 
 describe('Página chat-cliente', () => {
-  it('permite enviar sin asignaciones: exige solamente un número de mesa válido al cliente', async () => {
+  it('reintenta la push fallida sin volver a insertar el mensaje', async () => {
     const enviar = vi.fn().mockResolvedValue(mensaje);
-    const page = new ChatClientePage({ enviar } as unknown as ChatService);
+    const notificar = vi.fn().mockRejectedValueOnce(new Error('Sin FCM')).mockResolvedValue(undefined);
+    const page = new ChatClientePage({ enviar, notificar } as unknown as ChatService);
+    page.participante.set(cliente);
+    page.numeroMesa.set(8);
+    page.borrador = mensaje.texto;
+    await page.enviar();
+    expect(page.mensajes()).toEqual([mensaje]);
+    expect(page.errorEnvio()).toBe('');
+    expect(page.avisosPendientes()).toEqual(['mensaje']);
+    await page.reintentarAvisos();
+    expect(enviar).toHaveBeenCalledTimes(1);
+    expect(notificar).toHaveBeenCalledTimes(2);
+    expect(page.avisosPendientes()).toEqual([]);
+    page.ngOnDestroy();
+  });
+
+  it('carga el número de mesa vinculado sin pedir que se escriba manualmente', async () => {
+    const service = {
+      participante: vi.fn().mockResolvedValue({ ...cliente, rol: 'CLIENTE_ANONIMO', numero_mesa: 8 }),
+      historial: vi.fn().mockResolvedValue([]), conectar: vi.fn().mockReturnValue(vi.fn())
+    };
+    const page = new ChatClientePage(service as unknown as ChatService);
+    await page.iniciar();
+    expect(page.numeroMesa()).toBe(8);
+    expect(page.puedeEscribir()).toBe(true);
+    page.ngOnDestroy();
+  });
+
+  it('bloquea el envío hasta cargar la mesa vinculada del cliente', async () => {
+    const enviar = vi.fn().mockResolvedValue(mensaje);
+    const page = new ChatClientePage({ enviar, notificar: vi.fn().mockResolvedValue(undefined) } as unknown as ChatService);
     page.participante.set(cliente);
     page.borrador = mensaje.texto;
     await page.enviar();
@@ -28,7 +58,7 @@ describe('Página chat-cliente', () => {
 
   it('conserva borrador y UUID al reintentar un envío fallido, sin duplicar el eco de Realtime', async () => {
     const enviar = vi.fn().mockRejectedValueOnce(new Error('Sin conexión')).mockResolvedValue(mensaje);
-    const page = new ChatClientePage({ enviar } as unknown as ChatService);
+    const page = new ChatClientePage({ enviar, notificar: vi.fn().mockResolvedValue(undefined) } as unknown as ChatService);
     page.participante.set(cliente);
     page.numeroMesa.set(8);
     page.borrador = mensaje.texto;
@@ -45,7 +75,7 @@ describe('Página chat-cliente', () => {
 
   it('un mozo responde a cualquier consulta sin ingresar una mesa manual', async () => {
     const enviar = vi.fn().mockResolvedValue({ ...mensaje, id: 'respuesta', autor_rol: 'MOZO' });
-    const page = new ChatClientePage({ enviar } as unknown as ChatService);
+    const page = new ChatClientePage({ enviar, notificar: vi.fn().mockResolvedValue(undefined) } as unknown as ChatService);
     page.participante.set({ ...cliente, id: 'mozo', rol: 'MOZO' });
     page.responder(mensaje);
     page.borrador = 'Ya te llevo agua';

@@ -71,20 +71,30 @@
       }
     </section>
 
+    @if (errorPerfil) {
+    <div class="home-notice" role="alert">
+      <p>{{ errorPerfil }}</p>
+      <button class="retry-button" type="button" (click)="cargarPerfil()" [disabled]="cargandoPerfil">Reintentar</button>
+    </div>
+    } @else {
+    @if (errorMesa) {
+    <div class="home-notice" role="alert">
+      <p>{{ errorMesa }}</p>
+      <button class="retry-button" type="button" (click)="cargarEstadoMesa()" [disabled]="cargandoMesa">Reintentar consulta de mesa</button>
+    </div>
+    }
+    @if (cargandoMesa) {
+    <p class="home-status" role="status">Consultando tu mesa…</p>
+    }
+
     <nav class="menu-grid" aria-label="Opciones principales">
-      @if (errorPerfil) {
-      <div role="alert">
-        <p>{{ errorPerfil }}</p>
-        <button class="menu-option" type="button" (click)="cargarPerfil()">Reintentar</button>
-      </div>
-      }
       @if (puedeUsarChat) {
       <a class="menu-option" routerLink="/chat-cliente">
         <span class="menu-icon"
           ><ion-icon name="chatbubbles-outline" aria-hidden="true"></ion-icon
         ></span>
         <span class="menu-copy">
-          <strong>Chat del salón</strong>
+          <strong>{{ esMozo ? 'Chat del salón' : 'Consulta al mozo' }}</strong>
           <small>Consultas y respuestas entre clientes y mozos</small>
         </span>
         <ion-icon
@@ -266,5 +276,6 @@
       </a>
       }
     </nav>
+    }
   </main>
 </ion-content>

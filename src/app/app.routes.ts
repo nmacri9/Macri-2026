@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { roleGuard } from './role.guard';
+import { mesaGuard } from './mesa.guard';
 
 export const routes: Routes = [
   {
@@ -8,7 +9,7 @@ export const routes: Routes = [
       import('./pages/menu-productos/menu-productos.page').then(
         (m) => m.MenuProductosPage
       ),
-    canActivate: [roleGuard],
+    canActivate: [roleGuard, mesaGuard],
     data: { roles: ['CLIENTE_ANONIMO', 'CLIENTE_REGISTRADO'] },
   },
   {
@@ -17,8 +18,8 @@ export const routes: Routes = [
       import('./pages/chat-cliente/chat-cliente.page').then(
         (m) => m.ChatClientePage
       ),
-    canActivate: [roleGuard],
-    data: { roles: ['MOZO', 'CLIENTE_REGISTRADO'] },
+    canActivate: [roleGuard, mesaGuard],
+    data: { roles: ['MOZO', 'CLIENTE_REGISTRADO', 'CLIENTE_ANONIMO'], permitirMozo: true, requiereEscaneo: false },
   },
   {
     path: 'register',

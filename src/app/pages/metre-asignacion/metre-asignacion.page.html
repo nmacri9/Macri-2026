@@ -1,7 +1,24 @@
 <app-cepa-header titulo="Asignar Mesas" defaultHref="/home"></app-cepa-header>
 
 <ion-content class="ion-padding content-bg">
-  <div *ngIf="listaEspera.length === 0" style="text-align: center; color: #aaa; margin-top: 40px;">
+  <ion-button fill="outline" (click)="actualizar()" [disabled]="cargandoMesas || cargandoLista || asignando">Actualizar mesas y clientes</ion-button>
+
+  <div class="estado-carga" *ngIf="cargandoMesas || cargandoLista" role="status">
+    Cargando mesas y clientes…
+  </div>
+  <div class="estado-carga" *ngIf="errorMesas" role="alert">
+    <p>{{ errorMesas }}</p>
+    <ion-button fill="outline" (click)="cargarMesas()" [disabled]="cargandoMesas || asignando">Reintentar mesas</ion-button>
+  </div>
+  <div class="estado-carga" *ngIf="errorLista" role="alert">
+    <p>{{ errorLista }}</p>
+    <ion-button fill="outline" (click)="cargarListaEspera()" [disabled]="cargandoLista || asignando">Reintentar clientes</ion-button>
+  </div>
+  <div class="estado-carga" *ngIf="!cargandoMesas && !errorMesas" role="status">
+    <p *ngIf="mesasDisponibles.length === 0">No hay mesas disponibles para asignar. Si hay mesas libres en el salón, pedile al administrador que revise su disponibilidad y los permisos de tu usuario.</p>
+    <p *ngIf="mesasDisponibles.length > 0">Mesas disponibles: {{ mesasDisponibles.length }}</p>
+  </div>
+  <div *ngIf="!cargandoLista && !errorLista && listaEspera.length === 0" class="estado-carga">
     <p>No hay clientes pendientes en la lista de espera.</p>
     </div>
 
@@ -13,7 +30,10 @@
 
         <ion-item class="select-item">
         <ion-label>Mesa disponible:</ion-label>
-        <ion-select [(ngModel)]="cliente.mesaSeleccionadaId" placeholder="Elegir mesa">
+        <ion-select [(ngModel)]="cliente.mesaSeleccionadaId" placeholder="Elegir mesa"
+          [interfaceOptions]="opcionesSelector" cancelText="Cancelar" okText="Elegir"
+          [attr.aria-label]="'Mesa para ' + cliente.nombre"
+          [disabled]="cargandoMesas || asignando || !!errorMesas || mesasDisponibles.length === 0">
             <ion-select-option *ngFor="let mesa of mesasDisponibles" [value]="mesa.id">
             Mesa {{ mesa.numero }} (Capacidad: {{ mesa.capacidad }})
             </ion-select-option>
@@ -23,7 +43,7 @@
         <ion-button 
         expand="block" 
         class="btn-confirmar"
-        [disabled]="!cliente.mesaSeleccionadaId"
+        [disabled]="cliente.mesaSeleccionadaId === null || cargandoMesas || asignando || !!errorMesas || mesasDisponibles.length === 0"
         (click)="asignarMesa(cliente)">
         Asignar Mesa
         </ion-button>

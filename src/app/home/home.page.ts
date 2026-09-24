@@ -24,6 +24,7 @@ import {
   closeOutline
 } from 'ionicons/icons';
 import { AuthService } from '../services/auth.service';
+import { ChatPushService } from '../services/chat-push.service';
 
 @Component({
   selector: 'app-home',
@@ -37,6 +38,12 @@ export class HomePage {
   menuPerfilAbierto = false;
   cerrandoSesion = false;
   errorPerfil = '';
+  errorMesa = '';
+  cargandoPerfil = false;
+  cargandoMesa = false;
+  private clienteHabilitado = false;
+  private revisionPerfil = 0;
+  private revisionMesa = 0;
   
   usuarioActual: any = null;
 
@@ -49,6 +56,7 @@ export class HomePage {
   puedeUsarChat = false;
   esMozo = false;
   clienteVinculadoAMesa = false;
+  clienteConMesaAsignada = false;
 
   constructor(
     private cdr: ChangeDetectorRef, 
@@ -58,7 +66,8 @@ export class HomePage {
     private platform: Platform,
     private actionSheetCtrl: ActionSheetController,
     private router: Router,
-    private supabase: SupabaseService
+    private supabase: SupabaseService,
+    private chatPush: ChatPushService
   ) {
     addIcons({
       arrowForwardOutline,
@@ -111,7 +120,13 @@ export class HomePage {
   }
 
   async cargarPerfil() {
+    const revision = ++this.revisionPerfil;
+    ++this.revisionMesa;
+    this.cargandoPerfil = true;
+    this.cargandoMesa = false;
     this.errorPerfil = '';
+    this.errorMesa = '';
+    this.clienteHabilitado = false;
     this.usuarioActual = null;
     this.nombreUsuario = 'Usuario';
     this.fotoUsuario = null;
@@ -122,11 +137,13 @@ export class HomePage {
     this.esCliente = false;
     this.esMozo = false;
     this.puedeUsarChat = false;
+    this.clienteConMesaAsignada = false;
     this.clienteVinculadoAMesa = false; // <--- REINICIAR LA VARIABLE
     this.cdr.markForCheck();
 
     try {
       const usuario = await this.authService.obtenerUsuarioActual();
+      if (revision !== this.revisionPerfil) return;
       if (!usuario) throw new Error('No se pudo obtener el usuario actual.');
       
       this.usuarioActual = usuario;
@@ -135,7 +152,9 @@ export class HomePage {
       this.cdr.detectChanges();
 
       const perfil = await this.authService.obtenerPerfil();
+      if (revision !== this.revisionPerfil) return;
       if (!perfil) throw new Error('No se pudo obtener el perfil actual.');
+      void this.chatPush.actualizar();
       
       const nombreCompleto = [perfil.nombres, perfil.apellidos].filter(Boolean).join(' ');
       this.nombreUsuario = nombreCompleto || perfil.email || this.nombreUsuario;
@@ -165,6 +184,7 @@ export class HomePage {
       // =========================================================================
 
       // Fallback de fotos locales para el acceso rápido
+      if (revision !== this.revisionPerfil) return;
       if (!this.fotoUsuario) {
         const fotosPorDefecto: Record<string, string> = {
           'DUENO': 'assets/perfiles/Dueño.png',
@@ -185,35 +205,60 @@ export class HomePage {
       this.esMetre = ['METRE', 'SUPERVISOR', 'DUENO'].includes(rol);
       this.esMozo = (rol === 'MOZO' && perfil.estado === 'ACTIVO');
       this.esCliente = ['CLIENTE_REGISTRADO', 'CLIENTE_ANONIMO'].includes(rol);
+      this.clienteHabilitado = this.esCliente
+        && (rol === 'CLIENTE_ANONIMO' ? perfil.estado === 'ACTIVO' : perfil.estado === 'APROBADO');
+      this.puedeUsarChat = this.esMozo;
 
-      // =========================================================================
-      // Lógica robusta de estado de mesa
-      // =========================================================================
       if (this.esCliente) {
-        // Consultamos la tabla de asignaciones directamente
-        const { data } = await this.supabase.getClient()
-          .from('asignaciones_mesa')
-          .select('estado_escaneo')
-          .eq('cliente_id', this.usuarioActual.id)
-          .eq('activa', true)
-          .maybeSingle();
-
-        // Si existe una asignación activa y el estado ya es OCUPADA (ya escaneó)
-        if (data && data.estado_escaneo === 'OCUPADA') {
-          this.clienteVinculadoAMesa = true;
-        }
+        await this.cargarEstadoMesa();
       }
-
-      // El chat requiere que el cliente tenga la mesa vinculada
-      this.puedeUsarChat = (rol === 'MOZO' && perfil.estado === 'ACTIVO')
-        || (this.esCliente && this.clienteVinculadoAMesa && (rol === 'CLIENTE_ANONIMO' || perfil.estado === 'APROBADO'));
-
-      this.cdr.detectChanges();
     } catch (error) {
+      if (revision !== this.revisionPerfil) return;
       console.error('No se pudo cargar el perfil del usuario:', error);
-      this.errorPerfil = 'No pudimos cargar tus opciones. Volvé a intentar.';
+      this.errorPerfil = 'No pudimos cargar tu perfil. Volvé a intentar.';
     } finally {
-      this.cdr.markForCheck();
+      if (revision === this.revisionPerfil) {
+        this.cargandoPerfil = false;
+        this.cdr.markForCheck();
+      }
+    }
+  }
+
+  async cargarEstadoMesa() {
+    if (!this.clienteHabilitado || !this.usuarioActual) return;
+    const revision = ++this.revisionMesa;
+    const clienteId = this.usuarioActual.id;
+    this.cargandoMesa = true;
+    this.errorMesa = '';
+    this.clienteConMesaAsignada = false;
+    this.clienteVinculadoAMesa = false;
+    this.puedeUsarChat = false;
+    this.cdr.markForCheck();
+
+    try {
+      const { data, error } = await this.supabase.getClient()
+        .from('asignaciones_mesa')
+        .select('estado_escaneo')
+        .eq('cliente_id', clienteId)
+        .eq('activa', true)
+        .maybeSingle();
+      if (revision !== this.revisionMesa) return;
+      if (error) throw error;
+
+      this.clienteConMesaAsignada = !!data;
+      this.clienteVinculadoAMesa = data?.estado_escaneo === 'OCUPADA';
+      this.puedeUsarChat = this.clienteConMesaAsignada;
+    } catch (error) {
+      if (revision !== this.revisionMesa) return;
+      console.error('No se pudo consultar la mesa del cliente:', error);
+      this.errorMesa = (error as { code?: string })?.code === 'PGRST116'
+        ? 'Encontramos más de una mesa asignada a tu usuario. Pedile al metre que revise tu asignación.'
+        : 'No pudimos consultar tu mesa asignada. Podés seguir usando las opciones de ingreso y escaneo.';
+    } finally {
+      if (revision === this.revisionMesa) {
+        this.cargandoMesa = false;
+        this.cdr.markForCheck();
+      }
     }
   }
 

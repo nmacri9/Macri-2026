@@ -1,19 +1,27 @@
 import { Injectable } from '@angular/core';
 import { SupabaseService } from './supabase.service';
 import { ChatMensaje, ChatParticipante } from '../interfaces/chat-mensaje';
+import { MesasService } from './mesas.service';
 
 export type EstadoChat = 'conectando' | 'conectado' | 'desconectado';
 export const CHAT_CANAL = 'chat-mozo-cliente';
 export const CHAT_PAGINA = 50;
+export class MesaChatNoAsignadaError extends Error {}
 
 @Injectable({ providedIn: 'root' })
 export class ChatService {
-  constructor(private supabaseService: SupabaseService) {}
+  constructor(private supabaseService: SupabaseService, private mesas: MesasService) {}
 
   async participante(): Promise<ChatParticipante> {
     const { data, error } = await this.supabaseService.getClient().rpc('chat_participante');
     if (error) throw error;
-    return data as ChatParticipante;
+    const persona = data as ChatParticipante;
+    if (persona.rol === 'MOZO') return persona;
+    const asignacion = await this.mesas.obtenerAsignacionActiva(persona.id);
+    if (!asignacion?.numero) {
+      throw new MesaChatNoAsignadaError('Necesitás una mesa asignada para consultar al mozo.');
+    }
+    return { ...persona, numero_mesa: asignacion.numero };
   }
 
   async historial(antes?: ChatMensaje): Promise<ChatMensaje[]> {
@@ -37,8 +45,10 @@ export class ChatService {
     if (numeroMesa !== null && (!Number.isInteger(numeroMesa) || numeroMesa < 1 || numeroMesa > 9999)) {
       throw new Error('Ingresá un número de mesa entre 1 y 9999.');
     }
-    // La identidad y la hora se resuelven en la base. La mesa se declara manualmente
-    // hasta que el proyecto tenga terminado el flujo de asignaciones.
+    // Revalidar la asignación en cada envío, por si la mesa fue liberada o cambiada.
+    const persona = await this.participante();
+    numeroMesa = persona.rol === 'MOZO' ? null : persona.numero_mesa;
+    // La identidad y la hora se resuelven en la base.
     const { data, error } = await this.supabaseService.getClient().rpc('chat_enviar', {
       p_id: id, p_texto: limpio, p_respuesta_a: respuestaA, p_numero_mesa: numeroMesa
     });
@@ -53,6 +63,14 @@ export class ChatService {
       .limit(CHAT_PAGINA);
     if (error) throw error;
     return (data ?? []) as ChatMensaje[];
+  }
+
+  async notificar(mensajeId: string): Promise<void> {
+    const { data, error } = await this.supabaseService.getClient().functions.invoke('enviar-notificacion', {
+      body: { mensaje_id: mensajeId }
+    });
+    if (error) throw error;
+    if (!data?.success) throw new Error('No se pudo enviar la notificación.');
   }
 
   conectar(recibir: (mensaje: ChatMensaje) => void, estado: (estado: EstadoChat) => void): () => void {

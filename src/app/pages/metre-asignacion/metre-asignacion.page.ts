@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -16,7 +16,6 @@ interface ClienteEspera {
     cliente_id: string;
     nombre: string;
     estado: string;
-    foto_url?: string;
     mesaSeleccionadaId: number | null;
 
 }
@@ -32,9 +31,15 @@ interface ClienteEspera {
     ]
 
 })
-export class MetreAsignacionPage implements OnInit {
+export class MetreAsignacionPage {
     mesasDisponibles: Mesa[] = [];
     listaEspera: ClienteEspera[] = [];
+    cargandoMesas = false;
+    cargandoLista = false;
+    errorMesas = '';
+    errorLista = '';
+    asignando = false;
+    readonly opcionesSelector = { header: 'Elegir mesa', cssClass: 'alerta-tema-mesa' };
 
     constructor(
         private mesasService: MesasService,
@@ -45,28 +50,47 @@ export class MetreAsignacionPage implements OnInit {
     ) {}
 
 
-    async ngOnInit() {
-        await this.cargarMesas();
-        await this.cargarListaEspera();
+    ionViewWillEnter() {
+        return this.actualizar();
+    }
+
+    async actualizar() {
+        await Promise.all([this.cargarMesas(), this.cargarListaEspera()]);
     }
 
 
     async cargarMesas() {
+        this.cargandoMesas = true;
+        this.errorMesas = '';
+        this.cdr.markForCheck();
         try {
             this.mesasDisponibles = await this.mesasService.obtenerMesasDisponibles();
+            for (const cliente of this.listaEspera) {
+                if (!this.mesasDisponibles.some(mesa => mesa.id === cliente.mesaSeleccionadaId)) {
+                    cliente.mesaSeleccionadaId = null;
+                }
+            }
         } catch (err) {
+            this.mesasDisponibles = [];
+            this.errorMesas = this.mensajeErrorCarga(err, 'mesas disponibles');
             console.error('Error al cargar mesas disponibles:', err);
+        } finally {
+            this.cargandoMesas = false;
+            this.cdr.markForCheck();
         }
     }
 
 
     async cargarListaEspera() {
+        this.cargandoLista = true;
+        this.errorLista = '';
+        this.cdr.markForCheck();
         try {
             const supabase = this.supabaseService.getClient();
             // Consultamos los clientes con estado 'ESPERANDO'
             const { data, error } = await supabase
                 .from('lista_espera')
-                .select('id, cliente_id, nombre, foto_url, estado')
+                .select('id, cliente_id, nombre, estado')
                 .eq('estado', 'ESPERANDO')
                 .order('fecha_ingreso', { ascending: true });
 
@@ -76,30 +100,35 @@ export class MetreAsignacionPage implements OnInit {
                 id: item.id,
                 cliente_id: item.cliente_id,
                 nombre: item.nombre,
-                foto_url: item.foto_url,
                 estado: item.estado,
                 mesaSeleccionadaId: null
             }));
-            this.cdr.detectChanges();
 
         } catch (err) {
+            this.listaEspera = [];
+            this.errorLista = this.mensajeErrorCarga(err, 'lista de espera');
             console.error('Error al cargar la lista de espera desde Supabase:', err);
+        } finally {
+            this.cargandoLista = false;
+            this.cdr.markForCheck();
         }
     }
 
 
     async asignarMesa(cliente: ClienteEspera) {
-    if (!cliente.mesaSeleccionadaId) return;
+    if (cliente.mesaSeleccionadaId === null || this.asignando || this.cargandoMesas || this.errorMesas) return;
 
     const mesa = this.mesasDisponibles.find(m => m.id === cliente.mesaSeleccionadaId);
     if (!mesa) return;
 
+    this.asignando = true;
+    this.cdr.markForCheck();
     try {
         const metre = await this.authService.obtenerUsuarioActual();
-        const metreId = metre ? metre.id : '';
+        if (!metre) throw new Error('La sesión venció. Volvé a iniciar sesión para asignar una mesa.');
 
         // 1. Asignamos la mesa (esto actualiza asignaciones_mesa, mesas y lista_espera en Supabase)
-        await this.mesasService.asignarMesaACliente(cliente.cliente_id, mesa.id, metreId);
+        await this.mesasService.asignarMesaACliente(cliente.cliente_id, mesa.id, metre.id);
 
         const toast = await this.toastController.create({
             message: `Mesa ${mesa.numero} asignada con éxito a ${cliente.nombre}`,
@@ -109,8 +138,7 @@ export class MetreAsignacionPage implements OnInit {
         await toast.present();
         
         // 2. Recargamos la vista: el cliente asignado desaparecerá de la lista
-        await this.cargarMesas();
-        await this.cargarListaEspera();
+        await this.actualizar();
 
     } catch (error: any) {
         console.error('Error al asignar mesa:', error);
@@ -120,6 +148,19 @@ export class MetreAsignacionPage implements OnInit {
             color: 'danger'
         });
         await toast.present();
+        await this.actualizar();
+    } finally {
+        this.asignando = false;
+        this.cdr.markForCheck();
     }
 }
+
+    private mensajeErrorCarga(error: unknown, recurso: string): string {
+        const codigo = (error as { code?: string })?.code;
+        if (codigo === '42501') return `Tu usuario no tiene permiso para consultar la ${recurso === 'lista de espera' ? recurso : 'disponibilidad de las mesas'}. Avisá al administrador.`;
+        if (codigo === '42P01' || codigo === 'PGRST205' || codigo === '42703' || codigo === 'PGRST204') {
+            return 'La asignación de mesas necesita completar su configuración. Avisá al administrador.';
+        }
+        return `No se pudo cargar ${recurso === 'lista de espera' ? 'la' : 'las'} ${recurso}. Revisá la conexión y volvé a intentar.`;
+    }
 }

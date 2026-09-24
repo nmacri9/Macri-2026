@@ -3,6 +3,8 @@ import { IonApp, IonRouterOutlet } from '@ionic/angular';
 import { Platform } from '@ionic/angular';
 import { PushNotifications } from '@capacitor/push-notifications';
 import { SplashScreen } from '@capacitor/splash-screen'; 
+import { Router } from '@angular/router';
+import { ChatPushService } from './services/chat-push.service';
 
 @Component({
   selector: 'app-root',
@@ -12,7 +14,7 @@ import { SplashScreen } from '@capacitor/splash-screen';
 })
 export class AppComponent {
   
-  constructor(private platform: Platform) {
+  constructor(private platform: Platform, private chatPush: ChatPushService, private router: Router) {
     this.initializeApp();
   }
 
@@ -40,21 +42,26 @@ export class AppComponent {
         return;
       }
 
-      // 2. Registrar el dispositivo con Google/Apple
-      await PushNotifications.register();
-
-      PushNotifications.addListener('registration', async (token) => {
-        console.log('El dispositivo se registró con éxito. Token:', token.value);
-        // ¡Eliminamos la suscripción hardcodeada de acá!
+      await PushNotifications.addListener('registration', () => {
+        this.chatPush.activar();
       });
 
-      PushNotifications.addListener('registrationError', (error: any) => {
+      await PushNotifications.addListener('registrationError', (error: any) => {
         console.error('Error al registrar el dispositivo:', JSON.stringify(error));
       });
 
-      PushNotifications.addListener('pushNotificationReceived', (notification) => {
+      await PushNotifications.addListener('pushNotificationReceived', (notification) => {
         console.log('¡Notificación recibida en primer plano!', notification);
       });
+
+      await PushNotifications.addListener('pushNotificationActionPerformed', ({ notification }) => {
+        if (notification.data?.ruta === '/chat-cliente') void this.router.navigate(['/chat-cliente']);
+      });
+      if (this.platform.is('android')) {
+        await PushNotifications.createChannel({ id: 'default', name: 'Avisos de Cepa', importance: 5, sound: 'default' });
+      }
+      // Registrar después de instalar listeners para no perder el token inicial.
+      await PushNotifications.register();
 
     } catch (error) {
       // ESTE CATCH FALTABA

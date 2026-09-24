@@ -12,6 +12,20 @@ export class MesasService {
         this.supabase = this.supabaseService.getClient();
     }
 
+    async obtenerAsignacionActiva(clienteId: string) {
+        const { data, error } = await this.supabase
+            .from('asignaciones_mesa')
+            .select('mesa_id, estado_escaneo, mesas(numero)')
+            .eq('cliente_id', clienteId)
+            .eq('activa', true)
+            .maybeSingle();
+        if (error) throw error;
+        if (!data) return null;
+        const mesa = Array.isArray(data.mesas) ? data.mesas[0] : data.mesas;
+        return { mesaId: data.mesa_id, numero: mesa?.numero as number | undefined,
+            vinculada: data.estado_escaneo === 'OCUPADA' };
+    }
+
     // 1. Obtener mesas que NO tienen una asignación activa actualmente
     async obtenerMesasDisponibles(): Promise<Mesa[]> {
         const { data: ocupadas, error: errOcupadas } = await this.supabase
@@ -30,18 +44,20 @@ export class MesasService {
 
         if (errMesas) throw errMesas;
 
-        return (todasLasMesas as Mesa[]).filter(m => !idsOcupados.includes(m.id!));
+        return ((todasLasMesas ?? []) as Mesa[]).filter(m => !idsOcupados.includes(m.id));
     }
 
     // 2. El Metre asigna la mesa a un cliente de la lista de espera
     async asignarMesaACliente(clienteId: string, mesaId: number, metreId: string) {
         // A) Verificar disponibilidad
-        const { data: asignacionExistente } = await this.supabase
+        const { data: asignacionExistente, error: errorDisponibilidad } = await this.supabase
             .from('asignaciones_mesa')
             .select('id')
             .eq('mesa_id', mesaId)
             .eq('activa', true)
             .maybeSingle();
+
+        if (errorDisponibilidad) throw errorDisponibilidad;
 
         if (asignacionExistente) {
             throw new Error('Esta mesa acaba de ser asignada a otro cliente.');

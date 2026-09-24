@@ -9,12 +9,15 @@
         </div>
 
         <!-- Botón principal para escanear en teléfono -->
-        <ion-button expand="block" class="btn-escaneo" (click)="escaneando = true">
+        @if (esNativo) {
+        <ion-button expand="block" class="btn-escaneo" (click)="escanearMesa()" [disabled]="escaneando">
         <ion-icon slot="start" name="camera-outline"></ion-icon>
         Escanear QR de Mesa
         </ion-button>
+        }
 
         <!-- Panel de Pruebas / Simulación (Para pruebas en Web o Emulador) -->
+        @if (!esNativo) {
         <div class="panel-pruebas">
         <span class="label-pruebas">Botones de prueba (Simulador):</span>
         <div class="grid-botones">
@@ -32,5 +35,6 @@
             </ion-button>
         </div>
         </div>
+        }
     </div>
 </ion-content>

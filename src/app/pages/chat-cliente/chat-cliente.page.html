@@ -85,16 +85,19 @@
 
 <ion-footer class="chat-footer">
   <div class="composer-wrap">
-    @if (participante()?.rol === 'CLIENTE_REGISTRADO') {
+    @if (participante() && participante()?.rol !== 'MOZO') {
       <div class="table-entry">
-        <label for="chat-table">Tu mesa</label>
-        <input id="chat-table" type="number" inputmode="numeric" min="1" max="9999" step="1"
-          [ngModel]="numeroMesa()" (ngModelChange)="numeroMesa.set($event)" [disabled]="enviando()"
-          placeholder="N.º" aria-describedby="table-help">
-        <span id="table-help">{{ mesaValida() ? 'Este número acompaña tus consultas.' : 'Ingresá el número de tu mesa para escribir.' }}</span>
+        <strong>Mesa {{ numeroMesa() }}</strong>
+        <span>Tu mesa asignada acompaña cada consulta.</span>
       </div>
     }
     @if (errorEnvio()) { <p class="send-error" role="alert">{{ errorEnvio() }}</p> }
+    @if (avisosPendientes().length) {
+      <div class="notice error" role="alert">
+        <p>Tu mensaje está en el chat, pero no pudimos enviar el aviso al dispositivo.</p>
+        <button type="button" (click)="reintentarAvisos()" [disabled]="reintentandoAvisos()">Reintentar aviso</button>
+      </div>
+    }
     @if (respuesta(); as mensaje) {
       <div class="reply-preview">
         <div><strong>Respondiendo a {{ mensaje.autor_nombre }}{{ mensaje.numero_mesa !== null ? ' · Mesa ' + mensaje.numero_mesa : '' }}</strong><p>{{ mensaje.texto }}</p></div>
@@ -109,6 +112,6 @@
         <ion-icon name="send-outline" aria-hidden="true"></ion-icon>
       </button>
     </form>
-    <div class="composer-caption"><span>{{ enviando() ? 'Enviando…' : 'Una consulta, todos los mozos disponibles.' }}</span><span>{{ borrador.length }}/2000</span></div>
+    <div class="composer-caption"><span>{{ enviando() ? 'Enviando…' : participante()?.rol === 'MOZO' && !respuesta() ? 'Tocá Responder en una consulta para avisarle al cliente.' : 'Una consulta, todos los mozos disponibles.' }}</span><span>{{ borrador.length }}/2000</span></div>
   </div>
 </ion-footer>

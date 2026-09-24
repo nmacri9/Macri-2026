@@ -3,6 +3,7 @@
 <ion-content>
   <main class="carta">
     <header class="introduccion">
+      <a class="consulta" routerLink="/chat-cliente">Consulta al mozo</a>
       <span class="etiqueta">La carta de Cepa</span>
       <h1>Elegí tu próximo favorito</h1>
       <p>Explorá nuestros platos y bebidas. Usá las flechas para ver las tres fotos de cada producto.</p>
@@ -47,6 +48,7 @@
               <span class="etiqueta">{{ tipos[producto.tipo] }}</span>
               <h2>{{ producto.nombre }}</h2>
               <p class="descripcion">{{ producto.descripcion }}</p>
+              <p class="tiempo">Elaboración estimada: {{ producto.tiempo_elaboracion }} min</p>
               <p class="precio">{{ precio(producto.precio) }}</p>
             </div>
           </article>

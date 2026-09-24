@@ -11,6 +11,13 @@
     --background: var(--color-bg);
 }
 
+.estado-carga {
+    color: var(--color-text);
+    margin: 16px 0;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
 .card-container {
     background: var(--color-surface);
     border: 1px solid var(--color-border);

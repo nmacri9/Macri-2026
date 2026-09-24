@@ -177,9 +177,18 @@ export class HomePage {
           if (['METRE'].includes(rol)) { 
             await FCM.subscribeTo({ topic: 'metre_lista_espera' });
           }
-        } catch (err) {
-          console.error('Error configurando topics de FCM:', err);
+          if (['MOZO', 'mozo'].includes(rol) || this.esMozo) {
+            await FCM.subscribeTo({ topic: 'mozos' });
+          }
+          if (this.esCliente) {
+          const { data: authData } = await this.supabase.getClient().auth.getUser();
+          if (authData?.user?.id) {
+            await FCM.subscribeTo({ topic: `cliente_${authData.user.id}` });
         }
+      }
+    } catch (err) {
+      console.error('Error configurando topics de FCM:', err);
+    }
       }
       // =========================================================================
 

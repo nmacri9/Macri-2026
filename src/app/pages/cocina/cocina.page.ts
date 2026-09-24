@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { 
   IonHeader, IonToolbar, IonTitle, IonContent, 
@@ -7,6 +7,7 @@ import {
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { checkmarkCircleOutline } from 'ionicons/icons';
+import { SupabaseService } from '../../services/supabase.service'; 
 
 @Component({
   selector: 'app-cocina',
@@ -20,63 +21,92 @@ import { checkmarkCircleOutline } from 'ionicons/icons';
     IonBadge, IonList, IonItem, IonLabel, IonButton, IonIcon
   ]
 })
-export class CocinaPage implements OnInit {
+export class CocinaPage implements OnInit, OnDestroy {
   
-  // Array final que usará el HTML para dibujar las tarjetas
   pedidosCocina: any[] = [];
+  private canalCocina: any;
 
-  // Datos simulados: simulando lo que devolverá Supabase
-  pedidosSimulados = [
-    {
-      id: 'ped-001',
-      mesa_id: 3,
-      created_at: '2026-09-22T19:30:00Z',
-      estado: 'en_preparacion',
-      items: [
-        { nombre: 'Milanesa con fritas', cantidad: 2, tipo: 'PLATO' },
-        { nombre: 'Coca Cola 2L', cantidad: 1, tipo: 'BEBIDA' }, // Esto se va a filtrar
-        { nombre: 'Flan Casero', cantidad: 1, tipo: 'POSTRE' }
-      ]
-    },
-    {
-      id: 'ped-002',
-      mesa_id: 5,
-      created_at: '2026-09-22T19:35:00Z',
-      estado: 'en_preparacion',
-      items: [
-        { nombre: 'Ravioles con Tuco', cantidad: 3, tipo: 'PLATO' },
-        { nombre: 'Vino Tinto', cantidad: 1, tipo: 'BEBIDA' } // Esto se va a filtrar
-      ]
-    }
-  ];
-
-  constructor() {
-    // Registramos el ícono para el botón de "Pedido Listo"
+  constructor(
+    private supabase: SupabaseService,
+    private cdr: ChangeDetectorRef
+  ) {
     addIcons({ checkmarkCircleOutline });
   }
 
   ngOnInit() {
-    this.procesarPedidos();
+    this.cargarPedidos();
+    this.escucharNuevosPedidos();
   }
 
-  procesarPedidos() {
-    // Mapeamos los pedidos para sacar las bebidas
-    const pedidosFiltrados = this.pedidosSimulados.map(pedido => {
+  ngOnDestroy() {
+    // Apagamos la escucha de Supabase si el cocinero sale de la pantalla
+    if (this.canalCocina) {
+      this.canalCocina.unsubscribe();
+    }
+  }
+
+  async cargarPedidos() {
+    try {
+      console.log('1. Consultando pedidos a Supabase...');
+      // 1. Buscamos pedidos confirmados por el mozo. Ordenamos los más viejos primero.
+      const { data, error } = await this.supabase.getClient()
+        .from('pedidos')
+        .select('*')
+        .eq('estado_cocina', 'en_preparacion')
+        .order('created_at', { ascending: true });
+
+      console.log('2. Respuesta - Data:', data);
+      console.log('3. Respuesta - Error:', error);
+
+      if (error) throw error;
+
+      this.procesarYFiltrar(data || []);
+    } catch (error) {
+      console.error('Error al cargar pedidos de cocina:', error);
+    }
+  }
+
+  procesarYFiltrar(pedidosDB: any[]) {
+    // 2. sacamos las bebidas y dejamos solo Platos y Postres
+    const pedidosFiltrados = pedidosDB.map(pedido => {
       return {
         ...pedido,
-        // Filtramos dejando solo PLATO y POSTRE
         items: pedido.items.filter((item: any) => item.tipo === 'PLATO' || item.tipo === 'POSTRE')
       };
     });
 
-    // Eliminamos los pedidos que se quedaron vacíos
+    // 3. Descartamos pedidos que solo tenian bebidas (quedaron con 0 items)
     this.pedidosCocina = pedidosFiltrados.filter(pedido => pedido.items.length > 0);
+    this.cdr.detectChanges(); 
   }
 
-  marcarComoListo(pedidoId: string) {
-    console.log(`¡Pedido ${pedidoId} marcado como LISTO_COCINA!`);
-    
-    // Lo sacamos visualmente de la pantalla
-    this.pedidosCocina = this.pedidosCocina.filter(p => p.id !== pedidoId);
+  escucharNuevosPedidos() {
+    // 4. Mantengo la pantalla viva: si hay cambios en la tabla 'pedidos', recargamos
+    this.canalCocina = this.supabase.getClient()
+      .channel('pedidos_cocina')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'pedidos' },
+        () => {
+          this.cargarPedidos();
+        }
+      )
+      .subscribe();
+  }
+
+  async marcarComoListo(pedidoId: string) {
+    try {
+      // 5. El cocinero termina el plato y actualiza la base de datos
+      const { error } = await this.supabase.getClient()
+        .from('pedidos')
+        .update({ estado_cocina: 'listo' })
+        .eq('id', pedidoId);
+
+      if (error) throw error;
+
+      console.log(`¡Pedido ${pedidoId} despachado!`);
+    } catch (error) {
+      console.error('Error al actualizar pedido:', error);
+    }
   }
 }

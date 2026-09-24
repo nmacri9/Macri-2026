@@ -6,6 +6,7 @@ export interface Producto {
   nombre: string;
   tipo: ProductoDB['tipo'];
   precio: number;
+  tipo?: string;
   tiempoElaboracion: number;
   fotos: string[];
 }

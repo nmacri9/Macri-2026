@@ -57,7 +57,7 @@ Trabajo Final Integrador (TFI) — Aplicación móvil desarrollada con Angular, 
 
 ### 👨‍💻 Goncalves, Matias — Punto 9: Ingreso Anónimo, QR y Lista de Espera
 
-- **Branch:** `rama-matias-goncalves` *(o la que corresponda)*
+- **Branch:** `rama-matias-goncalves` 
 - **Período general de tareas:** 10/09/2026 — 18/09/2026
 
 #### 🔹 1. Pantalla de Registro Anónimo y Validaciones
@@ -207,21 +207,6 @@ Se implementó de manera integral el módulo de carga de bebidas para la carta, 
 
 ---
 
-## 📂 Archivos Modificados Destacados
-
-- `src/theme/variables.scss`
-- `src/app/app.routes.ts`
-- `src/app/pages/splash/`, `src/app/pages/login/`, `src/app/pages/alta-plato/`, `src/app/pages/alta-bebida/`
-- `src/app/shared/components/cepa-spinner/`, `src/app/shared/components/cepa-header/`
-- `src/app/core/services/productos.service.ts`, `src/app/core/services/auth.service.ts`, `src/app/core/services/email.service.ts`, `src/app/core/services/dni-scanner.ts`
-- `src/app/shared/confirm-modal/`
-- `src/app/pages/registro-cliente/`
-- `resources/icon.png`, `resources/splash.png`
-
----
-
----
-
 ## 📸 Índice de Imágenes del Proyecto
 
 > _A continuación se detallan todas las capturas correspondientes a íconos, pantallas de presentación, formularios y listados del proyecto._
@@ -229,7 +214,7 @@ Se implementó de manera integral el módulo de carga de bebidas para la carta, 
 |   #   | Componente / Pantalla     | Enlace de visualización                     |
 | :---: | :------------------------ | :------------------------------------------ |
 | **1** | Ícono de la aplicación    | [Ver imagen](./resources/icon.png)          |
-| **2** | Splash Dinámico     AGREGAR SPLASH DINAMICO     | [Ver imagen](./capturas/.jpeg)       |
+| **2** | Splash Dinámico           | [Ver imagen](./capturas/Splash-screen.jpeg)       |
 | **3** | Spinner                   | [Ver imagen](./capturas/spinner.jpeg)       |
 | **3** | Login: Pantalla principal | [Ver imagen](./capturas/login.jpeg)         |
 | **4** | Pantalla principal        | [Ver imagen](./capturas/home.jpeg)          |
@@ -237,14 +222,14 @@ Se implementó de manera integral el módulo de carga de bebidas para la carta, 
 | **6** | Alta de Plato: Vista      | [Ver imagen](./capturas/alta-plato.jpeg)    |
 | **7** | Alta de Bebida: Vista     | [Ver imagen](./capturas/alta-bebida.jpeg)   |
 | **8** | Alta de Empleado: Vista   | [Ver imagen](./capturas/alta-empleado.jpeg) |
-| **9** | Registro de Empleado: Vista  AGREGAR | [Ver imagen](./capturas/.jpeg) |
-| **10** | Clientes pendientes: Vista  AGREGAR | [Ver imagen](./capturas/.jpeg) |
-| **11** | Asignacion de mesa (metre): Vista  AGREGAR  | [Ver imagen](./capturas/.jpeg) |
-| **12** | Realizar pedido (Cliente) : Vista  AGREGAR  | [Ver imagen](./capturas/.jpeg) |
-| **13** | Menu de pedidos (Cliente) : Vista  AGREGAR  | [Ver imagen](./capturas/.jpeg) |
-| **14** | Escanear mesa (Cliente) : Vista  AGREGAR  | [Ver imagen](./capturas/.jpeg) |
-| **15** | Ingreso al local (Cliente) : Vista  AGREGAR  | [Ver imagen](./capturas/.jpeg) |
-| **16** | Confirmar pedido (mozo) : Vista  AGREGAR  | [Ver imagen](./capturas/.jpeg) |
+| **9** | Registro de Empleado: Vista | [Ver imagen](./capturas/Registro-empleado.jpeg) |
+| **10** | Clientes pendientes: Vista | [Ver imagen](./capturas/cliente-pendiente.jpeg) |
+| **11** | Asignacion de mesa (metre): Vista | [Ver imagen](./capturas/Asignar-mesa.jpeg) |
+| **12** | Realizar pedido (Cliente) : Vista | [Ver imagen](./capturas/.jpeg) |
+| **13** | Menu de pedidos (Cliente) : Vista | [Ver imagen](./capturas/menu.jpeg) |
+| **14** | Escanear mesa (Cliente) : Vista | [Ver imagen](./capturas/escanear-mesa.jpeg) |
+| **15** | Ingreso al local (Cliente) : Vista | [Ver imagen](./capturas/.jpeg) |
+| **16** | Confirmar pedido (mozo) : Vista    | [Ver imagen](./capturas/.jpeg) |
 
 
 

@@ -12,8 +12,8 @@ export class PedidosService {
     }
 
     /**
-     * INTEGRANTE 2: Confirma el pedido (Mozo), rutea ítems a Cocina y Bar,
-     * y cambia el estado a 'en_preparacion'.
+     * INTEGRANTE 2: Confirma el pedido ('confirmado') y asigna 'en_preparacion'
+     * a cocina y bar según la categoría de cada producto.
      */
     async confirmarPedidoYRutear(pedidoId: string, mozoId: string) {
         // 1. Obtener datos del pedido
@@ -25,15 +25,25 @@ export class PedidosService {
 
         if (errPedido || !pedido) throw new Error('No se encontró el pedido.');
 
-        const items = pedido.items as any[];
+        const items = (pedido.items as any[]) || [];
 
-        // 2. Ruteo según el campo 'tipo' de los productos elegidos
-        const tieneCocina = items.some((item: any) => 
-        ['PLATO', 'POSTRE'].includes(String(item.tipo).toUpperCase())
-        );
-        const tieneBar = items.some((item: any) => 
-        ['BEBIDA'].includes(String(item.tipo).toUpperCase())
-        );
+        // 2. Evaluamos el tipo de cada producto de forma flexible
+        let tieneCocina = false;
+        let tieneBar = false;
+
+        for (const item of items) {
+        // Leemos tipo o categoria independientemente de cómo se haya guardado
+        const valorTipo = String(item.tipo || item.categoria || '').trim().toUpperCase();
+
+        if (['PLATO', 'PLATOS', 'POSTRE', 'POSTRES', 'COMIDA'].includes(valorTipo)) {
+            tieneCocina = true;
+        } else if (['BEBIDA', 'BEBIDAS', 'BAR', 'TRAGO', 'TRAGOS'].includes(valorTipo)) {
+            tieneBar = true;
+        } else {
+            // Fallback: Si no viene el tipo explícito, asumimos cocina por defecto
+            tieneCocina = true;
+        }
+        }
 
         const estadoCocina = tieneCocina ? 'en_preparacion' : 'no_aplica';
         const estadoBar = tieneBar ? 'en_preparacion' : 'no_aplica';
@@ -42,7 +52,7 @@ export class PedidosService {
         const { error: errUpdate } = await this.supabase
         .from('pedidos')
         .update({
-            estado: 'en_preparacion',
+            estado: 'confirmado',
             estado_cocina: estadoCocina,
             estado_bar: estadoBar,
             confirmado_por: mozoId,

@@ -5,6 +5,8 @@ import { addIcons } from 'ionicons';
 import { restaurantOutline, checkmarkCircleOutline, timeOutline, closeCircleOutline } from 'ionicons/icons';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { SupabaseService } from '../../services/supabase.service';
+import { PedidosService } from '../../services/pedidos.service';
+import { AuthService } from '../../services/auth.service';
 import { ProductoCarrito } from '../../interfaces/carrito.model';
 import { CepaHeaderComponent } from '../../shared/components/cepa-header/cepa-header.component';
 import { CepaSpinnerComponent } from '../../shared/components/cepa-spinner/cepa-spinner.component';
@@ -40,6 +42,8 @@ export class ConfirmarPedidoPage implements OnInit, OnDestroy {
 
   constructor(
     private supabase: SupabaseService,
+    private pedidosService: PedidosService,
+    private authService: AuthService,
     private modalCtrl: ModalController,
     private toastCtrl: ToastController,
     private cdr: ChangeDetectorRef
@@ -105,34 +109,23 @@ export class ConfirmarPedidoPage implements OnInit, OnDestroy {
     this.cdr.detectChanges();
 
     try {
-      const { error } = await this.supabase.getClient()
-        .from('pedidos')
-        .update({ estado: 'confirmado' })
-        .eq('id', pedido.id);
+      const mozo = await this.authService.obtenerUsuarioActual();
+      const mozoId = mozo ? mozo.id : '';
 
-      if (error) throw error;
+      // ✅ LLAMADA AL MOTOR DE RUTEO (INTEGRANTE 2)
+      // Esta función cambia 'estado' a 'en_preparacion' y evalúa 'estado_cocina' y 'estado_bar'
+      await this.pedidosService.confirmarPedidoYRutear(pedido.id, mozoId);
 
       this.pedidos = this.pedidos.filter(p => p.id !== pedido.id);
 
       const toast = await this.toastCtrl.create({
-        message: `Pedido de Mesa ${pedido.mesas?.numero ?? pedido.mesa_id} confirmado.`,
-        duration: 2000,
+        message: `Pedido de Mesa ${pedido.mesas?.numero ?? pedido.mesa_id} confirmado y derivado a los sectores.`,
+        duration: 2500,
         position: 'middle',
         cssClass: 'toast-exito',
         icon: 'checkmark-circle-outline'
       });
       await toast.present();
-
-      try {
-        const numeroMesa = pedido.mesas?.numero ?? pedido.mesa_id;
-        await this.supabase.invocarEdgeFunction('enviar-notificacion', {
-          titulo: '¡Mesa Confirmada!',
-          cuerpo: `Marchando pedido para la Mesa ${numeroMesa}. A preparar todo.`,
-          topic: 'cocina'
-        });
-      } catch (pushError) {
-        console.warn('El pedido se confirmó pero falló la push:', pushError);
-      }
 
     } catch (error: any) {
       console.error('Error al confirmar pedido:', error);
@@ -178,9 +171,11 @@ export class ConfirmarPedidoPage implements OnInit, OnDestroy {
 
       try {
         await this.supabase.invocarEdgeFunction('enviar-notificacion', {
-          titulo: 'Problemas con tu pedido',
-          cuerpo: `El mozo solicitó que revises tu pedido. Por favor, modificalo.`,
-          topic: `cliente_${pedido.cliente_id}`
+          body: {
+            titulo: 'Problemas con tu pedido',
+            cuerpo: `El mozo solicitó que revises tu pedido. Por favor, modificalo.`,
+            topic: `cliente_${pedido.cliente_id}`
+          }
         });
       } catch (pushError) {
         console.warn('El pedido se rechazó pero falló la push:', pushError);

@@ -57,7 +57,7 @@ Trabajo Final Integrador (TFI) — Aplicación móvil desarrollada con Angular, 
 
 ### 👨‍💻 Goncalves, Matias — Punto 9: Ingreso Anónimo, QR y Lista de Espera
 
-- **Branch:** `rama-matias-goncalves` *(o la que corresponda)*
+- **Branch:** `rama-matias-goncalves` 
 - **Período general de tareas:** 10/09/2026 — 18/09/2026
 
 #### 🔹 1. Pantalla de Registro Anónimo y Validaciones
@@ -204,21 +204,6 @@ Se implementó de manera integral el módulo de carga de bebidas para la carta, 
 - Animación de entrada propia del logo (`logoEntrance`), separada del pulso continuo.
 - Barra de progreso indeterminada entre el logo y el listado del equipo.
 - Ajuste del timing de la secuencia de animaciones (incluyendo el delay de navegación al login) para que el último nombre del equipo termine de aparecer antes de la transición.
-
----
-
-## 📂 Archivos Modificados Destacados
-
-- `src/theme/variables.scss`
-- `src/app/app.routes.ts`
-- `src/app/pages/splash/`, `src/app/pages/login/`, `src/app/pages/alta-plato/`, `src/app/pages/alta-bebida/`
-- `src/app/shared/components/cepa-spinner/`, `src/app/shared/components/cepa-header/`
-- `src/app/core/services/productos.service.ts`, `src/app/core/services/auth.service.ts`, `src/app/core/services/email.service.ts`, `src/app/core/services/dni-scanner.ts`
-- `src/app/shared/confirm-modal/`
-- `src/app/pages/registro-cliente/`
-- `resources/icon.png`, `resources/splash.png`
-
----
 
 ---
 

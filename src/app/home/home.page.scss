@@ -166,6 +166,34 @@
   gap: 12px;
 }
 
+.home-notice {
+  flex-shrink: 0;
+  margin-bottom: 20px;
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  color: var(--color-text);
+  background: var(--color-surface);
+  font: 14px/1.5 'Inter', sans-serif;
+}
+
+.home-notice p { margin: 0 0 12px; }
+.home-status { color: var(--color-text); font: 14px/1.5 'Inter', sans-serif; }
+
+.retry-button {
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 1px solid var(--color-text);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.retry-button:focus-visible { outline: 2px solid var(--color-text); outline-offset: 3px; }
+.retry-button:disabled { opacity: 0.6; cursor: default; }
+
 .menu-option {
   position: relative;
   display: flex;

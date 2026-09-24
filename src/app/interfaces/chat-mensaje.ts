@@ -2,7 +2,7 @@ export interface ChatMensaje {
   id: string;
   autor_id: string;
   autor_nombre: string;
-  autor_rol: 'MOZO' | 'CLIENTE_REGISTRADO';
+  autor_rol: 'MOZO' | 'CLIENTE_REGISTRADO' | 'CLIENTE_ANONIMO';
   numero_mesa: number | null;
   texto: string;
   creado_en: string;
@@ -14,7 +14,7 @@ export interface ChatMensaje {
 export interface ChatParticipante {
   id: string;
   nombre: string;
-  rol: 'MOZO' | 'CLIENTE_REGISTRADO';
+  rol: 'MOZO' | 'CLIENTE_REGISTRADO' | 'CLIENTE_ANONIMO';
   numero_mesa: number | null;
 }
 

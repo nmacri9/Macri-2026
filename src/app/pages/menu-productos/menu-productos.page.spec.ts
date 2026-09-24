@@ -8,7 +8,7 @@ describe('Menú de productos', () => {
   const listarProductos = vi.fn();
   const producto = {
     id: 1, nombre: 'Risotto', descripcion: 'Arroz con hongos', precio: 12500,
-    tipo: 'PLATO', imagenes: ['uno.jpg', 'dos.jpg', 'tres.jpg'],
+    tipo: 'PLATO', tiempo_elaboracion: 25, imagenes: ['uno.jpg', 'dos.jpg', 'tres.jpg'],
   };
 
   beforeEach(() => {
@@ -26,6 +26,7 @@ describe('Menú de productos', () => {
     const elemento: HTMLElement = fixture.nativeElement;
     expect(elemento.textContent).toContain('Risotto');
     expect(elemento.textContent).toContain('Arroz con hongos');
+    expect(elemento.querySelector('.tiempo')?.textContent).toContain('25 min');
     expect(elemento.querySelector('.precio')?.textContent).toContain('12.500,00');
     const botones = elemento.querySelectorAll<HTMLButtonElement>('.controles button');
     for (const foto of ['dos.jpg', 'tres.jpg', 'uno.jpg']) {

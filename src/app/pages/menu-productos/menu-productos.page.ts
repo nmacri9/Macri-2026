@@ -1,4 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { IonContent, IonSpinner } from '@ionic/angular';
 import { Producto } from '../../interfaces/producto';
 import { ProductosService } from '../../services/productos.service';
@@ -13,7 +14,7 @@ interface ProductoEnMenu extends Producto {
 @Component({
   selector: 'app-menu-productos',
   standalone: true,
-  imports: [IonContent, IonSpinner, CepaHeaderComponent],
+  imports: [IonContent, IonSpinner, CepaHeaderComponent, RouterLink],
   templateUrl: './menu-productos.page.html',
   styleUrls: ['./menu-productos.page.scss'],
 })

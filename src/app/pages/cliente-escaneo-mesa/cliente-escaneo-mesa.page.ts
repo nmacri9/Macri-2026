@@ -6,6 +6,8 @@ import { MesasService } from '../../services/mesas.service';
 import { AuthService } from '../../services/auth.service';
 import { addIcons } from 'ionicons';
 import { qrCodeOutline, cameraOutline } from 'ionicons/icons';
+import { Capacitor } from '@capacitor/core';
+import { BarcodeScanner, BarcodeFormat } from '@capacitor-mlkit/barcode-scanning';
 
 @Component({
     selector: 'app-cliente-escaneo-mesa',
@@ -15,6 +17,7 @@ import { qrCodeOutline, cameraOutline } from 'ionicons/icons';
 })
 export class ClienteEscaneoMesaPage {
     escaneando: boolean = false;
+    readonly esNativo = Capacitor.isNativePlatform();
 
     constructor(
         private mesasService: MesasService,
@@ -55,13 +58,38 @@ export class ClienteEscaneoMesaPage {
         }
     }
 
+    async escanearMesa() {
+        if (this.escaneando) return;
+        this.escaneando = true;
+        try {
+            if (Capacitor.getPlatform() === 'android') {
+                const { available } = await BarcodeScanner.isGoogleBarcodeScannerModuleAvailable();
+                if (!available) {
+                    await BarcodeScanner.installGoogleBarcodeScannerModule();
+                    throw new Error('Se está preparando el lector. Esperá unos segundos y volvé a escanear.');
+                }
+            }
+            if (Capacitor.getPlatform() === 'ios') {
+                const { camera } = await BarcodeScanner.requestPermissions();
+                if (camera !== 'granted' && camera !== 'limited') {
+                    throw new Error('Habilitá el permiso de cámara para escanear tu mesa.');
+                }
+            }
+            const { barcodes } = await BarcodeScanner.scan({ formats: [BarcodeFormat.QrCode] });
+            const contenido = barcodes[0]?.rawValue;
+            if (contenido) await this.procesarQRLeido(contenido);
+        } catch (error: unknown) {
+            const toast = await this.toastController.create({
+                message: error instanceof Error ? error.message : 'No se pudo leer el QR. Volvé a intentar.',
+                duration: 4000, color: 'warning', position: 'bottom'
+            });
+            await toast.present();
+        } finally {
+            this.escaneando = false;
+        }
+    }
+
     async simularEscaneoMesa(numeroMesa: number) {
-        // Busca el token real de la mesa seleccionada o envía el token
-        const mesas = await this.mesasService.obtenerMesasDisponibles();
-        const mesa = mesas.find(m => m.numero === numeroMesa);
-        
-        // Pasa el qr_token si existe, o en su defecto el string de respaldo
-        const qrData = mesa ? mesa.qr_token : `MESA_${numeroMesa}`;
-        this.procesarQRLeido(qrData);
+        await this.procesarQRLeido(`MESA_${numeroMesa}`);
     }
 }

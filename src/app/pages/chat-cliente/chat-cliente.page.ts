@@ -5,7 +5,7 @@ import { IonBackButton, IonButtons, IonContent, IonFooter, IonHeader, IonIcon, I
 import { addIcons } from 'ionicons';
 import { arrowDownOutline, arrowUndoOutline, chatbubblesOutline, closeOutline, sendOutline } from 'ionicons/icons';
 import { ChatMensaje, ChatParticipante, combinarMensajes } from '../../interfaces/chat-mensaje';
-import { CHAT_PAGINA, ChatService, EstadoChat } from '../../services/chat.service';
+import { CHAT_PAGINA, ChatService, EstadoChat, MesaChatNoAsignadaError } from '../../services/chat.service';
 
 @Component({
   selector: 'app-chat-cliente',
@@ -25,6 +25,8 @@ export class ChatClientePage implements OnDestroy {
   readonly hayAnteriores = signal(false);
   readonly error = signal('');
   readonly errorEnvio = signal('');
+  readonly avisosPendientes = signal<string[]>([]);
+  readonly reintentandoAvisos = signal(false);
   readonly respuesta = signal<ChatMensaje | null>(null);
   readonly nuevos = signal(0);
   readonly numeroMesa = signal<number | null>(null);
@@ -72,9 +74,11 @@ export class ChatClientePage implements OnDestroy {
         this.borrador = '';
         this.numeroMesa.set(null);
         this.pendiente = undefined;
+        this.avisosPendientes.set([]);
         this.ultimoUsuario = participante.id;
       }
       this.participante.set(participante);
+      this.numeroMesa.set(participante.numero_mesa);
       this.desconectar = this.chat.conectar(mensaje => {
         if (ciclo !== this.ciclo) return;
         const yaExiste = this.mensajes().some(item => item.id === mensaje.id);
@@ -92,10 +96,11 @@ export class ChatClientePage implements OnDestroy {
       if (ciclo !== this.ciclo) return;
       console.error('No se pudo abrir el chat:', error);
       const codigo = (error as { code?: string })?.code;
-      this.error.set(codigo === 'PGRST202' || codigo === 'PGRST205' || codigo === '42P01'
+      this.error.set(error instanceof MesaChatNoAsignadaError ? error.message
+        : codigo === 'PGRST202' || codigo === 'PGRST205' || codigo === '42P01'
         ? 'El chat todavía no está habilitado. Avisá al personal del restaurante.'
         : codigo === '42501'
-          ? 'Tu usuario no está habilitado para entrar al chat. Iniciá sesión como cliente aprobado o mozo activo.'
+          ? 'Tu usuario no está habilitado para entrar al chat. Iniciá sesión como cliente habilitado o mozo activo.'
           : 'No se pudo abrir la sala. Intentá nuevamente.');
     } finally {
       if (ciclo === this.ciclo) this.cargando.set(false);
@@ -177,16 +182,19 @@ export class ChatClientePage implements OnDestroy {
     this.errorEnvio.set('');
     try {
       const mensaje = await this.chat.enviar(this.pendiente.id, texto, respuestaA, numeroMesa);
-      if (ciclo !== this.ciclo) return;
+      const aviso = this.notificar(mensaje.id, ciclo);
+      if (ciclo !== this.ciclo) { await aviso; return; }
       this.mensajes.update(actuales => combinarMensajes(actuales, [mensaje]));
       this.borrador = '';
       this.respuesta.set(null);
       this.pendiente = undefined;
       this.irAlFinal();
+      await aviso;
     } catch (error) {
       if (ciclo !== this.ciclo) return;
       console.error('No se pudo enviar el mensaje:', error);
-      this.errorEnvio.set('No se confirmó el envío. Tu mensaje sigue acá; podés volver a enviarlo.');
+      this.errorEnvio.set(error instanceof MesaChatNoAsignadaError ? error.message
+        : 'No se confirmó el envío. Tu mensaje sigue acá; podés volver a enviarlo.');
     } finally {
       if (ciclo === this.ciclo) this.enviando.set(false);
     }
@@ -194,6 +202,30 @@ export class ChatClientePage implements OnDestroy {
 
   responder(mensaje: ChatMensaje) {
     if (!this.enviando()) this.respuesta.set(mensaje);
+  }
+
+  private async notificar(id: string, ciclo: number) {
+    try {
+      await this.chat.notificar(id);
+      if (ciclo === this.ciclo) this.avisosPendientes.update(ids => ids.filter(item => item !== id));
+    } catch (error) {
+      console.error('Mensaje guardado, pero falló la notificación:', error);
+      if (ciclo === this.ciclo) this.avisosPendientes.update(ids => [...new Set([...ids, id])]);
+    }
+  }
+
+  async reintentarAvisos() {
+    if (this.reintentandoAvisos()) return;
+    const ciclo = this.ciclo;
+    this.reintentandoAvisos.set(true);
+    try {
+      for (const id of this.avisosPendientes()) {
+        if (ciclo !== this.ciclo) return;
+        await this.notificar(id, ciclo);
+      }
+    } finally {
+      if (ciclo === this.ciclo) this.reintentandoAvisos.set(false);
+    }
   }
 
   async alDesplazar() {
@@ -225,6 +257,7 @@ export class ChatClientePage implements OnDestroy {
     this.sincronizadoHasta = undefined;
     this.sincronizacion = Promise.resolve();
     this.enviando.set(false);
+    this.reintentandoAvisos.set(false);
     this.cargandoAnteriores.set(false);
     this.estado.set('desconectado');
   }

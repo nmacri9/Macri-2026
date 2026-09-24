@@ -1,13 +1,18 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { 
-  IonHeader, IonToolbar, IonTitle, IonContent, 
-  IonCard, IonCardHeader, IonCardTitle, IonCardContent, 
-  IonBadge, IonList, IonItem, IonLabel, IonButton, IonIcon 
+  IonContent, IonCard, IonCardHeader, IonCardTitle, IonCardContent, 
+  IonBadge, IonList, IonItem, IonLabel, IonButton, IonIcon, 
+  ModalController // Importamos el controlador de modales
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { checkmarkCircleOutline } from 'ionicons/icons';
-import { SupabaseService } from '../../services/supabase.service'; 
+import { SupabaseService } from '../../services/supabase.service';
+
+// Importamos tus componentes globales
+import { CepaHeaderComponent } from '../../shared/components/cepa-header/cepa-header.component';
+import { CepaSpinnerComponent } from '../../shared/components/cepa-spinner/cepa-spinner.component';
+import { ConfirmModalComponent } from '../../shared/confirm-modal/confirm-modal.component';
 
 @Component({
   selector: 'app-cocina',
@@ -16,19 +21,21 @@ import { SupabaseService } from '../../services/supabase.service';
   standalone: true,
   imports: [
     CommonModule, 
-    IonHeader, IonToolbar, IonTitle, IonContent, 
-    IonCard, IonCardHeader, IonCardTitle, IonCardContent, 
-    IonBadge, IonList, IonItem, IonLabel, IonButton, IonIcon
+    IonContent, IonCard, IonCardHeader, IonCardTitle, IonCardContent, 
+    IonBadge, IonList, IonItem, IonLabel, IonButton, IonIcon,
+    CepaHeaderComponent, CepaSpinnerComponent // No hace falta poner ConfirmModalComponent acá si se usa por ModalController
   ]
 })
 export class CocinaPage implements OnInit, OnDestroy {
   
   pedidosCocina: any[] = [];
   private canalCocina: any;
+  cargando = false; // Variable global del spinner
 
   constructor(
     private supabase: SupabaseService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private modalCtrl: ModalController // Inyectamos el controlador
   ) {
     addIcons({ checkmarkCircleOutline });
   }
@@ -39,49 +46,42 @@ export class CocinaPage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    // Apagamos la escucha de Supabase si el cocinero sale de la pantalla
     if (this.canalCocina) {
       this.canalCocina.unsubscribe();
     }
   }
 
   async cargarPedidos() {
+    this.cargando = true; // Mostramos tu spinner global
     try {
-      console.log('1. Consultando pedidos a Supabase...');
-      // 1. Buscamos pedidos confirmados por el mozo. Ordenamos los más viejos primero.
       const { data, error } = await this.supabase.getClient()
         .from('pedidos')
         .select('*')
-        .eq('estado_cocina', 'en_preparacion')
+        .eq('estado_cocina', 'en_preparacion') 
         .order('created_at', { ascending: true });
 
-      console.log('2. Respuesta - Data:', data);
-      console.log('3. Respuesta - Error:', error);
-
       if (error) throw error;
-
       this.procesarYFiltrar(data || []);
     } catch (error) {
       console.error('Error al cargar pedidos de cocina:', error);
+    } finally {
+      this.cargando = false; // Ocultamos el spinner
+      this.cdr.detectChanges();
     }
   }
 
   procesarYFiltrar(pedidosDB: any[]) {
-    // 2. sacamos las bebidas y dejamos solo Platos y Postres
     const pedidosFiltrados = pedidosDB.map(pedido => {
       return {
         ...pedido,
         items: pedido.items.filter((item: any) => item.tipo === 'PLATO' || item.tipo === 'POSTRE')
       };
     });
-
-    // 3. Descartamos pedidos que solo tenian bebidas (quedaron con 0 items)
     this.pedidosCocina = pedidosFiltrados.filter(pedido => pedido.items.length > 0);
-    this.cdr.detectChanges(); 
+    this.cdr.detectChanges();
   }
 
   escucharNuevosPedidos() {
-    // 4. Mantengo la pantalla viva: si hay cambios en la tabla 'pedidos', recargamos
     this.canalCocina = this.supabase.getClient()
       .channel('pedidos_cocina')
       .on(
@@ -94,19 +94,43 @@ export class CocinaPage implements OnInit, OnDestroy {
       .subscribe();
   }
 
+  
+  async abrirModalConfirmacion(pedidoId: string) {
+    const modal = await this.modalCtrl.create({
+      component: ConfirmModalComponent,
+      componentProps: {
+        mensaje: '¿Despachar pedido al mozo?'
+      },
+      cssClass: 'modal-transparente' 
+    });
+
+    await modal.present();
+
+    
+    const { data } = await modal.onDidDismiss();
+
+    
+    if (data === true) {
+      this.marcarComoListo(pedidoId);
+    }
+  }
+
   async marcarComoListo(pedidoId: string) {
+    this.cargando = true; // Activamos el spinner
+    this.cdr.detectChanges();
     try {
-      // 5. El cocinero termina el plato y actualiza la base de datos
       const { error } = await this.supabase.getClient()
         .from('pedidos')
         .update({ estado_cocina: 'listo' })
         .eq('id', pedidoId);
 
       if (error) throw error;
-
       console.log(`¡Pedido ${pedidoId} despachado!`);
     } catch (error) {
       console.error('Error al actualizar pedido:', error);
+    } finally {
+      this.cargando = false; // Ocultamos el spinner
+      this.cdr.detectChanges();
     }
   }
 }

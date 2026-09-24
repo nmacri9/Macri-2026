@@ -271,3 +271,14 @@
   font-weight: 600;
   font-size: 1.05rem;
 }
+
+
+
+
+.modal-transparente {
+  --background: transparent;
+  --box-shadow: none; 
+  --height: auto;
+  align-items: center;
+  justify-content: center;
+}

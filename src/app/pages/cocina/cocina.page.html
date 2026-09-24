@@ -1,10 +1,8 @@
-<ion-header>
-  <ion-toolbar color="dark">
-    <ion-title>Comandas - Cocina</ion-title>
-  </ion-toolbar>
-</ion-header>
+<app-cepa-header [titulo]="'Comandas - Cocina'"></app-cepa-header>
 
 <ion-content class="ion-padding" style="--background: #132A20;">
+
+  <app-cepa-spinner *ngIf="cargando" [texto]="'Actualizando pedidos...'"></app-cepa-spinner>
   
   <div *ngIf="pedidosCocina.length === 0" class="sin-pedidos">
     <h2>Sin pedidos pendientes</h2>
@@ -31,7 +29,7 @@
         </ion-item>
       </ion-list>
 
-      <ion-button expand="block" color="success" class="btn-listo" (click)="marcarComoListo(pedido.id)">
+      <ion-button expand="block" color="success" class="btn-listo" (click)="abrirModalConfirmacion(pedido.id)">
         <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
         Pedido Listo
       </ion-button>

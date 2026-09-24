@@ -243,6 +243,24 @@
         ></ion-icon>
       </a>
 
+      <!-- NUEVA TARJETA PARA COMANDAS -->
+<a class="menu-option" routerLink="/cocina">
+  
+  <span class="menu-icon">
+    <!-- Usamos el ícono de lista que ya importaste en tu home.page.ts -->
+    <ion-icon name="list-outline"></ion-icon>
+  </span>
+  
+  <span class="menu-copy">
+    <strong>Gestionar comandas</strong>
+    <small>Visualizá y despachá los pedidos entrantes</small>
+  </span>
+  
+  <ion-icon name="arrow-forward-outline" class="menu-arrow"></ion-icon>
+</a>
+
+
+
       } @if (puedeCargarBebidas) {
       <a class="menu-option" routerLink="/alta-bebida">
         <span class="menu-icon">

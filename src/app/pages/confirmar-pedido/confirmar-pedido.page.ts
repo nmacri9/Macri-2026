@@ -4,6 +4,7 @@ import { IonContent, IonItem, IonIcon, IonButton, ModalController, ToastControll
 import { addIcons } from 'ionicons';
 import { restaurantOutline, checkmarkCircleOutline, timeOutline, closeCircleOutline } from 'ionicons/icons';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { FCM } from '@capacitor-community/fcm';
 import { SupabaseService } from '../../services/supabase.service';
 import { ProductoCarrito } from '../../interfaces/carrito.model';
 import { CepaHeaderComponent } from '../../shared/components/cepa-header/cepa-header.component';
@@ -48,12 +49,21 @@ export class ConfirmarPedidoPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.suscribirCanalMozo();
     this.cargarPedidosPendientes();
     this.escucharNuevosPedidos();
   }
 
   ngOnDestroy() {
     this.canal?.unsubscribe();
+  }
+
+  private async suscribirCanalMozo() {
+    try {
+      await FCM.subscribeTo({ topic: 'mozos' });
+    } catch (err) {
+      console.warn('FCM no disponible en navegador web:', err);
+    }
   }
 
   private async cargarPedidosPendientes() {
@@ -177,9 +187,10 @@ export class ConfirmarPedidoPage implements OnInit, OnDestroy {
       await toast.present();
 
       try {
+        const numeroMesa = pedido.mesas?.numero ?? pedido.mesa_id;
         await this.supabase.invocarEdgeFunction('enviar-notificacion', {
           titulo: 'Problemas con tu pedido',
-          cuerpo: `El mozo solicitó que revises tu pedido. Por favor, modificalo.`,
+          cuerpo: `El mozo solicitó que revises el pedido de la Mesa ${numeroMesa}. Por favor, modificalo.`,
           topic: `cliente_${pedido.cliente_id}`
         });
       } catch (pushError) {

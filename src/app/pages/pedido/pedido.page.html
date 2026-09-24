@@ -109,7 +109,7 @@
     <!-- Vista: esperando que el mozo confirme -->
     <ng-container *ngIf="estadoPedido === 'pendiente_confirmacion'">
       <div class="estado-espera" style="text-align: center; padding: 30px 15px;">
-        <app-cepa-spinner></app-cepa-spinner>
+        <ion-spinner name="crescent" style="width: 48px; height: 48px; color: #C8B29E;"></ion-spinner>
         <h2 class="page-title" style="margin-top: 15px;">Esperando confirmación del mozo...</h2>
         <p class="estado-subtitle">Tu pedido ya llegó al mozo. En cuanto lo confirme, tu pedido se enviará a la cocina y barra.</p>
       </div>

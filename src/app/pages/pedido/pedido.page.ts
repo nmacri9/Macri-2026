@@ -17,7 +17,6 @@ type EstadoPedido = 'carrito' | 'pendiente_confirmacion' | 'rechazado_mozo' | 'c
   selector: 'app-pedido',
   templateUrl: './pedido.page.html',
   styleUrls: ['./pedido.page.scss'],
-  standalone: true,
   imports: [IonContent, IonItem, IonIcon, IonButton, CommonModule, CepaHeaderComponent, CepaSpinnerComponent]
 })
 export class PedidoPage implements OnInit, OnDestroy {
@@ -80,7 +79,8 @@ export class PedidoPage implements OnInit, OnDestroy {
     try {
       const { data, error } = await this.supabase.getClient()
         .from('productos') 
-        .select('*');
+        .select('*')
+        .eq('activo', true);
 
       if (error) throw error;
       this.productosMenu = data || [];
@@ -96,9 +96,10 @@ export class PedidoPage implements OnInit, OnDestroy {
     const item: ProductoCarrito = {
       id: productoDB.id,
       nombre: productoDB.nombre,
+      tipo: productoDB.tipo, // <-- CRUCIAL PARA EL INTEGRANTE 2 (RUTEO)
       precio: productoDB.precio,
       tiempoElaboracion: productoDB.tiempo_elaboracion || productoDB.tiempoElaboracion || 0, 
-      fotos: productoDB.fotos || [],
+      fotos: productoDB.imagenes || productoDB.fotos || [],
       cantidad: 1,
     };
     this.carritoService.agregarProducto(item);

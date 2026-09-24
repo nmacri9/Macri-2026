@@ -1,8 +1,12 @@
 <app-cepa-header titulo="Asignar Mesas" defaultHref="/home"></app-cepa-header>
 
 <ion-content class="ion-padding content-bg">
-  <div class="card-container" *ngFor="let cliente of listaEspera">
-    <div class="cliente-info">
+  <div *ngIf="listaEspera.length === 0" style="text-align: center; color: #aaa; margin-top: 40px;">
+    <p>No hay clientes pendientes en la lista de espera.</p>
+    </div>
+
+    <div class="card-container" *ngFor="let cliente of listaEspera">
+        <div class="cliente-info">
         <h3>{{ cliente.nombre }}</h3>
         <p>Estado: {{ cliente.estado }}</p>
         </div>

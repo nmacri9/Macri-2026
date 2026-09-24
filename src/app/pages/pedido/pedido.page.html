@@ -1,4 +1,5 @@
 <app-cepa-header [titulo]="'Tu Pedido'"></app-cepa-header>
+
 <ion-content class="ion-padding">
   <app-cepa-spinner *ngIf="enviando"></app-cepa-spinner>
 
@@ -20,11 +21,19 @@
         <div class="carrito-item-info">
           <span class="carrito-item-nombre">{{ prod.nombre }}</span>
           <span class="carrito-item-precio">${{ prod.precio }}</span>
-          <small style="color: #999; display: flex; align-items: center; gap: 4px; margin-top: 4px;">
-            <ion-icon name="time-outline"></ion-icon> 
-            {{ prod.tiempo_elaboracion || prod.tiempoElaboracion || 0 }} min
-          </small>
+          
+          <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px;">
+            <!-- Badge de Tipo de Producto (Plato / Bebida / Postre) -->
+            <span style="font-size: 11px; background: rgba(209, 176, 117, 0.2); color: #d1b075; padding: 2px 6px; border-radius: 4px; font-weight: bold;">
+              {{ prod.tipo }}
+            </span>
+            <small style="color: #999; display: flex; align-items: center; gap: 4px;">
+              <ion-icon name="time-outline"></ion-icon> 
+              {{ prod.tiempo_elaboracion || prod.tiempoElaboracion || 0 }} min
+            </small>
+          </div>
         </div>
+
         <ion-button fill="outline" slot="end" size="small" (click)="agregarAlCarrito(prod)" style="--color: #d1b075; --border-color: #d1b075;">
           Agregar
         </ion-button>
@@ -74,7 +83,7 @@
         <small>{{ errorPedido }}</small>
       </div>
 
-      <!-- Panel de totales, siempre visible -->
+      <!-- Panel de totales -->
       <div class="totales-panel" slot="fixed">
         <div class="totales-row">
           <span>Tiempo estimado</span>
@@ -99,19 +108,30 @@
 
     <!-- Vista: esperando que el mozo confirme -->
     <ng-container *ngIf="estadoPedido === 'pendiente_confirmacion'">
-      <div class="estado-espera">
+      <div class="estado-espera" style="text-align: center; padding: 30px 15px;">
         <app-cepa-spinner></app-cepa-spinner>
-        <h2 class="page-title">Esperando confirmación del mozo...</h2>
-        <p class="estado-subtitle">Tu pedido ya llegó a la mesa del mozo, en cuanto lo confirme vas a ver el estado acá mismo.</p>
+        <h2 class="page-title" style="margin-top: 15px;">Esperando confirmación del mozo...</h2>
+        <p class="estado-subtitle">Tu pedido ya llegó al mozo. En cuanto lo confirme, tu pedido se enviará a la cocina y barra.</p>
       </div>
     </ng-container>
 
-    <!-- Vista: pedido confirmado -->
+    <!-- Vista: pedido confirmado (Consigna Punto 14) -->
     <ng-container *ngIf="estadoPedido === 'confirmado'">
-      <div class="estado-espera">
-        <ion-icon name="cart-outline" class="estado-icono-exito"></ion-icon>
+      <div class="estado-espera" style="text-align: center; padding: 30px 15px;">
+        <ion-icon name="cart-outline" class="estado-icono-exito" style="font-size: 64px; color: #2dd36f;"></ion-icon>
         <h2 class="page-title">¡Pedido confirmado!</h2>
-        <p class="estado-subtitle">Tu pedido ya está en cocina/barra. Te avisamos cuando esté listo.</p>
+        <p class="estado-subtitle">Tu pedido fue derivado a cocina/bar. Ahora podés ver el seguimiento en tiempo real o jugar para obtener descuentos.</p>
+        
+        <!-- Botones de Acción Posterior (Punto 14) -->
+        <div style="margin-top: 25px; display: flex; flex-direction: column; gap: 12px;">
+          <ion-button expand="block" routerLink="/estado-pedido" style="--background: #d1b075;">
+            Ver Estado del Pedido
+          </ion-button>
+          
+          <ion-button expand="block" fill="outline" routerLink="/juegos" style="--color: #d1b075; --border-color: #d1b075;">
+            Ir a Juegos (Obtener Descuento)
+          </ion-button>
+        </div>
       </div>
     </ng-container>
 

@@ -3,13 +3,13 @@ import { CommonModule } from '@angular/common';
 import { 
   IonContent, IonCard, IonCardHeader, IonCardTitle, IonCardContent, 
   IonBadge, IonList, IonItem, IonLabel, IonButton, IonIcon, 
-  ModalController // Importamos el controlador de modales
+  ModalController 
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { checkmarkCircleOutline } from 'ionicons/icons';
 import { SupabaseService } from '../../services/supabase.service';
 
-// Importamos tus componentes globales
+
 import { CepaHeaderComponent } from '../../shared/components/cepa-header/cepa-header.component';
 import { CepaSpinnerComponent } from '../../shared/components/cepa-spinner/cepa-spinner.component';
 import { ConfirmModalComponent } from '../../shared/confirm-modal/confirm-modal.component';
@@ -23,19 +23,19 @@ import { ConfirmModalComponent } from '../../shared/confirm-modal/confirm-modal.
     CommonModule, 
     IonContent, IonCard, IonCardHeader, IonCardTitle, IonCardContent, 
     IonBadge, IonList, IonItem, IonLabel, IonButton, IonIcon,
-    CepaHeaderComponent, CepaSpinnerComponent // No hace falta poner ConfirmModalComponent acá si se usa por ModalController
+    CepaHeaderComponent, CepaSpinnerComponent 
   ]
 })
 export class CocinaPage implements OnInit, OnDestroy {
   
   pedidosCocina: any[] = [];
   private canalCocina: any;
-  cargando = false; // Variable global del spinner
+  cargando = false; 
 
   constructor(
     private supabase: SupabaseService,
     private cdr: ChangeDetectorRef,
-    private modalCtrl: ModalController // Inyectamos el controlador
+    private modalCtrl: ModalController 
   ) {
     addIcons({ checkmarkCircleOutline });
   }
@@ -52,7 +52,7 @@ export class CocinaPage implements OnInit, OnDestroy {
   }
 
   async cargarPedidos() {
-    this.cargando = true; // Mostramos tu spinner global
+    this.cargando = true; 
     try {
       const { data, error } = await this.supabase.getClient()
         .from('pedidos')
@@ -65,7 +65,7 @@ export class CocinaPage implements OnInit, OnDestroy {
     } catch (error) {
       console.error('Error al cargar pedidos de cocina:', error);
     } finally {
-      this.cargando = false; // Ocultamos el spinner
+      this.cargando = false; 
       this.cdr.detectChanges();
     }
   }
@@ -116,7 +116,7 @@ export class CocinaPage implements OnInit, OnDestroy {
   }
 
   async marcarComoListo(pedidoId: string) {
-    this.cargando = true; // Activamos el spinner
+    this.cargando = true; 
     this.cdr.detectChanges();
     try {
       const { error } = await this.supabase.getClient()
@@ -129,7 +129,7 @@ export class CocinaPage implements OnInit, OnDestroy {
     } catch (error) {
       console.error('Error al actualizar pedido:', error);
     } finally {
-      this.cargando = false; // Ocultamos el spinner
+      this.cargando = false; 
       this.cdr.detectChanges();
     }
   }

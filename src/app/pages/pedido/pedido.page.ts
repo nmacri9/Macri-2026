@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonContent, IonItem, IonIcon, IonButton } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { addOutline, removeOutline, cartOutline, timeOutline } from 'ionicons/icons';
+import { addOutline, removeOutline, cartOutline, timeOutline, alertCircleOutline } from 'ionicons/icons';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { Subscription } from 'rxjs';
 import { CarritoService } from '../../services/carrito.service';
@@ -11,7 +11,7 @@ import { SupabaseService } from '../../services/supabase.service';
 import { CepaHeaderComponent } from '../../shared/components/cepa-header/cepa-header.component';
 import { CepaSpinnerComponent } from '../../shared/components/cepa-spinner/cepa-spinner.component';
 
-type EstadoPedido = 'carrito' | 'pendiente_confirmacion' | 'confirmado';
+type EstadoPedido = 'carrito' | 'pendiente_confirmacion' | 'rechazado_mozo' | 'confirmado';
 
 @Component({
   selector: 'app-pedido',
@@ -41,7 +41,7 @@ export class PedidoPage implements OnInit, OnDestroy {
     private supabase: SupabaseService,
     private cdr: ChangeDetectorRef
   ) {
-    addIcons({ addOutline, removeOutline, cartOutline, timeOutline });
+    addIcons({ addOutline, removeOutline, cartOutline, timeOutline, alertCircleOutline });
   }
 
   ngOnInit() {
@@ -74,7 +74,6 @@ export class PedidoPage implements OnInit, OnDestroy {
     this.canalRealtime?.unsubscribe();
   }
 
-  // --- CARGA DEL MENÚ DESDE SUPABASE ---
   async cargarMenuReal() {
     this.cargandoMenu = true;
     try {
@@ -94,8 +93,8 @@ export class PedidoPage implements OnInit, OnDestroy {
   }
 
   agregarAlCarrito(productoDB: any) {
-    // Mapeamos los datos incluyendo el campo 'tipo' para que funcione el ruteo a Cocina/Bar
-    const item: any = {
+    // Mapeamos los datos de la base de datos a la interfaz ProductoCarrito
+    const item: ProductoCarrito = {
       id: productoDB.id,
       nombre: productoDB.nombre,
       tipo: productoDB.tipo, // <-- CRUCIAL PARA EL INTEGRANTE 2 (RUTEO)
@@ -141,27 +140,41 @@ export class PedidoPage implements OnInit, OnDestroy {
         throw new Error('No se encontró una mesa asignada. Escaneá el QR de tu mesa antes de pedir.');
       }
 
-      const { data, error } = await this.supabase.getClient()
-        .from('pedidos')
-        .insert({
-          cliente_id: userData.user.id,
-          mesa_id: asignacion.mesa_id,
-          items: this.items, 
-          total: this.total,
-          tiempo_estimado: this.tiempoEstimado,
-          estado: 'pendiente_confirmacion'
-        })
-        .select()
-        .single();
+      if (this.estadoPedido === 'rechazado_mozo' && this.pedidoId) {
+        const { error } = await this.supabase.getClient()
+          .from('pedidos')
+          .update({
+            items: this.items, 
+            total: this.total, 
+            tiempo_estimado: this.tiempoEstimado, 
+            estado: 'pendiente_confirmacion' 
+          })
+          .eq('id', this.pedidoId);
 
-      if (error) throw error;
+        if (error) throw error;
+      } else {
+        const { data, error } = await this.supabase.getClient()
+          .from('pedidos')
+          .insert({
+            cliente_id: userData.user.id,
+            mesa_id: asignacion.mesa_id,
+            items: this.items, 
+            total: this.total,
+            tiempo_estimado: this.tiempoEstimado,
+            estado: 'pendiente_confirmacion'
+          })
+          .select()
+          .single();
 
-      this.pedidoId = data.id;
+        if (error) throw error;
+        this.pedidoId = data.id;
+        this.escucharCambiosDeEstado(data.id); 
+      }
+
       this.estadoPedido = 'pendiente_confirmacion';
       this.carritoService.vaciar();
-      this.escucharCambiosDeEstado(data.id);
 
-      // Aviso Push al sector de mozos
+      // Aviso Push
       try {
         await this.supabase.getClient().functions.invoke('enviar-notificacion', {
           body: {
@@ -191,9 +204,20 @@ export class PedidoPage implements OnInit, OnDestroy {
         'postgres_changes',
         { event: 'UPDATE', schema: 'public', table: 'pedidos', filter: `id=eq.${pedidoId}` },
         (payload: any) => {
-          const nuevoEstado = payload.new.estado;
-          if (nuevoEstado === 'en_preparacion' || nuevoEstado === 'confirmado') {
+          if (payload.new.estado === 'confirmado') {
             this.estadoPedido = 'confirmado';
+            this.cdr.detectChanges();
+          } 
+          else if (payload.new.estado === 'rechazado_mozo') {
+            this.estadoPedido = 'rechazado_mozo';
+            
+            this.carritoService.vaciar();
+            payload.new.items.forEach((item: any) => {
+              for (let i = 0; i < item.cantidad; i++) {
+                this.carritoService.agregarProducto(item);
+              }
+            });
+            
             this.cdr.detectChanges();
           }
         }

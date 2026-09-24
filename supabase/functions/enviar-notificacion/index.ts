@@ -7,14 +7,14 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-// 1. Inicializamos Firebase de forma segura (sin leer .length de undefined)
+// 1. Inicializamos Firebase de forma segura
 if (getApps().length === 0) {
   const serviceAccount = JSON.parse(Deno.env.get('FIREBASE_SERVICE_ACCOUNT') || '{}');
   initializeApp({ credential: cert(serviceAccount) });
 }
 
 serve(async (req) => {
-  // 2. ATAJAMOS EL REQUERIMIENTO 'OPTIONS' QUE TE TIRA ERROR 500 EN LA CAPTURA
+  // 2. Manejo de CORS
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
@@ -26,7 +26,27 @@ serve(async (req) => {
     const topic = payload.topic || 'aprobacion_pendientes';
 
     const mensaje: any = {
-      notification: { title: titulo, body: cuerpo },
+      notification: { 
+        title: titulo, 
+        body: cuerpo 
+      },
+      // SOLUCIÓN: Forzar prioridad alta en Android para que suene en segundo plano
+      android: {
+        priority: 'high',
+        notification: {
+          sound: 'default',
+          channelId: 'default' // Esencial para Android 8.0 en adelante
+        }
+      },
+      // SOLUCIÓN: Forzar prioridad alta en iOS
+      apns: {
+        payload: {
+          aps: {
+            sound: 'default',
+            contentAvailable: true
+          }
+        }
+      },
       topic: topic 
     };
 

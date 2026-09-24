@@ -1,8 +1,9 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
 import { RouterLink, Router } from '@angular/router';
-import { IonContent, IonHeader, IonIcon, IonPopover, IonTitle, IonToolbar, NavController, ToastController,Platform, AlertController } from '@ionic/angular';
+import { IonContent, IonHeader, IonIcon, IonPopover, IonTitle, IonToolbar, NavController, ToastController, Platform, ActionSheetController, IonRefresher, IonRefresherContent } from '@ionic/angular';
 import { SupabaseService } from '../services/supabase.service';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { FCM } from '@capacitor-community/fcm';
 import { BarcodeScanner, BarcodeFormat } from '@capacitor-mlkit/barcode-scanning';
 import { addIcons } from 'ionicons';
 import {
@@ -17,7 +18,10 @@ import {
   wineOutline,
   cartOutline,
   checkmarkCircleOutline,
-  qrCodeOutline
+  qrCodeOutline,
+  listOutline,
+  pieChartOutline,
+  closeOutline
 } from 'ionicons/icons';
 import { AuthService } from '../services/auth.service';
 
@@ -25,7 +29,7 @@ import { AuthService } from '../services/auth.service';
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
-  imports: [RouterLink, IonContent, IonHeader, IonIcon, IonPopover, IonTitle, IonToolbar],
+  imports: [RouterLink, IonContent, IonHeader, IonIcon, IonPopover, IonTitle, IonToolbar, IonRefresher, IonRefresherContent],
 })
 export class HomePage {
   nombreUsuario = 'Usuario';
@@ -43,7 +47,8 @@ export class HomePage {
   esMetre = false;
   esCliente = false;
   puedeUsarChat = false;
-  esMozo = false; 
+  esMozo = false;
+  clienteVinculadoAMesa = false;
 
   constructor(
     private cdr: ChangeDetectorRef, 
@@ -51,7 +56,7 @@ export class HomePage {
     private navController: NavController, 
     private toastController: ToastController,
     private platform: Platform,
-    private alertCtrl: AlertController,
+    private actionSheetCtrl: ActionSheetController,
     private router: Router,
     private supabase: SupabaseService
   ) {
@@ -67,12 +72,21 @@ export class HomePage {
       wineOutline,
       cartOutline,
       checkmarkCircleOutline,
-      qrCodeOutline
+      qrCodeOutline,
+      listOutline,
+      pieChartOutline,
+      closeOutline
     });
   }
 
   ionViewWillEnter() {
     return this.cargarPerfil();
+  }
+
+  // Función para el pull-to-refresh
+  async recargarPantalla(event: any) {
+    await this.cargarPerfil();
+    event.target.complete();
   }
 
   async cerrarSesion(menu: IonPopover) {
@@ -108,56 +122,93 @@ export class HomePage {
     this.esCliente = false;
     this.esMozo = false;
     this.puedeUsarChat = false;
+    this.clienteVinculadoAMesa = false; // <--- REINICIAR LA VARIABLE
     this.cdr.markForCheck();
+
     try {
       const usuario = await this.authService.obtenerUsuarioActual();
-
-      if (!usuario) {
-        throw new Error('No se pudo obtener el usuario actual.');
-      }
-
+      if (!usuario) throw new Error('No se pudo obtener el usuario actual.');
+      
       this.usuarioActual = usuario;
-
       this.nombreUsuario = usuario.email || 'Usuario';
       this.fotoUsuario = usuario.user_metadata?.['foto_url'] || null;
-
       this.cdr.detectChanges();
 
       const perfil = await this.authService.obtenerPerfil();
-
-      if (!perfil) {
-        throw new Error('No se pudo obtener el perfil actual.');
-      }
-
-      const nombreCompleto = [perfil.nombres, perfil.apellidos]
-        .filter(Boolean)
-        .join(' ');
-
+      if (!perfil) throw new Error('No se pudo obtener el perfil actual.');
+      
+      const nombreCompleto = [perfil.nombres, perfil.apellidos].filter(Boolean).join(' ');
       this.nombreUsuario = nombreCompleto || perfil.email || this.nombreUsuario;
       this.fotoUsuario = perfil.foto_url || this.fotoUsuario;
       
-      const rol = String(perfil.rol ?? '').trim().toUpperCase()
-        .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      const rol = String(perfil.rol ?? '').trim().toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
-      // Roles administrativos (Dueño / Supervisor)
+      // =========================================================================
+      // GESTIÓN DINÁMICA DE CANALES PUSH
+      // =========================================================================
+      if (this.platform.is('capacitor')) {
+        try {
+          await FCM.unsubscribeFrom({ topic: 'aprobacion_pendientes' });
+          await FCM.unsubscribeFrom({ topic: 'metre_lista_espera' });
+
+          if (['DUENO', 'SUPERVISOR'].includes(rol)) {
+            await FCM.subscribeTo({ topic: 'aprobacion_pendientes' });
+          }
+          
+          if (['METRE'].includes(rol)) { 
+            await FCM.subscribeTo({ topic: 'metre_lista_espera' });
+          }
+        } catch (err) {
+          console.error('Error configurando topics de FCM:', err);
+        }
+      }
+      // =========================================================================
+
+      // Fallback de fotos locales para el acceso rápido
+      if (!this.fotoUsuario) {
+        const fotosPorDefecto: Record<string, string> = {
+          'DUENO': 'assets/perfiles/Dueño.png',
+          'SUPERVISOR': 'assets/perfiles/Supervisor.png',
+          'METRE': 'assets/perfiles/Metre.png',
+          'MOZO': 'assets/perfiles/mozo.png',
+          'COCINERO': 'assets/perfiles/cocinero.png',
+          'CANTINERO': 'assets/perfiles/cantinero.png',
+          'CLIENTE_REGISTRADO': 'assets/perfiles/cliente.png',
+          'CLIENTE_ANONIMO': 'assets/perfiles/anonimo.png'
+        };
+        this.fotoUsuario = fotosPorDefecto[rol] || null;
+      }
+
       this.puedeGestionarClientes = perfil.estado === 'ACTIVO' && ['DUENO', 'SUPERVISOR'].includes(rol);
-      this.puedeCargarPlatos = perfil.estado === 'ACTIVO' && ['DUENO', 'SUPERVISOR', 'COCINERO'].includes(rol);
-      this.puedeCargarBebidas = perfil.estado === 'ACTIVO' && ['DUENO', 'SUPERVISOR', 'CANTINERO'].includes(rol);
-      
-      // Metre
-      this.esMetre = ['METRE', 'DUENO', 'SUPERVISOR'].includes(rol);
-
-      // Mozo
-      this.esMozo = ['MOZO', 'DUENO', 'SUPERVISOR'].includes(rol);
-      
-      // Clientes
+      this.puedeCargarPlatos = perfil.estado === 'ACTIVO' && rol === 'COCINERO';
+      this.puedeCargarBebidas = perfil.estado === 'ACTIVO' && rol === 'CANTINERO';
+      this.esMetre = ['METRE', 'SUPERVISOR', 'DUENO'].includes(rol);
+      this.esMozo = (rol === 'MOZO' && perfil.estado === 'ACTIVO');
       this.esCliente = ['CLIENTE_REGISTRADO', 'CLIENTE_ANONIMO'].includes(rol);
-      
+
+      // =========================================================================
+      // Lógica robusta de estado de mesa
+      // =========================================================================
+      if (this.esCliente) {
+        // Consultamos la tabla de asignaciones directamente
+        const { data } = await this.supabase.getClient()
+          .from('asignaciones_mesa')
+          .select('estado_escaneo')
+          .eq('cliente_id', this.usuarioActual.id)
+          .eq('activa', true)
+          .maybeSingle();
+
+        // Si existe una asignación activa y el estado ya es OCUPADA (ya escaneó)
+        if (data && data.estado_escaneo === 'OCUPADA') {
+          this.clienteVinculadoAMesa = true;
+        }
+      }
+
+      // El chat requiere que el cliente tenga la mesa vinculada
       this.puedeUsarChat = (rol === 'MOZO' && perfil.estado === 'ACTIVO')
-        || (rol === 'CLIENTE_REGISTRADO' && perfil.estado === 'APROBADO');
+        || (this.esCliente && this.clienteVinculadoAMesa && (rol === 'CLIENTE_ANONIMO' || perfil.estado === 'APROBADO'));
 
       this.cdr.detectChanges();
-
     } catch (error) {
       console.error('No se pudo cargar el perfil del usuario:', error);
       this.errorPerfil = 'No pudimos cargar tus opciones. Volvé a intentar.';
@@ -175,6 +226,11 @@ export class HomePage {
 
     if (this.platform.is('capacitor')) {
       try {
+        const { available } = await BarcodeScanner.isGoogleBarcodeScannerModuleAvailable();
+        if (!available) {
+          await BarcodeScanner.installGoogleBarcodeScannerModule();
+        }
+
         const { camera } = await BarcodeScanner.requestPermissions();
         
         if (camera === 'granted' || camera === 'limited') {
@@ -199,7 +255,6 @@ export class HomePage {
       contenidoQR = 'QR_INGRESO_CEPA';
     }
 
-    // Validamos lo que leyó el escáner
     if (contenidoQR === 'QR_INGRESO_CEPA') {
       await Haptics.impact({ style: ImpactStyle.Light });
       this.mostrarOpcionesIngreso();
@@ -215,34 +270,39 @@ export class HomePage {
   }
 
   async mostrarOpcionesIngreso() {
-    const alert = await this.alertCtrl.create({
+    const actionSheet = await this.actionSheetCtrl.create({
       header: '¡Bienvenido a Cepa!',
-      message: '¿Qué querés hacer?',
-      cssClass: 'cepa-alert',
+      subHeader: '¿Qué querés hacer?',
+      cssClass: 'cepa-action-sheet',
       buttons: [
         {
-          text: 'Ver Encuestas',
-          role: 'cancel',
-          handler: () => {
-            this.router.navigate(['/graficos-encuestas']); 
-          }
-        },
-        {
           text: 'Lista de Espera',
+          icon: 'list-outline',
           handler: () => {
             this.anotarseEnLista();
           }
+        },
+        {
+          text: 'Ver Encuestas',
+          icon: 'pie-chart-outline',
+          handler: () => {
+            this.router.navigate(['/graficos-encuestas']);
+          }
+        },
+        {
+          text: 'Cancelar',
+          icon: 'close-outline',
+          role: 'cancel'
         }
       ]
     });
-    await alert.present();
+    await actionSheet.present();
   }
 
   async anotarseEnLista() {
     if (!this.usuarioActual) return;
 
     try {
-      // 1. Validar si el cliente ya está en la lista de espera
       const { data: existente, error: errorConsulta } = await this.supabase.getClient()
         .from('lista_espera')
         .select('*')
@@ -253,7 +313,6 @@ export class HomePage {
       if (errorConsulta) throw errorConsulta;
 
       if (existente) {
-        // Si ya existe, le avisamos y cortamos la ejecución
         const toast = await this.toastController.create({
           message: 'Ya te encuentras anotado en la lista de espera.',
           duration: 3000,
@@ -264,7 +323,6 @@ export class HomePage {
         return;
       }
 
-      // 2. Si no existe, procedo a insertarlo
       const { error: errorInsert } = await this.supabase.getClient()
         .from('lista_espera')
         .insert({
@@ -298,35 +356,32 @@ export class HomePage {
     }
   }
 
-  // VALIDACION!! No dejo entrar a mesas sin estar en lista o asignado
   async verificarAccesoMesa() {
     if (!this.usuarioActual) return;
 
     try {
-      // Consultamos si el cliente figura en la lista de espera o si ya tiene mesa asignada
       const { data, error } = await this.supabase.getClient()
         .from('lista_espera')
         .select('*')
         .eq('cliente_id', this.usuarioActual.id)
         .single();
 
-      // Si no está en la lista o da error (porque no existe el registro)
       if (error || !data) {
-        const alert = await this.alertCtrl.create({
-          header: 'Acceso Denegado',
-          message: 'No podés escanear una mesa si antes no escaneaste el QR de ingreso y te anotaste en la lista de espera.',
-          buttons: ['OK']
+        const toast = await this.toastController.create({
+          message: '⛔ Acceso Denegado: No podés escanear una mesa si antes no te anotaste en la lista de espera.',
+          duration: 4000,
+          position: 'middle',
+          color: 'danger',
+          cssClass: 'toast-denegado-cepa'
         });
-        await alert.present();
+        await toast.present();
         return;
       }
 
-      // Si paso la validación, lo dejamos pasar a la pantalla de escaneo de mesa
       this.router.navigate(['/cliente-escaneo-mesa']);
 
     } catch (err) {
       console.error('Error al verificar acceso a mesa:', err);
-      // Por seguridad, bloqueamos el acceso
       const toast = await this.toastController.create({
         message: 'Debes estar en la lista de espera para acceder a las mesas.',
         duration: 3000,
@@ -341,7 +396,7 @@ export class HomePage {
     try {
       await this.supabase.getClient().functions.invoke('enviar-notificacion', {
         body: {
-          topic: 'aprobacion_pendientes', 
+          topic: 'metre_lista_espera', 
           titulo: 'Nuevo cliente en lista de espera',
           cuerpo: `${this.nombreUsuario} está esperando una mesa.`
         }
@@ -351,13 +406,3 @@ export class HomePage {
     }
   }
 }
-
-
-
-
-
-
-
-
-
-

@@ -108,38 +108,26 @@ export class RegistroClientePage implements OnInit {
   async tomarFoto() {
     if (this.cargandoFoto || this.cargando) return;
 
-    if (!Capacitor.isNativePlatform()) {
-      const input = this.archivoFoto?.nativeElement;
-      if (!input) {
-        this.errorFoto = 'No se pudo abrir el selector de imágenes.';
-        return;
-      }
-      input.value = '';
-      input.click();
-      return;
-    }
-
     this.cargandoFoto = true;
     this.errorFoto = '';
+    
     try {
       const image = await Camera.getPhoto({
         quality: 80,
         allowEditing: false,
         resultType: CameraResultType.DataUrl,
-        source: CameraSource.Prompt,
-        promptLabelHeader: 'Foto de perfil',
-        promptLabelPhoto: 'Elegir de la galería',
-        promptLabelPicture: 'Tomar una foto',
-        promptLabelCancel: 'Cancelar'
+        source: CameraSource.Camera
       });
 
       if (!image.dataUrl) throw new Error('No se pudo leer la foto.');
+      
       this.fotoPreview = image.dataUrl;
       this.registroForm.patchValue({ foto: this.fotoPreview });
       this.registroForm.get('foto')?.markAsDirty();
+      
     } catch (error: any) {
       if (!/cancel|canceled|cancelled|no image picked/i.test(error?.message ?? '')) {
-        this.errorFoto = 'No se pudo cargar la foto. Revisá los permisos o elegí otra imagen.';
+        this.errorFoto = 'No se pudo capturar la foto. Revisá los permisos de la cámara e intentá nuevamente.';
       }
     } finally {
       this.cargandoFoto = false;

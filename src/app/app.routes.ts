@@ -4,13 +4,19 @@ import { roleGuard } from './role.guard';
 export const routes: Routes = [
   {
     path: 'menu-productos',
-    loadComponent: () => import('./pages/menu-productos/menu-productos.page').then(m => m.MenuProductosPage),
+    loadComponent: () =>
+      import('./pages/menu-productos/menu-productos.page').then(
+        (m) => m.MenuProductosPage
+      ),
     canActivate: [roleGuard],
     data: { roles: ['CLIENTE_ANONIMO', 'CLIENTE_REGISTRADO'] },
   },
   {
     path: 'chat-cliente',
-    loadComponent: () => import('./pages/chat-cliente/chat-cliente.page').then(m => m.ChatClientePage),
+    loadComponent: () =>
+      import('./pages/chat-cliente/chat-cliente.page').then(
+        (m) => m.ChatClientePage
+      ),
     canActivate: [roleGuard],
     data: { roles: ['MOZO', 'CLIENTE_REGISTRADO'] },
   },
@@ -55,14 +61,14 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/alta-plato/alta-plato.page').then((m) => m.AltaPlatoPage),
     canActivate: [roleGuard],
-    data: { roles: ['DUENO', 'SUPERVISOR', 'COCINERO'] },
+    data: { roles: ['COCINERO'] },
   },
   {
     path: 'alta-bebida',
     loadComponent: () =>
       import('./pages/alta-bebida/alta-bebida').then((m) => m.AltaBebidaPage),
     canActivate: [roleGuard],
-    data: { roles: ['DUENO', 'SUPERVISOR', 'CANTINERO'] },
+    data: { roles: ['CANTINERO'] },
   },
   {
     path: 'alta-mesa',
@@ -77,6 +83,8 @@ export const routes: Routes = [
       import('./pages/registro-cliente/registro-cliente.page').then(
         (m) => m.RegistroClientePage
       ),
+    canActivate: [roleGuard],
+    data: { roles: ['DUENO', 'SUPERVISOR'] },
   },
   {
     path: 'clientes-pendientes',
@@ -122,16 +130,23 @@ export const routes: Routes = [
   },
   {
     path: 'pedido',
-    loadComponent: () => import('./pages/pedido/pedido.page').then(m => m.PedidoPage),
+    loadComponent: () =>
+      import('./pages/pedido/pedido.page').then((m) => m.PedidoPage),
     canActivate: [roleGuard],
-    data: { roles: ['CLIENTE_REGISTRADO', 'CLIENTE_ANONIMO'] }
+    data: { roles: ['CLIENTE_REGISTRADO', 'CLIENTE_ANONIMO'] },
   },
   {
     path: 'confirmar-pedido',
-    loadComponent: () => import('./pages/confirmar-pedido/confirmar-pedido.page').then(m => m.ConfirmarPedidoPage),
+    loadComponent: () =>
+      import('./pages/confirmar-pedido/confirmar-pedido.page').then(
+        (m) => m.ConfirmarPedidoPage
+      ),
     canActivate: [roleGuard],
-    data: { roles: ['MOZO'] }
+    data: { roles: ['MOZO'] },
   },
-
+  {
+    path: 'cocina',
+    loadComponent: () =>
+      import('./pages/cocina/cocina.page').then((m) => m.CocinaPage),
+  },
 ];
-

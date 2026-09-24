@@ -1,0 +1,41 @@
+<ion-header>
+  <ion-toolbar color="dark">
+    <ion-title>Comandas - Cocina</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding" style="--background: #132A20;">
+  
+  <div *ngIf="pedidosCocina.length === 0" class="sin-pedidos">
+    <h2>Sin pedidos pendientes</h2>
+    <p>La cocina está al día.</p>
+  </div>
+
+  <!-- Iteramos sobre el array ya procesado -->
+  <ion-card *ngFor="let pedido of pedidosCocina" class="comanda-card">
+    <ion-card-header>
+      <div class="header-comanda">
+        <ion-card-title>Mesa {{ pedido.mesa_id }}</ion-card-title>
+        <ion-badge color="warning">{{ pedido.created_at | date:'HH:mm' }}</ion-badge>
+      </div>
+    </ion-card-header>
+
+    <ion-card-content>
+      <ion-list lines="full" class="lista-items">
+        <!-- Mostramos solo los items de comida -->
+        <ion-item *ngFor="let item of pedido.items">
+          <ion-label>
+            <h3>{{ item.nombre }}</h3>
+          </ion-label>
+          <ion-badge slot="end" color="light">x{{ item.cantidad }}</ion-badge>
+        </ion-item>
+      </ion-list>
+
+      <ion-button expand="block" color="success" class="btn-listo" (click)="marcarComoListo(pedido.id)">
+        <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+        Pedido Listo
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>

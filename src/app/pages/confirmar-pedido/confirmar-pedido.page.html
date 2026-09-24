@@ -33,13 +33,25 @@
 
         <div class="pedido-card-footer">
           <span class="pedido-total">Total: ${{ pedido.total }}</span>
-          <ion-button
-            class="btn-confirmar"
-            [disabled]="confirmandoId === pedido.id"
-            (click)="confirmarPedido(pedido)">
-            <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
-            Confirmar
-          </ion-button>
+          
+          <!-- Contenedor con clase formal para los dos botones -->
+          <div class="botones-accion">
+            <ion-button
+              class="btn-rechazar"
+              [disabled]="confirmandoId === pedido.id"
+              (click)="rechazarPedido(pedido)">
+              <ion-icon name="close-circle-outline" slot="start"></ion-icon>
+              Revisión
+            </ion-button>
+
+            <ion-button
+              class="btn-confirmar"
+              [disabled]="confirmandoId === pedido.id"
+              (click)="confirmarPedido(pedido)">
+              <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+              Confirmar
+            </ion-button>
+          </div>
         </div>
 
       </div>

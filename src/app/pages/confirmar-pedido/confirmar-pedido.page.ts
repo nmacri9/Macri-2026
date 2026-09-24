@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonContent, IonItem, IonIcon, IonButton, ModalController, ToastController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { restaurantOutline, checkmarkCircleOutline, timeOutline } from 'ionicons/icons';
+import { restaurantOutline, checkmarkCircleOutline, timeOutline, closeCircleOutline } from 'ionicons/icons';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { SupabaseService } from '../../services/supabase.service';
 import { ProductoCarrito } from '../../interfaces/carrito.model';
@@ -12,8 +12,9 @@ import { ConfirmModalComponent } from '../../shared/confirm-modal/confirm-modal.
 
 interface PedidoPendiente {
   id: string;
+  cliente_id: string; 
   mesa_id: number;
-  mesas?: { numero: number }; // TODO: confirmar el nombre real de la columna en la tabla "mesas"
+  mesas?: { numero: number };
   items: ProductoCarrito[];
   total: number;
   tiempo_estimado: number;
@@ -43,7 +44,7 @@ export class ConfirmarPedidoPage implements OnInit, OnDestroy {
     private toastCtrl: ToastController,
     private cdr: ChangeDetectorRef
   ) {
-    addIcons({ restaurantOutline, checkmarkCircleOutline, timeOutline });
+    addIcons({ restaurantOutline, checkmarkCircleOutline, timeOutline, closeCircleOutline });
   }
 
   ngOnInit() {
@@ -137,6 +138,58 @@ export class ConfirmarPedidoPage implements OnInit, OnDestroy {
       console.error('Error al confirmar pedido:', error);
       await Haptics.impact({ style: ImpactStyle.Heavy });
       this.errorMsg = 'No se pudo confirmar el pedido. Intente nuevamente.';
+    } finally {
+      this.confirmandoId = null;
+      this.cdr.detectChanges();
+    }
+  }
+
+  async rechazarPedido(pedido: PedidoPendiente) {
+    const modal = await this.modalCtrl.create({
+      component: ConfirmModalComponent,
+      componentProps: { mensaje: `¿Solicitar modificaciones a la Mesa ${pedido.mesas?.numero ?? pedido.mesa_id}?` },
+      cssClass: 'modal-alerta'
+    });
+
+    await modal.present();
+    const { data: confirmado } = await modal.onDidDismiss();
+    if (!confirmado) return;
+
+    this.confirmandoId = pedido.id;
+    this.cdr.detectChanges();
+
+    try {
+      const { error } = await this.supabase.getClient()
+        .from('pedidos')
+        .update({ estado: 'rechazado_mozo' })
+        .eq('id', pedido.id);
+
+      if (error) throw error;
+
+      this.pedidos = this.pedidos.filter(p => p.id !== pedido.id);
+
+      const toast = await this.toastCtrl.create({
+        message: `Mesa ${pedido.mesas?.numero ?? pedido.mesa_id} enviada a corrección.`,
+        duration: 2500,
+        color: 'warning',
+        icon: 'close-circle-outline'
+      });
+      await toast.present();
+
+      try {
+        await this.supabase.invocarEdgeFunction('enviar-notificacion', {
+          titulo: 'Problemas con tu pedido',
+          cuerpo: `El mozo solicitó que revises tu pedido. Por favor, modificalo.`,
+          topic: `cliente_${pedido.cliente_id}`
+        });
+      } catch (pushError) {
+        console.warn('El pedido se rechazó pero falló la push:', pushError);
+      }
+
+    } catch (error: any) {
+      console.error('Error al rechazar pedido:', error);
+      await Haptics.impact({ style: ImpactStyle.Heavy });
+      this.errorMsg = 'No se pudo rechazar el pedido.';
     } finally {
       this.confirmandoId = null;
       this.cdr.detectChanges();

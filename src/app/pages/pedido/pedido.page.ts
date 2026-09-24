@@ -17,12 +17,10 @@ type EstadoPedido = 'carrito' | 'pendiente_confirmacion' | 'confirmado';
   selector: 'app-pedido',
   templateUrl: './pedido.page.html',
   styleUrls: ['./pedido.page.scss'],
-  standalone: true,
   imports: [IonContent, IonItem, IonIcon, IonButton, CommonModule, CepaHeaderComponent, CepaSpinnerComponent]
 })
 export class PedidoPage implements OnInit, OnDestroy {
 
-  // Variables para el menú real
   productosMenu: any[] = [];
   cargandoMenu = true;
 
@@ -80,11 +78,10 @@ export class PedidoPage implements OnInit, OnDestroy {
   async cargarMenuReal() {
     this.cargandoMenu = true;
     try {
-      // Ajustá el nombre de la tabla si en tu BD se llama distinto (ej. 'platos', 'productos')
       const { data, error } = await this.supabase.getClient()
         .from('productos') 
-        .select('*');
-        // .eq('activo', true); // Descomentá esto si tenés una columna para ocultar productos agotados
+        .select('*')
+        .eq('activo', true);
 
       if (error) throw error;
       this.productosMenu = data || [];
@@ -97,18 +94,18 @@ export class PedidoPage implements OnInit, OnDestroy {
   }
 
   agregarAlCarrito(productoDB: any) {
-    // Mapeamos los datos de la base de datos a la interfaz ProductoCarrito
-    const item: ProductoCarrito = {
+    // Mapeamos los datos incluyendo el campo 'tipo' para que funcione el ruteo a Cocina/Bar
+    const item: any = {
       id: productoDB.id,
       nombre: productoDB.nombre,
+      tipo: productoDB.tipo, // <-- CRUCIAL PARA EL INTEGRANTE 2 (RUTEO)
       precio: productoDB.precio,
       tiempoElaboracion: productoDB.tiempo_elaboracion || productoDB.tiempoElaboracion || 0, 
-      fotos: productoDB.fotos || [],
+      fotos: productoDB.imagenes || productoDB.fotos || [],
       cantidad: 1,
     };
     this.carritoService.agregarProducto(item);
   }
-  // -------------------------------------
 
   sumar(item: ProductoCarrito) {
     this.carritoService.agregarProducto(item);
@@ -164,7 +161,7 @@ export class PedidoPage implements OnInit, OnDestroy {
       this.carritoService.vaciar();
       this.escucharCambiosDeEstado(data.id);
 
-      // Aviso Push
+      // Aviso Push al sector de mozos
       try {
         await this.supabase.getClient().functions.invoke('enviar-notificacion', {
           body: {
@@ -194,7 +191,8 @@ export class PedidoPage implements OnInit, OnDestroy {
         'postgres_changes',
         { event: 'UPDATE', schema: 'public', table: 'pedidos', filter: `id=eq.${pedidoId}` },
         (payload: any) => {
-          if (payload.new.estado === 'confirmado') {
+          const nuevoEstado = payload.new.estado;
+          if (nuevoEstado === 'en_preparacion' || nuevoEstado === 'confirmado') {
             this.estadoPedido = 'confirmado';
             this.cdr.detectChanges();
           }

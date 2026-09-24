@@ -1,9 +1,9 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { 
-    IonContent, IonItem, IonLabel, IonSelect, 
-    IonSelectOption, IonButton, ToastController 
+import {
+    IonContent, IonItem, IonLabel, IonSelect,
+    IonSelectOption, IonButton, ToastController
 } from '@ionic/angular';
 import { CepaHeaderComponent } from '../../shared/components/cepa-header/cepa-header.component';
 import { MesasService } from '../../services/mesas.service';
@@ -18,6 +18,7 @@ interface ClienteEspera {
     estado: string;
     foto_url?: string;
     mesaSeleccionadaId: number | null;
+
 }
 
 @Component({
@@ -29,6 +30,7 @@ interface ClienteEspera {
         CommonModule, FormsModule, IonContent, IonItem, 
         IonLabel, IonSelect, IonSelectOption, IonButton, CepaHeaderComponent
     ]
+
 })
 export class MetreAsignacionPage implements OnInit {
     mesasDisponibles: Mesa[] = [];
@@ -42,10 +44,12 @@ export class MetreAsignacionPage implements OnInit {
         private cdr: ChangeDetectorRef
     ) {}
 
+
     async ngOnInit() {
         await this.cargarMesas();
         await this.cargarListaEspera();
     }
+
 
     async cargarMesas() {
         try {
@@ -55,10 +59,10 @@ export class MetreAsignacionPage implements OnInit {
         }
     }
 
+
     async cargarListaEspera() {
         try {
             const supabase = this.supabaseService.getClient();
-
             // Consultamos los clientes con estado 'ESPERANDO'
             const { data, error } = await supabase
                 .from('lista_espera')
@@ -66,8 +70,8 @@ export class MetreAsignacionPage implements OnInit {
                 .eq('estado', 'ESPERANDO')
                 .order('fecha_ingreso', { ascending: true });
 
-            if (error) throw error;
 
+            if (error) throw error;
             this.listaEspera = (data || []).map((item: any) => ({
                 id: item.id,
                 cliente_id: item.cliente_id,
@@ -76,7 +80,6 @@ export class MetreAsignacionPage implements OnInit {
                 estado: item.estado,
                 mesaSeleccionadaId: null
             }));
-
             this.cdr.detectChanges();
 
         } catch (err) {
@@ -84,46 +87,39 @@ export class MetreAsignacionPage implements OnInit {
         }
     }
 
+
     async asignarMesa(cliente: ClienteEspera) {
-        if (!cliente.mesaSeleccionadaId) return;
+    if (!cliente.mesaSeleccionadaId) return;
 
-        const mesa = this.mesasDisponibles.find(m => m.id === cliente.mesaSeleccionadaId);
-        if (!mesa) return;
+    const mesa = this.mesasDisponibles.find(m => m.id === cliente.mesaSeleccionadaId);
+    if (!mesa) return;
 
-        try {
-            const metre = await this.authService.obtenerUsuarioActual();
-            const metreId = metre ? metre.id : '';
+    try {
+        const metre = await this.authService.obtenerUsuarioActual();
+        const metreId = metre ? metre.id : '';
 
-            // 1. Asignamos la mesa mediante el servicio
-            await this.mesasService.asignarMesaACliente(cliente.cliente_id, mesa.id, metreId);
-            
-            // 2. Actualizamos el estado del cliente en la tabla 'lista_espera' a 'ASIGNADO'
-            const { error: errorLista } = await this.supabaseService.getClient()
-                .from('lista_espera')
-                .update({ estado: 'ASIGNADO' })
-                .eq('id', cliente.id);
+        // 1. Asignamos la mesa (esto actualiza asignaciones_mesa, mesas y lista_espera en Supabase)
+        await this.mesasService.asignarMesaACliente(cliente.cliente_id, mesa.id, metreId);
 
-            if (errorLista) throw errorLista;
+        const toast = await this.toastController.create({
+            message: `Mesa ${mesa.numero} asignada con éxito a ${cliente.nombre}`,
+            duration: 3000,
+            color: 'success'
+        });
+        await toast.present();
+        
+        // 2. Recargamos la vista: el cliente asignado desaparecerá de la lista
+        await this.cargarMesas();
+        await this.cargarListaEspera();
 
-            const toast = await this.toastController.create({
-                message: `Mesa ${mesa.numero} asignada con éxito a ${cliente.nombre}`,
-                duration: 3000,
-                color: 'success'
-            });
-            await toast.present();
-            
-            // 3. Recargamos la lista de espera y las mesas disponibles
-            await this.cargarMesas();
-            await this.cargarListaEspera();
-
-        } catch (error: any) {
-            console.error('Error al asignar mesa:', error);
-            const toast = await this.toastController.create({
-                message: error.message || 'Error al asignar la mesa',
-                duration: 4000,
-                color: 'danger'
-            });
-            await toast.present();
-        }
+    } catch (error: any) {
+        console.error('Error al asignar mesa:', error);
+        const toast = await this.toastController.create({
+            message: error.message || 'Error al asignar la mesa',
+            duration: 4000,
+            color: 'danger'
+        });
+        await toast.present();
     }
+}
 }

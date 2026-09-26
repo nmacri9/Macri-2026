@@ -299,6 +299,8 @@ Servicio desacoplado enfocado exclusivamente en la gestión del estado en memori
 | **15** | Escanear mesa (Cliente): Vista      | [Ver imagen](./capturas/escanear-mesa.jpeg)    |
 | **16** | Ingreso al local (Cliente): Vista   | [Ver imagen](./capturas/.jpeg)                 |
 | **17** | Confirmar pedido (Mozo): Vista      | [Ver imagen](./capturas/.jpeg)                 |
+| **18** | Gestion Comandas (Cocinero): Vista  | [Ver imagen](./capturas/.jpeg)             |
+
 
 
 

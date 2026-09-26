@@ -1,32 +1,12 @@
+/* ============================================
+   Base y Contenedores
+   ============================================ */
 ion-content {
-  --background: #132A20; // verde muy oscuro - fondo principal
-  --padding-bottom: 150px; // deja lugar para que el panel fijo no tape el último item
+  --background: #132A20; 
 }
 
-/* 🧪 SOLO PARA TESTING — sacar junto con el bloque del HTML */
-.testing-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  padding: 12px 16px;
-  margin: 16px 16px 0;
-  border: 1px dashed #C8B29E;
-  border-radius: 12px;
-  max-width: 480px;
-
-  ion-button {
-    --color: #dbcbb9;
-    --border-color: #C8B29E;
-    font-size: 12px;
-  }
-}
-
-.testing-label {
-  width: 100%;
-  font-family: 'Inter', sans-serif;
-  font-size: 12px;
-  color: #C8B29E;
-  margin: 0 0 4px;
+ion-footer {
+  background: transparent;
 }
 
 .carrito-section {
@@ -37,33 +17,241 @@ ion-content {
 
 .section-label {
   font-family: 'EB Garamond', serif;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
-  color: #dbcbb9; // crema - texto principal
-  margin: 16px 4px 12px;
+  color: #dbcbb9; 
+  margin: 24px 4px 16px;
+  letter-spacing: 0.3px;
 }
 
 /* ============================================
- Banner de Rechazo (Punto 13)
+   Tarjetas del Menú (Flotantes)
+   ============================================ */
+.carrito-item {
+  --background: #1B3B2D; 
+  --border-radius: 16px;
+  --padding-start: 16px;
+  --padding-top: 14px;
+  --padding-bottom: 14px;
+  --inner-padding-end: 14px;
+  border: none; 
+  border-radius: 16px;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 12px rgba(9, 22, 16, 0.4); 
+}
+
+/* ============================================
+   Lista del Carrito (Minimalista)
+   ============================================ */
+.item-agregado {
+  --background: transparent;
+  --padding-start: 4px;
+  --inner-padding-end: 4px;
+  box-shadow: none;
+  border-radius: 0;
+  border-bottom: 1px solid rgba(200, 178, 158, 0.15); 
+  margin-bottom: 0;
+  
+  &:last-child {
+    border-bottom: none; 
+  }
+}
+
+/* ============================================
+   Textos e Información agrupada
+   ============================================ */
+.carrito-item-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0; 
+}
+
+.carrito-item-nombre {
+  font-family: 'EB Garamond', serif;
+  font-size: 17px;
+  font-weight: 600;
+  color: #dbcbb9; 
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 4px;
+}
+
+.menu-item-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-family: 'Inter', sans-serif;
+}
+
+.badge-tipo {
+  background: rgba(219, 203, 185, 0.15); /* Crema con transparencia */
+  color: #dbcbb9; 
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 12px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.meta-precio {
+  font-size: 14px;
+  font-weight: 600;
+  color: #C8B29E; 
+}
+
+.meta-tiempo {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: rgba(200, 178, 158, 0.8);
+  
+  ion-icon {
+    font-size: 14px;
+  }
+}
+
+.meta-dot {
+  color: rgba(200, 178, 158, 0.4);
+  font-size: 10px;
+}
+
+.carrito-item-precio {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #C8B29E; 
+  margin-top: 4px;
+}
+
+/* ============================================
+   Botones de Acción (Píldora y Circular)
+   ============================================ */
+.btn-agregar {
+  --background: rgba(200, 178, 158, 0.12);
+  --background-activated: rgba(200, 178, 158, 0.25);
+  --color: #dbcbb9;
+  --border-radius: 50%;
+  --padding-start: 0;
+  --padding-end: 0;
+  width: 40px;
+  height: 40px;
+  margin: 0;
+  box-shadow: none;
+
+  ion-icon {
+    font-size: 22px;
+  }
+}
+
+/* Píldora para sumar/restar */
+.carrito-item-controles {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(200, 178, 158, 0.1); 
+  border: 1px solid rgba(200, 178, 158, 0.15);
+  padding: 2px 4px;
+  border-radius: 24px; /* Forma de píldora redonda */
+  flex-shrink: 0;
+}
+
+.control-btn {
+  --background: transparent;
+  --color: #dbcbb9;
+  --padding-start: 4px;
+  --padding-end: 4px;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  margin: 0;
+
+  ion-icon {
+    font-size: 18px;
+  }
+}
+
+.carrito-item-cantidad {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  color: #dbcbb9; 
+  min-width: 20px;
+  text-align: center;
+}
+
+/* ============================================
+   Panel de Totales (Footer)
+   ============================================ */
+.totales-panel {
+  background: #1B3B2D; 
+  border-top: 1px solid rgba(200, 178, 158, 0.15); 
+  border-radius: 24px 24px 0 0;
+  padding: 20px 24px calc(20px + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 -8px 24px rgba(9, 22, 16, 0.5);
+}
+
+.totales-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #C8B29E; 
+  margin-bottom: 8px;
+}
+
+.totales-row-destacado {
+  font-family: 'EB Garamond', serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: #dbcbb9; 
+  margin-bottom: 16px;
+}
+
+.btn-submit {
+  --background: #C8B29E; 
+  --background-activated: #b59d89;
+  --color: #091610; 
+  --border-radius: 16px;
+  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  height: 54px;
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: 0.3px;
+  margin: 0;
+
+  &[disabled] {
+    --background: #C8B29E;
+    opacity: 0.3;
+  }
+}
+
+/* ============================================
+   Banner de Rechazo
    ============================================ */
 .banner-rechazo {
   display: flex;
   align-items: center;
   gap: 14px;
-  background-color: rgba(211, 47, 47, 0.15); // Fondo rojizo translúcido
-  border: 1px solid #d32f2f; // Rojo semántico
-  border-radius: 16px; // Match con las otras tarjetas
+  background-color: rgba(211, 47, 47, 0.1); 
+  border-left: 4px solid #d32f2f; 
+  border-radius: 8px;
   padding: 16px;
-  
-  /* Centrado calcado de carrito-section */
   width: calc(100% - 32px);
   max-width: 448px; 
   margin: 0 auto 20px;
   
   ion-icon {
-    font-size: 36px;
+    font-size: 32px;
     color: #ff6b6b;
-    min-width: 36px;
+    min-width: 32px;
   }
 
   .texto-banner {
@@ -73,7 +261,7 @@ ion-content {
     h3 {
       margin: 0 0 4px 0;
       font-family: 'EB Garamond', serif;
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 700;
       color: #ff6b6b; 
     }
@@ -82,14 +270,14 @@ ion-content {
       font-family: 'Inter', sans-serif;
       margin: 0;
       font-size: 13px;
-      color: #dbcbb9; // crema - texto principal
+      color: #dbcbb9; 
       line-height: 1.4;
     }
   }
 }
 
 /* ============================================
- Estado vacío
+   Estados de Espera y Vacío
    ============================================ */
 .carrito-empty {
   display: flex;
@@ -101,158 +289,18 @@ ion-content {
 
   ion-icon {
     font-size: 48px;
-    color: #C8B29E; // beige oscuro - acento
+    color: rgba(200, 178, 158, 0.4);
     margin-bottom: 12px;
   }
 
   p {
     font-family: 'EB Garamond', serif;
-    color: #dbcbb9; // crema - texto principal
-    font-size: 15px;
+    color: #C8B29E; 
+    font-size: 16px;
     margin: 0;
   }
 }
 
-/* ============================================
- Items del carrito
-   ============================================ */
-.carrito-item {
-  --background: #1B3B2D; // verde oscuro - fondo de tarjeta
-  --border-radius: 16px;
-  --padding-start: 14px;
-  --padding-top: 10px;
-  --padding-bottom: 10px;
-  --inner-padding-end: 10px;
-  border: 1px solid #C8B29E; // beige oscuro - acento
-  border-radius: 16px;
-  margin-bottom: 12px;
-}
-
-.carrito-item-info {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-width: 0; // permite que el nombre largo truncar en vez de romper el layout
-}
-
-.carrito-item-nombre {
-  font-family: 'EB Garamond', serif;
-  font-size: 16px;
-  font-weight: 600;
-  color: #dbcbb9; // crema - texto principal
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.carrito-item-precio {
-  font-family: 'Inter', sans-serif;
-  font-size: 13px;
-  color: #C8B29E; // beige oscuro - acento
-  margin-top: 2px;
-}
-
-.carrito-item-controles {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
-}
-
-.control-btn {
-  --background: transparent;
-  --background-hover: rgba(200, 178, 158, 0.15);
-  --color: #dbcbb9; // crema - texto principal
-  --padding-start: 6px;
-  --padding-end: 6px;
-  width: 36px;
-  height: 36px;
-  min-width: 36px;
-  margin: 0;
-
-  ion-icon {
-    font-size: 20px;
-  }
-}
-
-.carrito-item-cantidad {
-  font-family: 'Inter', sans-serif;
-  font-weight: 600;
-  font-size: 16px;
-  color: #dbcbb9; // crema - texto principal
-  min-width: 22px;
-  text-align: center;
-}
-
-/* ============================================
- Error general
-   ============================================ */
-.form-error {
-  text-align: center;
-  margin: 4px 16px 12px;
-
-  small {
-    font-family: 'EB Garamond', serif;
-    color: red;
-    font-weight: 600;
-    font-size: 14px;
-  }
-}
-
-/* ============================================
- Panel de totales — fijo abajo (slot="fixed")
-   ============================================ */
-.totales-panel {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: #1B3B2D; // verde oscuro - fondo de tarjeta
-  border-top: 1px solid #C8B29E; // beige oscuro - acento
-  border-radius: 20px 20px 0 0;
-  padding: 14px 20px calc(14px + env(safe-area-inset-bottom, 0px));
-  box-shadow: 0 -4px 14px rgba(9, 22, 16, 0.35);
-}
-
-.totales-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-family: 'Inter', sans-serif;
-  font-size: 14px;
-  color: #C8B29E; // beige oscuro - acento
-  margin-bottom: 6px;
-}
-
-.totales-row-destacado {
-  font-family: 'EB Garamond', serif;
-  font-size: 22px;
-  font-weight: 700;
-  color: #dbcbb9; // crema - texto principal
-  margin-bottom: 12px;
-}
-
-.btn-submit {
-  --background: #C8B29E; // beige oscuro - fondo de botón
-  --color: #091610; // verde hiper oscuro - texto dentro de botones
-  --border-radius: 16px;
-  --box-shadow: none;
-  height: 50px;
-  font-family: 'Inter', sans-serif;
-  font-size: 16px;
-  font-weight: 600;
-  text-transform: none;
-  margin: 0;
-
-  &[disabled] {
-    --background: #C8B29E;
-    opacity: 0.5;
-  }
-}
-
-/* ============================================
- Estados: esperando confirmación / confirmado
-   ============================================ */
 .estado-espera {
   display: flex;
   flex-direction: column;
@@ -265,28 +313,41 @@ ion-content {
 
 .page-title {
   font-family: 'EB Garamond', serif;
-  color: #dbcbb9; // crema - texto principal
+  color: #dbcbb9; 
   font-weight: 700;
-  font-size: 22px;
+  font-size: 24px;
   margin: 20px 0 8px;
 }
 
 .estado-subtitle {
   font-family: 'Inter', sans-serif;
-  color: #C8B29E; // beige oscuro - acento
-  font-size: 14px;
+  color: #C8B29E; 
+  font-size: 15px;
   line-height: 1.5;
   margin: 0;
   max-width: 320px;
 }
 
 .estado-icono-exito {
-  font-size: 64px;
-  color: #C8B29E; // beige oscuro - acento
+  font-size: 72px;
+  color: #2dd36f; 
+  margin-bottom: 16px;
+}
+
+.form-error {
+  text-align: center;
+  margin: 4px 16px 12px;
+
+  small {
+    font-family: 'Inter', sans-serif;
+    color: #ff6b6b;
+    font-weight: 500;
+    font-size: 13px;
+  }
 }
 
 /* ============================================
- RESPONSIVE
+   RESPONSIVE
    ============================================ */
 @media (max-width: 480px) {
   .carrito-section {
@@ -298,55 +359,27 @@ ion-content {
   }
 
   .section-label {
+    font-size: 18px;
+  }
+
+  .carrito-item-nombre {
     font-size: 16px;
   }
 
-  .carrito-item-nombre {
-    font-size: 15px;
-  }
-
-  .carrito-item-precio {
-    font-size: 12px;
-  }
-
-  .control-btn {
-    width: 32px;
-    height: 32px;
-    min-width: 32px;
-
-    ion-icon {
-      font-size: 18px;
-    }
-  }
-
-  .totales-panel {
-    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
-  }
-
-  .totales-row-destacado {
-    font-size: 20px;
-  }
-
-  .btn-submit {
-    height: 46px;
-    font-size: 15px;
-  }
-}
-
-@media (max-width: 360px) {
-  .carrito-item-nombre {
-    font-size: 14px;
-  }
-
-  .carrito-item-cantidad {
-    font-size: 15px;
-  }
-
-  .totales-row {
+  .meta-precio, .carrito-item-precio {
     font-size: 13px;
   }
 
+  .totales-panel {
+    padding: 16px 20px calc(16px + env(safe-area-inset-bottom, 0px));
+  }
+
   .totales-row-destacado {
-    font-size: 18px;
+    font-size: 22px;
+  }
+
+  .btn-submit {
+    height: 50px;
+    font-size: 15px;
   }
 }

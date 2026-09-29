@@ -77,12 +77,6 @@
       <button class="retry-button" type="button" (click)="cargarPerfil()" [disabled]="cargandoPerfil">Reintentar</button>
     </div>
     } @else {
-    @if (errorMesa) {
-    <div class="home-notice" role="alert">
-      <p>{{ errorMesa }}</p>
-      <button class="retry-button" type="button" (click)="cargarEstadoMesa()" [disabled]="cargandoMesa">Reintentar consulta de mesa</button>
-    </div>
-    }
     @if (cargandoMesa) {
     <p class="home-status" role="status">Consultando tu mesa…</p>
     }
@@ -105,9 +99,9 @@
       </a>
       }
 
-      <!-- VISTA CLIENTE: Escaneo de mesa y Pedido -->
+      <!-- VISTA CLIENTE: Ingreso y escaneo de mesa -->
       @if (esCliente) {
-      <!-- Opciones SIEMPRE disponibles para el cliente en la puerta -->
+      @if (estadoAsignacionConocido && !clienteConMesaAsignada) {
         <a class="menu-option" (click)="escanearQRIngreso()" style="cursor: pointer">
           <span class="menu-icon">
             <ion-icon name="qr-code-outline"></ion-icon>
@@ -118,7 +112,9 @@
           </span>
           <ion-icon name="arrow-forward-outline" class="menu-arrow"></ion-icon>
         </a>
+      }
 
+      @if (estadoAsignacionConocido && clienteConMesaAsignada) {
         <a class="menu-option" (click)="verificarAccesoMesa()" style="cursor: pointer">
           <span class="menu-icon">
             <ion-icon name="grid-outline" aria-hidden="true"></ion-icon>
@@ -129,32 +125,9 @@
           </span>
           <ion-icon name="arrow-forward-outline" class="menu-arrow" aria-hidden="true"></ion-icon>
         </a>
+      }
 
-        <!-- Opciones BLOQUEADAS hasta que se vincule a una mesa -->
-        <!-- @if (clienteVinculadoAMesa) { -->
-          <a class="menu-option" routerLink="/menu-productos">
-            <span class="menu-icon">
-              <ion-icon name="restaurant-outline" aria-hidden="true"></ion-icon>
-            </span>
-            <span class="menu-copy">
-              <strong>Menú de productos</strong>
-              <small>Conocé los platos, bebidas y sus precios</small>
-            </span>
-            <ion-icon name="arrow-forward-outline" class="menu-arrow" aria-hidden="true"></ion-icon>
-          </a>
-
-          <a class="menu-option" routerLink="/pedido">
-            <span class="menu-icon">
-              <ion-icon name="cart-outline" aria-hidden="true"></ion-icon>
-            </span>
-            <span class="menu-copy">
-              <strong>Hacer Pedido</strong>
-              <small>Elegí tus platos y bebidas favoritas</small>
-            </span>
-            <ion-icon name="arrow-forward-outline" class="menu-arrow" aria-hidden="true"></ion-icon>
-          </a>
-        }
-      <!-- } -->
+      }
 
       <!-- VISTA METRE: Asignación de mesa -->
       @if (esMetre) {

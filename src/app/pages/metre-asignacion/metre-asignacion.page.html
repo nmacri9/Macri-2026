@@ -26,6 +26,7 @@
         <div class="cliente-info">
         <h3>{{ cliente.nombre }}</h3>
         <p>Estado: {{ cliente.estado }}</p>
+        <p>Personas: {{ cliente.cantidad_personas }}</p>
         </div>
 
         <ion-item class="select-item">
@@ -34,8 +35,8 @@
           [interfaceOptions]="opcionesSelector" cancelText="Cancelar" okText="Elegir"
           [attr.aria-label]="'Mesa para ' + cliente.nombre"
           [disabled]="cargandoMesas || asignando || !!errorMesas || mesasDisponibles.length === 0">
-            <ion-select-option *ngFor="let mesa of mesasDisponibles" [value]="mesa.id">
-            Mesa {{ mesa.numero }} (Capacidad: {{ mesa.capacidad }})
+            <ion-select-option *ngFor="let mesa of mesasDisponibles" [value]="mesa.id" [disabled]="mesa.capacidad < cliente.cantidad_personas">
+            Mesa {{ mesa.id }} (Capacidad: {{ mesa.capacidad }})
             </ion-select-option>
         </ion-select>
         </ion-item>

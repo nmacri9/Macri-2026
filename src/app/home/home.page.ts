@@ -25,6 +25,7 @@ import {
 } from 'ionicons/icons';
 import { AuthService } from '../services/auth.service';
 import { ChatPushService } from '../services/chat-push.service';
+import { MesasService } from '../services/mesas.service';
 
 @Component({
   selector: 'app-home',
@@ -38,7 +39,6 @@ export class HomePage {
   menuPerfilAbierto = false;
   cerrandoSesion = false;
   errorPerfil = '';
-  errorMesa = '';
   cargandoPerfil = false;
   cargandoMesa = false;
   private clienteHabilitado = false;
@@ -57,6 +57,7 @@ export class HomePage {
   esMozo = false;
   clienteVinculadoAMesa = false;
   clienteConMesaAsignada = false;
+  estadoAsignacionConocido = false;
 
   constructor(
     private cdr: ChangeDetectorRef, 
@@ -67,7 +68,8 @@ export class HomePage {
     private actionSheetCtrl: ActionSheetController,
     private router: Router,
     private supabase: SupabaseService,
-    private chatPush: ChatPushService
+    private chatPush: ChatPushService,
+    private mesasService: MesasService
   ) {
     addIcons({
       arrowForwardOutline,
@@ -125,7 +127,6 @@ export class HomePage {
     this.cargandoPerfil = true;
     this.cargandoMesa = false;
     this.errorPerfil = '';
-    this.errorMesa = '';
     this.clienteHabilitado = false;
     this.usuarioActual = null;
     this.nombreUsuario = 'Usuario';
@@ -138,6 +139,7 @@ export class HomePage {
     this.esMozo = false;
     this.puedeUsarChat = false;
     this.clienteConMesaAsignada = false;
+    this.estadoAsignacionConocido = false;
     this.clienteVinculadoAMesa = false; // <--- REINICIAR LA VARIABLE
     this.cdr.markForCheck();
 
@@ -238,31 +240,27 @@ export class HomePage {
     const revision = ++this.revisionMesa;
     const clienteId = this.usuarioActual.id;
     this.cargandoMesa = true;
-    this.errorMesa = '';
     this.clienteConMesaAsignada = false;
+    this.estadoAsignacionConocido = false;
     this.clienteVinculadoAMesa = false;
     this.puedeUsarChat = false;
     this.cdr.markForCheck();
 
     try {
-      const { data, error } = await this.supabase.getClient()
-        .from('asignaciones_mesa')
-        .select('estado_escaneo')
-        .eq('cliente_id', clienteId)
-        .eq('activa', true)
-        .maybeSingle();
+      const tieneAsignacion = await this.mesasService.tieneAsignacionActiva(clienteId);
       if (revision !== this.revisionMesa) return;
-      if (error) throw error;
 
-      this.clienteConMesaAsignada = !!data;
-      this.clienteVinculadoAMesa = data?.estado_escaneo === 'OCUPADA';
-      this.puedeUsarChat = this.clienteConMesaAsignada;
+      this.clienteConMesaAsignada = tieneAsignacion;
+      this.estadoAsignacionConocido = true;
+      if (tieneAsignacion) {
+        const data = await this.mesasService.obtenerAsignacionActiva(clienteId);
+        if (revision !== this.revisionMesa) return;
+        this.clienteVinculadoAMesa = !!data?.vinculada;
+        this.puedeUsarChat = !!data;
+      }
     } catch (error) {
       if (revision !== this.revisionMesa) return;
       console.error('No se pudo consultar la mesa del cliente:', error);
-      this.errorMesa = (error as { code?: string })?.code === 'PGRST116'
-        ? 'Encontramos más de una mesa asignada a tu usuario. Pedile al metre que revise tu asignación.'
-        : 'No pudimos consultar tu mesa asignada. Podés seguir usando las opciones de ingreso y escaneo.';
     } finally {
       if (revision === this.revisionMesa) {
         this.cargandoMesa = false;
@@ -357,18 +355,30 @@ export class HomePage {
     if (!this.usuarioActual) return;
 
     try {
+      let clienteId = await this.mesasService.obtenerClienteId(this.usuarioActual.id);
+      if (clienteId === null && this.esCliente && this.usuarioActual.email?.startsWith('anonimo_')) {
+        const { data: creado, error: errorCliente } = await this.supabase.getClient()
+          .from('clientes').insert({
+            cliente_id: this.usuarioActual.id,
+            nombre: this.nombreUsuario,
+            apellido: '',
+            correo: this.usuarioActual.email,
+            estado: 'APROBADO'
+          }).select('id').single();
+        if (errorCliente) throw errorCliente;
+        clienteId = creado.id;
+      }
+      if (clienteId === null) throw new Error('No se encontró tu registro de cliente.');
       const { data: existente, error: errorConsulta } = await this.supabase.getClient()
-        .from('lista_espera')
-        .select('*')
-        .eq('cliente_id', this.usuarioActual.id)
-        .eq('estado', 'ESPERANDO') 
-        .maybeSingle();
+        .from('asignaciones').select('id, estado')
+        .eq('cliente_id', clienteId).is('fecha_finalizacion', null)
+        .limit(1).maybeSingle();
 
       if (errorConsulta) throw errorConsulta;
 
       if (existente) {
         const toast = await this.toastController.create({
-          message: 'Ya te encuentras anotado en la lista de espera.',
+          message: existente.estado === 'esperando' ? 'Ya te encuentras anotado en la lista de espera.' : 'Ya tenés una mesa asignada.',
           duration: 3000,
           color: 'warning',
           position: 'bottom'
@@ -378,11 +388,10 @@ export class HomePage {
       }
 
       const { error: errorInsert } = await this.supabase.getClient()
-        .from('lista_espera')
+        .from('asignaciones')
         .insert({
-          cliente_id: this.usuarioActual.id,
-          nombre: this.nombreUsuario,
-          estado: 'ESPERANDO'
+          cliente_id: clienteId,
+          estado: 'esperando'
         });
 
       if (errorInsert) throw errorInsert;
@@ -396,6 +405,7 @@ export class HomePage {
       await toast.present();
 
       await this.notificarMetre();
+      await this.cargarEstadoMesa();
 
     } catch (error: any) {
       console.error('DETALLE DEL ERROR EN SUPABASE:', error);
@@ -414,13 +424,9 @@ export class HomePage {
     if (!this.usuarioActual) return;
 
     try {
-      const { data, error } = await this.supabase.getClient()
-        .from('lista_espera')
-        .select('*')
-        .eq('cliente_id', this.usuarioActual.id)
-        .single();
+      const data = await this.mesasService.obtenerAsignacionActiva(this.usuarioActual.id);
 
-      if (error || !data) {
+      if (!data) {
         const toast = await this.toastController.create({
           message: '⛔ Acceso Denegado: No podés escanear una mesa si antes no te anotaste en la lista de espera.',
           duration: 4000,

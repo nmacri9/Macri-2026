@@ -1,93 +1,115 @@
 import { describe, it, expect, vi } from 'vitest';
+import { createClient } from '@supabase/supabase-js';
 import { ChatService, CHAT_CANAL } from './chat.service';
 import { SupabaseService } from './supabase.service';
 import { MesasService } from './mesas.service';
-import { ChatMensaje, combinarMensajes } from '../interfaces/chat-mensaje';
+import { AuthService } from './auth.service';
+import { MensajeDB, combinarMensajes, mensajeDesdeDB } from '../interfaces/chat-mensaje';
 
-const mensaje = (id: string, creado_en = '2026-09-17T17:00:00Z'): ChatMensaje => ({
-  id, creado_en, autor_id: 'cliente', autor_nombre: 'Ana', autor_rol: 'CLIENTE_REGISTRADO',
-  numero_mesa: 4, texto: '¿Me traen agua?', respuesta_a: null, respuesta_texto: null, respuesta_autor: null
-});
+const fila: MensajeDB = {
+  id: 10, created_at: '2026-09-29T17:00:00Z', autor_id: 'cliente', autor_nombre: 'Ana',
+  autor_rol: 'CLIENTE_REGISTRADO', mesa_id: 4, texto: 'Hola', respuesta_a: null,
+  respuesta_texto: null, respuesta_autor: null
+};
+const perfil = { id: 'cliente', nombres: 'Ana', apellidos: '', rol: 'CLIENTE_REGISTRADO', estado: 'APROBADO' };
 
-const mesas = { obtenerAsignacionActiva: vi.fn().mockResolvedValue({ vinculada: true, numero: 4 }) } as unknown as MesasService;
+function preparar() {
+  const request = vi.fn().mockResolvedValue(new Response(JSON.stringify(fila), {
+    status: 201, headers: { 'Content-Type': 'application/json' }
+  }));
+  const client = createClient('https://example.supabase.co', 'clave-pruebas', {
+    global: { fetch: request }, auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
+  });
+  const obtenerPerfil = vi.fn().mockResolvedValue(perfil);
+  const obtenerAsignacionActiva = vi.fn().mockResolvedValue({ mesaId: 4, vinculada: true });
+  const service = new ChatService({ getClient: () => client } as unknown as SupabaseService,
+    { obtenerAsignacionActiva } as unknown as MesasService, { obtenerPerfil } as unknown as AuthService);
+  return { service, request, obtenerPerfil, obtenerAsignacionActiva };
+}
 
-describe('Chat del salón', () => {
-  it('rechaza el envío si el cliente ya no tiene una asignación activa', async () => {
-    const rpc = vi.fn().mockResolvedValue({ data: { id: 'cliente', rol: 'CLIENTE_ANONIMO' }, error: null });
-    const sinMesa = { obtenerAsignacionActiva: vi.fn().mockResolvedValue(null) } as unknown as MesasService;
-    const service = new ChatService({ getClient: () => ({ rpc }) } as unknown as SupabaseService, sinMesa);
+describe('Chat con public.mensajes', () => {
+  it('envía texto y referencia; la base determina identidad y mesa', async () => {
+    const { service, request } = preparar();
+    const resultado = await service.enviar('solicitud', '  Hola  ', null, 99);
+    const [url, opciones] = request.mock.calls[0];
+    expect(String(url)).toContain('/rest/v1/mensajes');
+    expect(JSON.parse(opciones.body)).toEqual({ solicitud_id: 'solicitud', texto: 'Hola', respuesta_a: null });
+    expect(resultado).toEqual(mensajeDesdeDB(fila));
+  });
+
+  it('recupera el mensaje original tras un reintento sin duplicarlo', async () => {
+    const { service, request } = preparar();
+    request.mockResolvedValueOnce(new Response(JSON.stringify({ code: '23505', message: 'duplicado' }), {
+      status: 409, headers: { 'Content-Type': 'application/json' }
+    })).mockResolvedValueOnce(new Response(JSON.stringify(fila), {
+      status: 200, headers: { 'Content-Type': 'application/json' }
+    }));
+    expect((await service.enviar('solicitud', 'Hola', null, 4)).id).toBe('10');
+    const url = new URL(request.mock.calls[1][0]);
+    expect(url.searchParams.get('solicitud_id')).toBe('eq.solicitud');
+    expect(url.searchParams.get('autor_id')).toBe('eq.cliente');
+  });
+
+  it('pagina por created_at e id y adapta las respuestas al modelo de la pantalla', async () => {
+    const { service, request } = preparar();
+    request.mockResolvedValueOnce(new Response(JSON.stringify([{ ...fila, respuesta_a: 2 }]), {
+      status: 200, headers: { 'Content-Type': 'application/json' }
+    }));
+    const mensajes = await service.historial(mensajeDesdeDB(fila));
+    const url = new URL(request.mock.calls[0][0]);
+    expect(url.searchParams.get('order')).toBe('created_at.desc,id.desc');
+    expect(url.searchParams.get('or')).toContain('id.lt.10');
+    expect(mensajes[0].respuesta_a).toBe('2');
+  });
+
+  it('ordena los ids bigint numéricamente para mensajes de la misma fecha', () => {
+    const mensajes = combinarMensajes([], [mensajeDesdeDB(fila), mensajeDesdeDB({ ...fila, id: 2 })]);
+    expect(mensajes.map(m => m.id)).toEqual(['2', '10']);
+  });
+
+  it('bloquea clientes sin asignación y perfiles no habilitados antes de guardar', async () => {
+    const { service, request, obtenerPerfil, obtenerAsignacionActiva } = preparar();
+    obtenerAsignacionActiva.mockResolvedValueOnce(null);
     await expect(service.enviar('id', 'Hola', null, 4)).rejects.toThrow('mesa asignada');
-    expect(rpc).toHaveBeenCalledTimes(1);
-    expect(rpc).toHaveBeenCalledWith('chat_participante');
+    obtenerPerfil.mockResolvedValueOnce({ ...perfil, estado: 'PENDIENTE' });
+    await expect(service.participante()).rejects.toMatchObject({ code: '42501' });
+    expect(request).not.toHaveBeenCalled();
   });
 
-  it('notifica usando solo el id guardado y detecta errores de la función', async () => {
-    const invoke = vi.fn().mockResolvedValueOnce({ data: { success: true }, error: null })
-      .mockResolvedValueOnce({ data: null, error: new Error('FCM no disponible') });
-    const service = new ChatService({ getClient: () => ({ functions: { invoke } }) } as unknown as SupabaseService, mesas);
-    await service.notificar('mensaje');
-    expect(invoke).toHaveBeenCalledWith('enviar-notificacion', { body: { mensaje_id: 'mensaje' } });
-    await expect(service.notificar('mensaje')).rejects.toThrow('FCM no disponible');
+  it('permite al mozo participar sin mesa y al cliente con un id mayor que 9999', async () => {
+    const { service, obtenerPerfil, obtenerAsignacionActiva } = preparar();
+    obtenerPerfil.mockResolvedValueOnce({ ...perfil, rol: 'MOZO', estado: 'ACTIVO' });
+    expect((await service.participante()).numero_mesa).toBeNull();
+    expect(obtenerAsignacionActiva).not.toHaveBeenCalled();
+    obtenerAsignacionActiva.mockResolvedValueOnce({ mesaId: 10000 });
+    expect((await service.participante()).numero_mesa).toBe(10000);
   });
 
-  it('combina historial, envío y Realtime sin duplicar y conserva el orden', () => {
-    const original = mensaje('b');
-    const resultado = combinarMensajes([original], [mensaje('c', '2026-09-17T17:01:00Z'), original, mensaje('a')]);
-    expect(resultado.map(item => item.id)).toEqual(['a', 'b', 'c']);
+  it('rechaza mensajes vacíos y demasiado largos antes del envío', async () => {
+    const { service, request } = preparar();
+    await expect(service.enviar('id', '  \n ', null, 4)).rejects.toThrow();
+    await expect(service.enviar('id', 'x'.repeat(2001), null, 4)).rejects.toThrow();
+    expect(request).not.toHaveBeenCalled();
   });
 
-  it('usa la mesa asignada aunque se intente enviar otra; el servidor determina el autor y la hora', async () => {
-    const rpc = vi.fn().mockResolvedValueOnce({ data: { id: 'cliente', rol: 'CLIENTE_REGISTRADO' }, error: null })
-      .mockResolvedValueOnce({ data: mensaje('id'), error: null });
-    const service = new ChatService({ getClient: () => ({ rpc }) } as unknown as SupabaseService, mesas);
-    await service.enviar('id', '  Hola\n¿Hay agua?  ', 'consulta', 99);
-    expect(rpc).toHaveBeenCalledWith('chat_enviar', {
-      p_id: 'id', p_texto: 'Hola\n¿Hay agua?', p_respuesta_a: 'consulta', p_numero_mesa: 4
-    });
-  });
-
-  it('rechaza mensajes vacíos, demasiado largos y mesas inválidas antes del envío', async () => {
-    const rpc = vi.fn();
-    const service = new ChatService({ getClient: () => ({ rpc }) } as unknown as SupabaseService, mesas);
-    await expect(service.enviar('id', '  \n ', null, 1)).rejects.toThrow();
-    await expect(service.enviar('id', 'x'.repeat(2001), null, 1)).rejects.toThrow();
-    for (const mesa of [0, -1, 1.5, 10000, NaN]) {
-      await expect(service.enviar('id', 'Hola', null, mesa)).rejects.toThrow();
-    }
-    expect(rpc).not.toHaveBeenCalled();
-  });
-
-  it('propaga el error del servidor para conservar el borrador', async () => {
-    const error = { code: '42501', message: 'No autorizado' };
-    const rpc = vi.fn().mockResolvedValue({ data: null, error });
-    const service = new ChatService({ getClient: () => ({ rpc }) } as unknown as SupabaseService, mesas);
-    await expect(service.enviar('id', 'Hola', null, 4)).rejects.toBe(error);
-  });
-
-  it('escucha el canal correcto y deja de procesar eventos al salir de la pantalla', () => {
-    let recibir!: (payload: { new: ChatMensaje }) => void;
-    let estado!: (status: string) => void;
+  it('escucha mensajes reales y deja de procesar al salir de la pantalla', () => {
+    let recibir!: (payload: { new: MensajeDB }) => void;
     const canal = {
       on: vi.fn((_event, _filter, callback) => { recibir = callback; return canal; }),
-      subscribe: vi.fn(callback => { estado = callback; return canal; })
+      subscribe: vi.fn().mockReturnThis()
     };
     const client = { channel: vi.fn(() => canal), removeChannel: vi.fn().mockResolvedValue('ok') };
-    const service = new ChatService({ getClient: () => client } as unknown as SupabaseService, mesas);
+    const service = new ChatService({ getClient: () => client } as unknown as SupabaseService,
+      {} as MesasService, {} as AuthService);
     const onMensaje = vi.fn();
-    const onEstado = vi.fn();
-    const cerrar = service.conectar(onMensaje, onEstado);
+    const cerrar = service.conectar(onMensaje, vi.fn());
     expect(client.channel).toHaveBeenCalledWith(CHAT_CANAL);
     expect(canal.on).toHaveBeenCalledWith('postgres_changes', {
-      event: 'INSERT', schema: 'public', table: 'chat_mensajes'
+      event: 'INSERT', schema: 'public', table: 'mensajes'
     }, expect.any(Function));
-    estado('SUBSCRIBED');
-    expect(onEstado).toHaveBeenLastCalledWith('conectado');
-    recibir({ new: mensaje('a') });
+    recibir({ new: fila });
     cerrar();
-    recibir({ new: mensaje('b') });
-    estado('CLOSED');
-    expect(onMensaje).toHaveBeenCalledTimes(1);
-    expect(onEstado).toHaveBeenLastCalledWith('conectado');
-    expect(client.removeChannel).toHaveBeenCalledWith(canal);
+    recibir({ new: fila });
+    expect(onMensaje).toHaveBeenCalledExactlyOnceWith(mensajeDesdeDB(fila));
   });
 });

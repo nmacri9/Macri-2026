@@ -164,6 +164,18 @@ abrirModal() {
 
         if (errorInsert) throw errorInsert;
 
+        const { error: errorCliente } = await this.supabase.getClient()
+          .from('clientes')
+          .insert({
+            cliente_id: data.user.id,
+            nombre: nombre.trim(),
+            apellido: '',
+            correo: emailFalso,
+            foto_url: fotoSubida.url,
+            estado: 'APROBADO'
+          });
+        if (errorCliente) throw errorCliente;
+
         // 5. Redirigimos al Home
         console.log('Cliente anónimo registrado con éxito');
         this.router.navigate(['/home']);

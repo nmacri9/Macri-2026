@@ -155,6 +155,13 @@ export class AuthService {
       .maybeSingle();
     if (clienteError) throw clienteError;
     if (cliente) {
+      if (cliente.correo?.startsWith('anonimo_') && cliente.correo.endsWith('@cepa.com')) {
+        return {
+          id: cliente.cliente_id, nombres: cliente.nombre, apellidos: cliente.apellido,
+          email: cliente.correo, foto_url: cliente.foto_url,
+          rol: 'CLIENTE_ANONIMO', estado: 'ACTIVO', origen: 'clientes' as const,
+        };
+      }
       // Normaliza los nombres para las pantallas, sin crear filas en usuarios.
       return {
         id: cliente.cliente_id,

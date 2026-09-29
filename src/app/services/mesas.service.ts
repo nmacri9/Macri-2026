@@ -2,138 +2,93 @@ import { Injectable } from '@angular/core';
 import { SupabaseService } from './supabase.service';
 import { Mesa } from '../interfaces/mesa';
 
-@Injectable({
-    providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class MesasService {
-    private supabase;
+  private db;
+  constructor(supabase: SupabaseService) { this.db = supabase.getClient(); }
 
-    constructor(private supabaseService: SupabaseService) {
-        this.supabase = this.supabaseService.getClient();
+  async obtenerClienteId(authId: string): Promise<number | null> {
+    const { data, error } = await this.db.from('clientes').select('id').eq('cliente_id', authId).maybeSingle();
+    if (error) throw error;
+    return data?.id ?? null;
+  }
+
+  async tieneAsignacionActiva(authId: string): Promise<boolean> {
+    const clienteId = await this.obtenerClienteId(authId);
+    if (clienteId === null) return false;
+    const { data, error } = await this.db.from('asignaciones').select('id')
+      .eq('cliente_id', clienteId).is('fecha_finalizacion', null)
+      .in('estado', ['esperando', 'asignado']).limit(1).maybeSingle();
+    if (error) throw error;
+    return !!data;
+  }
+
+  async obtenerAsignacionActiva(authId: string) {
+    const clienteId = await this.obtenerClienteId(authId);
+    if (clienteId === null) return null;
+    const { data, error } = await this.db.from('asignaciones')
+      .select('id, mesa_id, mesas(disponibilidad)').eq('cliente_id', clienteId)
+      .eq('estado', 'asignado').is('fecha_finalizacion', null).not('mesa_id', 'is', null)
+      .order('fecha_asignacion', { ascending: false }).limit(1).maybeSingle();
+    if (error) throw error;
+    if (!data) return null;
+    const mesa = Array.isArray(data.mesas) ? data.mesas[0] : data.mesas;
+    return { mesaId: data.mesa_id, vinculada: mesa?.disponibilidad === 'OCUPADA' };
+  }
+
+  async obtenerMesasDisponibles(): Promise<Mesa[]> {
+    const { data, error } = await this.db.from('mesas').select('*')
+      .eq('disponibilidad', 'VACIA').order('id', { ascending: true });
+    if (error) throw error;
+    return (data ?? []) as Mesa[];
+  }
+
+  async asignarMesaACliente(asignacionId: number, mesaId: number) {
+    const { data: pendiente, error: errorPendiente } = await this.db.from('asignaciones')
+      .select('cantidad_personas').eq('id', asignacionId).eq('estado', 'esperando')
+      .is('mesa_id', null).is('fecha_finalizacion', null).maybeSingle();
+    if (errorPendiente) throw errorPendiente;
+    if (!pendiente) throw new Error('El cliente ya no está en la lista de espera.');
+
+    const { data: mesa, error: errorMesa } = await this.db.from('mesas')
+      .select('capacidad, disponibilidad').eq('id', mesaId).single();
+    if (errorMesa) throw errorMesa;
+    if (mesa.disponibilidad !== 'VACIA') throw new Error('La mesa ya no está disponible.');
+    if (mesa.capacidad < pendiente.cantidad_personas) throw new Error('La capacidad de la mesa es insuficiente.');
+
+    const { data: ocupada, error: errorOcupada } = await this.db.from('asignaciones')
+      .select('id').eq('mesa_id', mesaId).eq('estado', 'asignado')
+      .is('fecha_finalizacion', null).limit(1).maybeSingle();
+    if (errorOcupada) throw errorOcupada;
+    if (ocupada) throw new Error('Esta mesa acaba de ser asignada a otro cliente.');
+
+    const ahora = new Date().toISOString();
+    const { count: asignacionesActualizadas, error } = await this.db.from('asignaciones')
+      .update({ mesa_id: mesaId, estado: 'asignado', fecha_asignacion: ahora, updated_at: ahora }, { count: 'exact' })
+      .eq('id', asignacionId).eq('estado', 'esperando').is('mesa_id', null)
+      .is('fecha_finalizacion', null);
+    if (error) throw error;
+    if (asignacionesActualizadas !== 1) throw new Error('No se pudo actualizar la asignación. Revisá los permisos o actualizá la lista.');
+
+    const { count: mesasActualizadas, error: errorEstado } = await this.db.from('mesas')
+      .update({ disponibilidad: 'RESERVADA' }, { count: 'exact' })
+      .eq('id', mesaId).eq('disponibilidad', 'VACIA');
+    if (errorEstado) throw errorEstado;
+    if (mesasActualizadas !== 1) throw new Error('Se asignó la mesa al cliente, pero no se pudo marcar como RESERVADA. Revisá la mesa.');
+  }
+
+  async validarYVincularMesaQR(authId: string, qrTokenLeido: string) {
+    const asignacion = await this.obtenerAsignacionActiva(authId);
+    if (!asignacion) throw new Error('Aún no tenés ninguna mesa asignada por el Metre.');
+    const { data: mesa, error } = await this.db.from('mesas')
+      .select('id, qr_token').eq('id', asignacion.mesaId).single();
+    if (error) throw error;
+    if (mesa.qr_token !== qrTokenLeido && `MESA_${mesa.id}` !== qrTokenLeido) {
+      throw new Error(`Mesa equivocada. Debes vincularte a tu mesa asignada: Mesa ${mesa.id}.`);
     }
-
-    async obtenerAsignacionActiva(clienteId: string) {
-        const { data, error } = await this.supabase
-            .from('asignaciones_mesa')
-            .select('mesa_id, estado_escaneo, mesas(numero)')
-            .eq('cliente_id', clienteId)
-            .eq('activa', true)
-            .maybeSingle();
-        if (error) throw error;
-        if (!data) return null;
-        const mesa = Array.isArray(data.mesas) ? data.mesas[0] : data.mesas;
-        return { mesaId: data.mesa_id, numero: mesa?.numero as number | undefined,
-            vinculada: data.estado_escaneo === 'OCUPADA' };
-    }
-
-    // 1. Obtener mesas que NO tienen una asignación activa actualmente
-    async obtenerMesasDisponibles(): Promise<Mesa[]> {
-        const { data: ocupadas, error: errOcupadas } = await this.supabase
-            .from('asignaciones_mesa')
-            .select('mesa_id')
-            .eq('activa', true);
-
-        if (errOcupadas) throw errOcupadas;
-
-        const idsOcupados = ocupadas ? ocupadas.map(a => a.mesa_id) : [];
-
-        const { data: todasLasMesas, error: errMesas } = await this.supabase
-            .from('mesas')
-            .select('*')
-            .order('numero', { ascending: true });
-
-        if (errMesas) throw errMesas;
-
-        return ((todasLasMesas ?? []) as Mesa[]).filter(m => !idsOcupados.includes(m.id));
-    }
-
-    // 2. El Metre asigna la mesa a un cliente de la lista de espera
-    async asignarMesaACliente(clienteId: string, mesaId: number, metreId: string) {
-        // A) Verificar disponibilidad
-        const { data: asignacionExistente, error: errorDisponibilidad } = await this.supabase
-            .from('asignaciones_mesa')
-            .select('id')
-            .eq('mesa_id', mesaId)
-            .eq('activa', true)
-            .maybeSingle();
-
-        if (errorDisponibilidad) throw errorDisponibilidad;
-
-        if (asignacionExistente) {
-            throw new Error('Esta mesa acaba de ser asignada a otro cliente.');
-        }
-
-        // B) Crear asignación activa
-        const { error: errAsignacion } = await this.supabase
-            .from('asignaciones_mesa')
-            .insert({
-                cliente_id: clienteId,
-                mesa_id: mesaId,
-                asignado_por: metreId,
-                activa: true,
-                estado_escaneo: 'PENDIENTE_ESCANEO'
-            });
-
-        if (errAsignacion) throw errAsignacion;
-
-        // C) Actualizar disponibilidad en 'mesas'
-        const { error: errMesa } = await this.supabase
-            .from('mesas')
-            .update({ disponibilidad: 'RESERVADA' })
-            .eq('id', mesaId);
-
-        if (errMesa) throw errMesa;
-
-        // D) Actualizar estado en 'lista_espera' a 'ASIGNADO'
-        const { error: errLista } = await this.supabase
-            .from('lista_espera')
-            .update({ estado: 'ASIGNADO' })
-            .eq('cliente_id', clienteId)
-            .eq('estado', 'ESPERANDO');
-
-        if (errLista) throw errLista;
-    }
-
-    // 3. Validación y escaneo del QR físico por parte del Cliente
-    async validarYVincularMesaQR(clienteId: string, qrTokenLeido: string) {
-        const { data: asignacion, error } = await this.supabase
-            .from('asignaciones_mesa')
-            .select('*, mesas(*)')
-            .eq('cliente_id', clienteId)
-            .eq('activa', true)
-            .maybeSingle();
-
-        if (error) throw error;
-
-        if (!asignacion) {
-            throw new Error('Aún no tenés ninguna mesa asignada por el Metre.');
-        }
-
-        const mesaAsignada = asignacion.mesas as Mesa;
-
-        const coincideToken = mesaAsignada.qr_token === qrTokenLeido;
-        const coincideNumero = `MESA_${mesaAsignada.numero}` === qrTokenLeido;
-
-        if (!coincideToken && !coincideNumero) {
-            throw new Error(`Mesa equivocada. Debes vincularte a tu mesa asignada: Mesa N° ${mesaAsignada.numero}.`);
-        }
-
-        // C) Actualizar 'asignaciones_mesa'
-        const { error: errUpdateAsignacion } = await this.supabase
-            .from('asignaciones_mesa')
-            .update({ estado_escaneo: 'OCUPADA' })
-            .eq('id', asignacion.id);
-
-        if (errUpdateAsignacion) throw errUpdateAsignacion;
-
-        // D) Actualizar 'mesas'
-        const { error: errUpdateMesa } = await this.supabase
-            .from('mesas')
-            .update({ disponibilidad: 'OCUPADA' })
-            .eq('id', mesaAsignada.id);
-
-        if (errUpdateMesa) throw errUpdateMesa;
-
-        return asignacion;
-    }
+    const { error: errUpdateMesa } = await this.db.from('mesas')
+      .update({ disponibilidad: 'OCUPADA' }).eq('id', mesa.id);
+    if (errUpdateMesa) throw errUpdateMesa;
+    return asignacion;
+  }
 }

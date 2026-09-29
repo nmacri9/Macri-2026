@@ -13,7 +13,8 @@ import { Mesa } from '../../interfaces/mesa';
 
 interface ClienteEspera {
     id: number;
-    cliente_id: string;
+    cliente_id: number;
+    cantidad_personas: number;
     nombre: string;
     estado: string;
     mesaSeleccionadaId: number | null;
@@ -87,11 +88,13 @@ export class MetreAsignacionPage {
         this.cdr.markForCheck();
         try {
             const supabase = this.supabaseService.getClient();
-            // Consultamos los clientes con estado 'ESPERANDO'
+            // Solo asignaciones pendientes que todavía no tienen mesa.
             const { data, error } = await supabase
-                .from('lista_espera')
-                .select('id, cliente_id, nombre, estado')
-                .eq('estado', 'ESPERANDO')
+                .from('asignaciones')
+                .select('id, cliente_id, estado, cantidad_personas, clientes(nombre, apellido)')
+                .eq('estado', 'esperando')
+                .is('mesa_id', null)
+                .is('fecha_finalizacion', null)
                 .order('fecha_ingreso', { ascending: true });
 
 
@@ -99,8 +102,9 @@ export class MetreAsignacionPage {
             this.listaEspera = (data || []).map((item: any) => ({
                 id: item.id,
                 cliente_id: item.cliente_id,
-                nombre: item.nombre,
+                nombre: [item.clientes?.nombre, item.clientes?.apellido].filter(Boolean).join(' ') || `Cliente ${item.cliente_id}`,
                 estado: item.estado,
+                cantidad_personas: item.cantidad_personas,
                 mesaSeleccionadaId: null
             }));
 
@@ -127,11 +131,11 @@ export class MetreAsignacionPage {
         const metre = await this.authService.obtenerUsuarioActual();
         if (!metre) throw new Error('La sesión venció. Volvé a iniciar sesión para asignar una mesa.');
 
-        // 1. Asignamos la mesa (esto actualiza asignaciones_mesa, mesas y lista_espera en Supabase)
-        await this.mesasService.asignarMesaACliente(cliente.cliente_id, mesa.id, metre.id);
+        // Actualizamos la asignación pendiente.
+        await this.mesasService.asignarMesaACliente(cliente.id, mesa.id);
 
         const toast = await this.toastController.create({
-            message: `Mesa ${mesa.numero} asignada con éxito a ${cliente.nombre}`,
+            message: `Mesa ${mesa.id} asignada con éxito a ${cliente.nombre}`,
             duration: 3000,
             color: 'success'
         });
@@ -158,9 +162,8 @@ export class MetreAsignacionPage {
     private mensajeErrorCarga(error: unknown, recurso: string): string {
         const codigo = (error as { code?: string })?.code;
         if (codigo === '42501') return `Tu usuario no tiene permiso para consultar la ${recurso === 'lista de espera' ? recurso : 'disponibilidad de las mesas'}. Avisá al administrador.`;
-        if (codigo === '42P01' || codigo === 'PGRST205' || codigo === '42703' || codigo === 'PGRST204') {
-            return 'La asignación de mesas necesita completar su configuración. Avisá al administrador.';
-        }
+        const detalle = (error as { message?: string })?.message;
+        if (detalle) return `No se pudo cargar ${recurso}: ${detalle}`;
         return `No se pudo cargar ${recurso === 'lista de espera' ? 'la' : 'las'} ${recurso}. Revisá la conexión y volvé a intentar.`;
     }
 }

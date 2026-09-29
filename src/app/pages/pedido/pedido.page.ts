@@ -47,13 +47,9 @@ export class PedidoPage implements OnInit, OnDestroy {
   constructor(
     private carritoService: CarritoService,
     private supabase: SupabaseService,
-<<<<<<< HEAD
     private cdr: ChangeDetectorRef,
     private modalController: ModalController,
-=======
     private mesasService: MesasService,
-    private cdr: ChangeDetectorRef
->>>>>>> 1caab85b132bffdf6f645f572a0ad12095e92b2b
   ) {
     addIcons({ addOutline, removeOutline, cartOutline, timeOutline, alertCircleOutline, closeOutline });
   }
@@ -309,7 +305,6 @@ export class PedidoPage implements OnInit, OnDestroy {
       }
     }, 3000);
   }
-<<<<<<< HEAD
   async abrirAvisoConfirmacion() {
     const aviso = await this.modalController.create({
       component: ConfirmModalComponent,
@@ -335,6 +330,4 @@ export class PedidoPage implements OnInit, OnDestroy {
     }
   }
 }
-=======
-}
->>>>>>> 1caab85b132bffdf6f645f572a0ad12095e92b2b
+

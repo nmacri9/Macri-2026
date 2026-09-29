@@ -17,7 +17,7 @@ ion-footer {
 
 .section-label {
   font-family: 'EB Garamond', serif;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 600;
   color: #dbcbb9; 
   margin: 24px 4px 16px;
@@ -25,7 +25,7 @@ ion-footer {
 }
 
 /* ============================================
-   Tarjetas del Menú (Flotantes)
+   Tarjetas del Menú
    ============================================ */
 .carrito-item {
   --background: #1B3B2D; 
@@ -41,7 +41,167 @@ ion-footer {
 }
 
 /* ============================================
-   Lista del Carrito (Minimalista)
+   Textos e Información agrupada
+   ============================================ */
+.carrito-item-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0; 
+}
+
+.carrito-item-nombre {
+  font-family: 'EB Garamond', serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: #dbcbb9; 
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 6px;
+}
+
+.menu-item-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-family: 'Inter', sans-serif;
+}
+
+.badge-tipo {
+  background: rgba(219, 203, 185, 0.15); 
+  color: #dbcbb9; 
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 12px;
+  text-transform: uppercase;
+}
+
+.meta-precio {
+  font-size: 14px;
+  font-weight: 700;
+  color: #C8B29E; 
+}
+
+.meta-tiempo {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: rgba(200, 178, 158, 0.8);
+}
+
+.meta-dot {
+  color: rgba(200, 178, 158, 0.4);
+  font-size: 10px;
+}
+
+/* ============================================
+   Botón circular (+) para agregar a la canasta
+   ============================================ */
+.btn-agregar {
+  --background: rgba(200, 178, 158, 0.15);
+  --background-activated: rgba(200, 178, 158, 0.3);
+  --color: #dbcbb9;
+  --border-radius: 50%;
+  --padding-start: 0;
+  --padding-end: 0;
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  box-shadow: none;
+
+  ion-icon {
+    font-size: 24px;
+  }
+}
+
+/* ============================================
+   BOTÓN FLOTANTE "VER PEDIDO" (Estilo Rappi)
+   ============================================ */
+.footer-flotante {
+  padding: 8px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(0deg, #132A20 60%, rgba(19, 42, 32, 0) 100%);
+}
+
+.btn-flotante-ver {
+  --background: #dbcbb9;
+  --background-activated: #c4b5a3;
+  --color: #091610;
+  --border-radius: 16px;
+  --box-shadow: 0 8px 24px rgba(9, 22, 16, 0.6);
+  height: 60px;
+  margin: 0 auto;
+  max-width: 480px;
+  text-transform: none;
+}
+
+.btn-flotante-contenido {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 8px;
+
+  .badge-cantidad {
+    background: #132A20;
+    color: #dbcbb9;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+  }
+
+  .texto-ver {
+    font-family: 'EB Garamond', serif;
+    font-size: 19px;
+    font-weight: 700;
+  }
+
+  .total-ver {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+  }
+}
+
+/* ============================================
+   SOBREPANTALLA (MODAL BOTTOM SHEET)
+   ============================================ */
+.modal-cepa {
+  --background: #18392B;
+  --border-radius: 24px 24px 0 0;
+}
+
+.modal-header ion-toolbar {
+  --background: #18392B;
+  --border-width: 0;
+}
+
+.modal-header ion-title {
+  font-family: 'EB Garamond', serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: #dbcbb9;
+}
+
+.modal-content {
+  --background: #18392B;
+}
+
+.modal-footer {
+  background: #1B3B2D;
+}
+
+/* ============================================
+   Lista interna del Modal (Productos elegidos)
    ============================================ */
 .item-agregado {
   --background: transparent;
@@ -55,100 +215,21 @@ ion-footer {
   &:last-child {
     border-bottom: none; 
   }
-}
 
-/* ============================================
-   Textos e Información agrupada
-   ============================================ */
-.carrito-item-info {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-width: 0; 
-}
+  .carrito-item-nombre {
+    font-size: 16px;
+  }
 
-.carrito-item-nombre {
-  font-family: 'EB Garamond', serif;
-  font-size: 17px;
-  font-weight: 600;
-  color: #dbcbb9; 
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-bottom: 4px;
-}
-
-.menu-item-meta {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 6px;
-  font-family: 'Inter', sans-serif;
-}
-
-.badge-tipo {
-  background: rgba(219, 203, 185, 0.15); /* Crema con transparencia */
-  color: #dbcbb9; 
-  font-size: 10px;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 12px;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-}
-
-.meta-precio {
-  font-size: 14px;
-  font-weight: 600;
-  color: #C8B29E; 
-}
-
-.meta-tiempo {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 12px;
-  color: rgba(200, 178, 158, 0.8);
-  
-  ion-icon {
+  .carrito-item-precio {
+    font-family: 'Inter', sans-serif;
     font-size: 14px;
+    font-weight: 500;
+    color: #C8B29E; 
+    margin-top: 4px;
   }
 }
 
-.meta-dot {
-  color: rgba(200, 178, 158, 0.4);
-  font-size: 10px;
-}
-
-.carrito-item-precio {
-  font-family: 'Inter', sans-serif;
-  font-size: 14px;
-  font-weight: 500;
-  color: #C8B29E; 
-  margin-top: 4px;
-}
-
-/* ============================================
-   Botones de Acción (Píldora y Circular)
-   ============================================ */
-.btn-agregar {
-  --background: rgba(200, 178, 158, 0.12);
-  --background-activated: rgba(200, 178, 158, 0.25);
-  --color: #dbcbb9;
-  --border-radius: 50%;
-  --padding-start: 0;
-  --padding-end: 0;
-  width: 40px;
-  height: 40px;
-  margin: 0;
-  box-shadow: none;
-
-  ion-icon {
-    font-size: 22px;
-  }
-}
-
-/* Píldora para sumar/restar */
+/* Píldora para sumar/restar dentro del modal */
 .carrito-item-controles {
   display: flex;
   align-items: center;
@@ -156,7 +237,7 @@ ion-footer {
   background: rgba(200, 178, 158, 0.1); 
   border: 1px solid rgba(200, 178, 158, 0.15);
   padding: 2px 4px;
-  border-radius: 24px; /* Forma de píldora redonda */
+  border-radius: 24px;
   flex-shrink: 0;
 }
 
@@ -177,22 +258,20 @@ ion-footer {
 
 .carrito-item-cantidad {
   font-family: 'Inter', sans-serif;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 15px;
   color: #dbcbb9; 
-  min-width: 20px;
+  min-width: 22px;
   text-align: center;
 }
 
 /* ============================================
-   Panel de Totales (Footer)
+   Panel de Totales (Footer del Modal)
    ============================================ */
 .totales-panel {
   background: #1B3B2D; 
   border-top: 1px solid rgba(200, 178, 158, 0.15); 
-  border-radius: 24px 24px 0 0;
   padding: 20px 24px calc(20px + env(safe-area-inset-bottom, 0px));
-  box-shadow: 0 -8px 24px rgba(9, 22, 16, 0.5);
 }
 
 .totales-row {
@@ -202,15 +281,21 @@ ion-footer {
   font-family: 'Inter', sans-serif;
   font-size: 14px;
   color: #C8B29E; 
-  margin-bottom: 8px;
+  margin-bottom: 12px;
+
+  span:last-child {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
 }
 
 .totales-row-destacado {
   font-family: 'EB Garamond', serif;
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 700;
   color: #dbcbb9; 
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 
 .btn-submit {
@@ -218,13 +303,11 @@ ion-footer {
   --background-activated: #b59d89;
   --color: #091610; 
   --border-radius: 16px;
-  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  height: 54px;
+  height: 56px;
   font-family: 'Inter', sans-serif;
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 700;
   text-transform: none;
-  letter-spacing: 0.3px;
   margin: 0;
 
   &[disabled] {
@@ -234,7 +317,7 @@ ion-footer {
 }
 
 /* ============================================
-   Banner de Rechazo
+   Estados de Espera y Rechazo
    ============================================ */
 .banner-rechazo {
   display: flex;
@@ -276,31 +359,6 @@ ion-footer {
   }
 }
 
-/* ============================================
-   Estados de Espera y Vacío
-   ============================================ */
-.carrito-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 16px;
-  text-align: center;
-
-  ion-icon {
-    font-size: 48px;
-    color: rgba(200, 178, 158, 0.4);
-    margin-bottom: 12px;
-  }
-
-  p {
-    font-family: 'EB Garamond', serif;
-    color: #C8B29E; 
-    font-size: 16px;
-    margin: 0;
-  }
-}
-
 .estado-espera {
   display: flex;
   flex-direction: column;
@@ -336,50 +394,12 @@ ion-footer {
 
 .form-error {
   text-align: center;
-  margin: 4px 16px 12px;
+  margin: 16px;
 
   small {
     font-family: 'Inter', sans-serif;
     color: #ff6b6b;
     font-weight: 500;
-    font-size: 13px;
-  }
-}
-
-/* ============================================
-   RESPONSIVE
-   ============================================ */
-@media (max-width: 480px) {
-  .carrito-section {
-    padding: 0 14px;
-  }
-
-  .banner-rechazo {
-    width: calc(100% - 28px);
-  }
-
-  .section-label {
-    font-size: 18px;
-  }
-
-  .carrito-item-nombre {
-    font-size: 16px;
-  }
-
-  .meta-precio, .carrito-item-precio {
-    font-size: 13px;
-  }
-
-  .totales-panel {
-    padding: 16px 20px calc(16px + env(safe-area-inset-bottom, 0px));
-  }
-
-  .totales-row-destacado {
-    font-size: 22px;
-  }
-
-  .btn-submit {
-    height: 50px;
-    font-size: 15px;
+    font-size: 14px;
   }
 }

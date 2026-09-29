@@ -5,47 +5,12 @@
 
   <div [hidden]="enviando">
 
-    <!-- MENÚ REAL DESDE SUPABASE -->
-    <section class="carrito-section" *ngIf="estadoPedido === 'carrito' || estadoPedido === 'rechazado_mozo'">
-      <h3 class="section-label">Nuestro Menú</h3>
-      
-      <div *ngIf="cargandoMenu" style="text-align: center; padding: 20px;">
-        <app-cepa-spinner></app-cepa-spinner>
-      </div>
-
-      <div *ngIf="!cargandoMenu && productosMenu.length === 0" style="color: #ccc; font-size: 14px;">
-        No hay platos disponibles en este momento.
-      </div>
-
-      <ion-item class="carrito-item" lines="none" *ngFor="let prod of productosMenu">
-        <div class="carrito-item-info">
-          <span class="carrito-item-nombre">{{ prod.nombre }}</span>
-          <span class="carrito-item-precio">${{ prod.precio }}</span>
-          
-          <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px;">
-            <!-- Badge de Tipo de Producto (Plato / Bebida / Postre) -->
-            <span style="font-size: 11px; background: rgba(209, 176, 117, 0.2); color: #d1b075; padding: 2px 6px; border-radius: 4px; font-weight: bold;">
-              {{ prod.tipo }}
-            </span>
-            <small style="color: #999; display: flex; align-items: center; gap: 4px;">
-              <ion-icon name="time-outline"></ion-icon> 
-              {{ prod.tiempo_elaboracion || prod.tiempoElaboracion || 0 }} min
-            </small>
-          </div>
-        </div>
-
-        <!-- Nuevo botón redondo minimalista -->
-        <ion-button class="btn-agregar" slot="end" (click)="agregarAlCarrito(prod)">
-          <ion-icon name="add-outline"></ion-icon>
-        </ion-button>
-      </ion-item>
-    </section>
-    <!-- FIN MENÚ REAL -->
-
-    <!-- Vista: armando el carrito -->
+    <!-- =======================================================
+         1. VISTA PRINCIPAL: CARTA DE PRODUCTOS (Menú)
+         ======================================================= -->
     <ng-container *ngIf="estadoPedido === 'carrito' || estadoPedido === 'rechazado_mozo'">
 
-      <!-- BANNER NUEVO: Solo sale si el mozo lo rebotó -->
+      <!-- Banner si el mozo rebotó el pedido -->
       <div class="banner-rechazo" *ngIf="estadoPedido === 'rechazado_mozo'">
         <ion-icon name="alert-circle-outline"></ion-icon>
         <div class="texto-banner">
@@ -54,176 +19,42 @@
         </div>
       </div>
 
-      <section class="carrito-section">
-        <h3 class="section-label">Productos agregados</h3>
-
-        <div class="carrito-empty" *ngIf="items.length === 0">
-          <ion-icon name="cart-outline"></ion-icon>
-          <p>Todavía no agregaste nada al carrito.</p>
-        </div>
-
-        <!-- Se agrega 'item-agregado' para quitarle el fondo y hacerlo lista -->
-        <ion-item class="carrito-item item-agregado" lines="none" *ngFor="let item of items">
-          <div class="carrito-item-info">
-            <span class="carrito-item-nombre">{{ item.nombre }}</span>
-            <span class="carrito-item-precio">${{ item.precio }} c/u</span>
-          </div>
-
-          <div class="carrito-item-controles">
-            <ion-button fill="clear" class="control-btn" (click)="restar(item)">
-              <ion-icon name="remove-outline"></ion-icon>
-            </ion-button>
-            <span class="carrito-item-cantidad">{{ item.cantidad }}</span>
-            <ion-button fill="clear" class="control-btn" (click)="sumar(item)">
-              <ion-icon name="add-outline"></ion-icon>
-            </ion-button>
-          </div>
-        </ion-item>
-      </section>
-
-      <div class="form-error" *ngIf="errorPedido">
-        <small>{{ errorPedido }}</small>
-      </div>
-
-      <!-- Panel de totales -->
-      <div class="totales-panel" slot="fixed">
-        <div class="totales-row">
-          <span>Tiempo estimado</span>
-          <span>{{ tiempoEstimado }} min</span>
-        </div>
-        <div class="totales-row totales-row-destacado">
-          <span>Total</span>
-          <span>${{ total }}</span>
-        </div>
-
-        <!-- Se quitó el color="success" para que tome el estilo crema elegante -->
-        <ion-button
-          class="btn-submit"
-          expand="block"
-          [disabled]="items.length === 0"
-          (click)="enviarPedido()">
-          {{ estadoPedido === 'rechazado_mozo' ? 'Volver a Enviar Pedido' : 'Enviar Pedido' }}
-        </ion-button>
-      </div>
-
-    </ng-container>
-
-    <!-- Vista: esperando que el mozo confirme -->
-    <ng-container *ngIf="estadoPedido === 'pendiente_confirmacion'">
-      <div class="estado-espera" style="text-align: center; padding: 30px 15px;">
-        <ion-spinner name="crescent" style="width: 48px; height: 48px; color: #C8B29E;"></ion-spinner>
-        <h2 class="page-title" style="margin-top: 15px;">Esperando confirmación del mozo...</h2>
-        <p class="estado-subtitle">Tu pedido ya llegó al mozo. En cuanto lo confirme, tu pedido se enviará a la cocina y barra.</p>
-      </div>
-    </ng-container>
-
-    <!-- Vista: pedido confirmado (Consigna Punto 14) -->
-    <ng-container *ngIf="estadoPedido === 'confirmado'">
-      <div class="estado-espera" style="text-align: center; padding: 30px 15px;">
-        <ion-icon name="cart-outline" class="estado-icono-exito" style="font-size: 64px; color: #2dd36f;"></ion-icon>
-        <h2 class="page-title">¡Pedido confirmado!</h2>
-        <p class="estado-subtitle">Tu pedido fue derivado a cocina/bar. Ahora podés ver el seguimiento en tiempo real o jugar para obtener descuentos.</p>
+      <section class="carrito-section" style="padding-bottom: 80px;">
+        <h3 class="section-label">Platos y Bebidas</h3>
         
-        <!-- Botones de Acción Posterior (Punto 14) -->
-        <div style="margin-top: 25px; display: flex; flex-direction: column; gap: 12px;">
-          <ion-button expand="block" routerLink="/estado-pedido" style="--background: #d1b075;">
-            Ver Estado del Pedido
-          </ion-button>
-          
-          <ion-button expand="block" fill="outline" routerLink="/juegos" style="--color: #d1b075; --border-color: #d1b075;">
-            Ir a Juegos (Obtener Descuento)
-          </ion-button>
-        </div>
-      </div>
-    </ng-container>
-<app-cepa-header [titulo]="'Tu Pedido'"></app-cepa-header>
-
-<ion-content class="ion-padding">
-  <app-cepa-spinner *ngIf="enviando"></app-cepa-spinner>
-
-  <div [hidden]="enviando">
-
-    <!-- MENÚ REAL DESDE SUPABASE -->
-    <section class="carrito-section" *ngIf="estadoPedido === 'carrito' || estadoPedido === 'rechazado_mozo'">
-      <h3 class="section-label">Nuestro Menú</h3>
-      
-      <div *ngIf="cargandoMenu" style="text-align: center; padding: 20px;">
-        <app-cepa-spinner></app-cepa-spinner>
-      </div>
-
-      <div *ngIf="!cargandoMenu && productosMenu.length === 0" style="color: #ccc; font-size: 14px;">
-        No hay platos disponibles en este momento.
-      </div>
-
-      <ion-item class="carrito-item" lines="none" *ngFor="let prod of productosMenu">
-        <div class="carrito-item-info">
-          <span class="carrito-item-nombre">{{ prod.nombre }}</span>
-          
-          <!-- Metadata agrupada: Badge, Precio y Tiempo en una línea -->
-          <div class="menu-item-meta">
-            <span class="badge-tipo">{{ prod.tipo }}</span>
-            <span class="meta-dot">&bull;</span>
-            <span class="meta-precio">${{ prod.precio }}</span>
-            <span class="meta-dot">&bull;</span>
-            <small class="meta-tiempo">
-              <ion-icon name="time-outline"></ion-icon> 
-              {{ prod.tiempo_elaboracion || prod.tiempoElaboracion || 0 }} min
-            </small>
-          </div>
+        <div *ngIf="cargandoMenu" style="text-align: center; padding: 20px;">
+          <app-cepa-spinner></app-cepa-spinner>
         </div>
 
-        <ion-button class="btn-agregar" slot="end" (click)="agregarAlCarrito(prod)">
-          <ion-icon name="add-outline"></ion-icon>
-        </ion-button>
-      </ion-item>
-    </section>
-    <!-- FIN MENÚ REAL -->
-
-    <!-- Vista: armando el carrito -->
-    <ng-container *ngIf="estadoPedido === 'carrito' || estadoPedido === 'rechazado_mozo'">
-
-      <!-- BANNER NUEVO: Solo sale si el mozo lo rebotó -->
-      <div class="banner-rechazo" *ngIf="estadoPedido === 'rechazado_mozo'">
-        <ion-icon name="alert-circle-outline"></ion-icon>
-        <div class="texto-banner">
-          <h3>El mozo solicitó revisar tu pedido</h3>
-          <p>Modificá las cantidades o cambiá los platos y volvé a enviarlo.</p>
-        </div>
-      </div>
-
-      <section class="carrito-section" style="padding-bottom: 24px;">
-        <h3 class="section-label">Productos agregados</h3>
-
-        <div class="carrito-empty" *ngIf="items.length === 0">
-          <ion-icon name="cart-outline"></ion-icon>
-          <p>Todavía no agregaste nada al carrito.</p>
+        <div *ngIf="!cargandoMenu && productosMenu.length === 0" style="color: #ccc; font-size: 14px; text-align: center;">
+          No hay platos disponibles en este momento.
         </div>
 
-        <ion-item class="carrito-item item-agregado" lines="none" *ngFor="let item of items">
+        <ion-item class="carrito-item" lines="none" *ngFor="let prod of productosMenu">
           <div class="carrito-item-info">
-            <span class="carrito-item-nombre">{{ item.nombre }}</span>
-            <span class="carrito-item-precio">${{ item.precio }} c/u</span>
+            <span class="carrito-item-nombre">{{ prod.nombre }}</span>
+            <div class="menu-item-meta">
+              <span class="badge-tipo">{{ prod.tipo }}</span>
+              <span class="meta-dot">&bull;</span>
+              <span class="meta-precio">${{ prod.precio }}</span>
+              <span class="meta-dot">&bull;</span>
+              <small class="meta-tiempo">
+                <ion-icon name="time-outline"></ion-icon> 
+                {{ prod.tiempo_elaboracion || prod.tiempoElaboracion || 0 }} min
+              </small>
+            </div>
           </div>
-
-          <!-- Controles en forma de píldora -->
-          <div class="carrito-item-controles">
-            <ion-button fill="clear" class="control-btn" (click)="restar(item)">
-              <ion-icon name="remove-outline"></ion-icon>
-            </ion-button>
-            <span class="carrito-item-cantidad">{{ item.cantidad }}</span>
-            <ion-button fill="clear" class="control-btn" (click)="sumar(item)">
-              <ion-icon name="add-outline"></ion-icon>
-            </ion-button>
-          </div>
+          <ion-button class="btn-agregar" slot="end" (click)="agregarAlCarrito(prod)">
+            <ion-icon name="add-outline"></ion-icon>
+          </ion-button>
         </ion-item>
       </section>
 
-      <div class="form-error" *ngIf="errorPedido">
-        <small>{{ errorPedido }}</small>
-      </div>
     </ng-container>
 
-    <!-- Vista: esperando que el mozo confirme -->
+    <!-- =======================================================
+         2. ESTADOS POSTERIORES (Esperando Mozo / Confirmado)
+         ======================================================= -->
     <ng-container *ngIf="estadoPedido === 'pendiente_confirmacion'">
       <div class="estado-espera">
         <ion-spinner name="crescent" style="width: 48px; height: 48px; color: #C8B29E;"></ion-spinner>
@@ -232,7 +63,6 @@
       </div>
     </ng-container>
 
-    <!-- Vista: pedido confirmado (Consigna Punto 14) -->
     <ng-container *ngIf="estadoPedido === 'confirmado'">
       <div class="estado-espera">
         <ion-icon name="cart-outline" class="estado-icono-exito"></ion-icon>
@@ -253,26 +83,85 @@
   </div>
 </ion-content>
 
-<!-- FOOTER: Panel de totales flotante (Fuera del content) -->
-<ion-footer class="ion-no-border" *ngIf="!enviando && (estadoPedido === 'carrito' || estadoPedido === 'rechazado_mozo')">
-  <div class="totales-panel">
-    <div class="totales-row">
-      <span>Tiempo estimado</span>
-      <span>{{ tiempoEstimado }} min</span>
+<!-- =======================================================
+     3. BOTÓN FLOTANTE INFERIOR
+     ======================================================= -->
+<ion-footer class="ion-no-border footer-flotante" *ngIf="!enviando && (estadoPedido === 'carrito' || estadoPedido === 'rechazado_mozo') && items.length > 0">
+  <ion-button class="btn-flotante-ver" expand="block" (click)="modalCarrito.present()">
+    <div class="btn-flotante-contenido">
+      <div class="badge-cantidad">{{ items.length }}</div>
+      <span class="texto-ver">Ver mi pedido</span>
+      <span class="total-ver">${{ total }}</span>
     </div>
-    <div class="totales-row totales-row-destacado">
-      <span>Total</span>
-      <span>${{ total }}</span>
-    </div>
-
-    <ion-button
-      class="btn-submit"
-      expand="block"
-      [disabled]="items.length === 0"
-      (click)="enviarPedido()">
-      {{ estadoPedido === 'rechazado_mozo' ? 'Volver a Enviar Pedido' : 'Enviar Pedido' }}
-    </ion-button>
-  </div>
+  </ion-button>
 </ion-footer>
-  </div>
-</ion-content>
+
+<!-- =======================================================
+     4. MODAL SOBREPANTALLA (SIN ngIf, COMPLETO Y CON CRUZ)
+     ======================================================= -->
+<ion-modal #modalCarrito class="modal-cepa">
+    
+    <!-- Encabezado del Modal con la Cruz -->
+    <ion-header class="ion-no-border">
+      <ion-toolbar style="--background: #18392B;">
+        <ion-title style="color: #dbcbb9; font-family: 'EB Garamond', serif; font-size: 22px;">Resumen del Pedido</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="modalCarrito.dismiss()">
+            <ion-icon name="close-outline" style="font-size: 32px; color: #C8B29E;"></ion-icon>          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <!-- Contenido del Modal (Resumen del carrito) -->
+    <ion-content class="modal-content ion-padding" style="--background: #18392B;">
+      <div class="carrito-empty" *ngIf="items.length === 0">
+        <ion-icon name="cart-outline"></ion-icon>
+        <p>No hay productos en tu pedido.</p>
+      </div>
+
+      <ion-item class="carrito-item item-agregado" lines="none" *ngFor="let item of items">
+        <div class="carrito-item-info">
+          <span class="carrito-item-nombre">{{ item.nombre }}</span>
+          <span class="carrito-item-precio">${{ item.precio }} c/u</span>
+        </div>
+
+        <div class="carrito-item-controles">
+          <ion-button fill="clear" class="control-btn" (click)="restar(item)">
+            <ion-icon name="remove-outline"></ion-icon>
+          </ion-button>
+          <span class="carrito-item-cantidad">{{ item.cantidad }}</span>
+          <ion-button fill="clear" class="control-btn" (click)="sumar(item)">
+            <ion-icon name="add-outline"></ion-icon>
+          </ion-button>
+        </div>
+      </ion-item>
+
+      <div class="form-error" *ngIf="errorPedido">
+        <small>{{ errorPedido }}</small>
+      </div>
+    </ion-content>
+
+    <!-- Pie del Modal (Totales y Envío) -->
+    <ion-footer class="ion-no-border modal-footer" style="background: #1B3B2D;">
+      <div class="totales-panel">
+        <div class="totales-row">
+          <span>Tiempo estimado</span>
+          <span><ion-icon name="time-outline"></ion-icon> {{ tiempoEstimado }} min</span>
+        </div>
+        <div class="totales-row totales-row-destacado">
+          <span>Total a pagar</span>
+          <span>${{ total }}</span>
+        </div>
+
+        <!-- Al tocar, cierra la X y luego llama a enviarPedido() -->
+        <ion-button
+          class="btn-submit"
+          expand="block"
+          [disabled]="items.length === 0"
+          (click)="modalCarrito.dismiss(); enviarPedido()">
+          {{ estadoPedido === 'rechazado_mozo' ? 'Volver a Enviar Pedido' : 'Confirmar Pedido' }}
+        </ion-button>
+      </div>
+    </ion-footer>
+
+</ion-modal>

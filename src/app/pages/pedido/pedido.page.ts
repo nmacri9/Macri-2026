@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonContent, IonItem, IonIcon, IonButton, IonSpinner, IonFooter } from '@ionic/angular';
+import { IonContent, IonItem, IonIcon, IonButton, IonSpinner, IonFooter, IonToolbar, IonTitle, IonHeader, IonButtons } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { addOutline, removeOutline, cartOutline, timeOutline, alertCircleOutline } from 'ionicons/icons';
+import { addOutline, removeOutline, cartOutline, timeOutline, alertCircleOutline, closeOutline } from 'ionicons/icons';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { FCM } from '@capacitor-community/fcm';
 import { Subscription } from 'rxjs';
@@ -11,6 +11,10 @@ import { ProductoCarrito } from '../../interfaces/carrito.model';
 import { SupabaseService } from '../../services/supabase.service';
 import { CepaHeaderComponent } from '../../shared/components/cepa-header/cepa-header.component';
 import { CepaSpinnerComponent } from '../../shared/components/cepa-spinner/cepa-spinner.component';
+import { IonModal } from '@ionic/angular/common';
+import { ViewChild } from '@angular/core';
+import { ModalController} from '@ionic/angular';
+import { ConfirmModalComponent } from '../../shared/confirm-modal/confirm-modal.component';
 
 type EstadoPedido = 'carrito' | 'pendiente_confirmacion' | 'rechazado_mozo' | 'confirmado';
 
@@ -19,10 +23,10 @@ type EstadoPedido = 'carrito' | 'pendiente_confirmacion' | 'rechazado_mozo' | 'c
   templateUrl: './pedido.page.html',
   styleUrls: ['./pedido.page.scss'],
   standalone: true,
-  imports: [IonContent, IonItem,IonFooter , IonIcon, IonButton, IonSpinner, CommonModule, CepaHeaderComponent, CepaSpinnerComponent]
+  imports: [IonContent, IonItem,IonFooter, IonToolbar, IonTitle,IonHeader, IonButtons, IonModal , IonIcon, IonButton, IonSpinner, CommonModule, CepaHeaderComponent, CepaSpinnerComponent]
 })
 export class PedidoPage implements OnInit, OnDestroy {
-
+  @ViewChild('modalCarrito') modalCarrito!: IonModal;
   productosMenu: any[] = [];
   cargandoMenu = true;
 
@@ -42,9 +46,10 @@ export class PedidoPage implements OnInit, OnDestroy {
   constructor(
     private carritoService: CarritoService,
     private supabase: SupabaseService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private modalController: ModalController,
   ) {
-    addIcons({ addOutline, removeOutline, cartOutline, timeOutline, alertCircleOutline });
+    addIcons({ addOutline, removeOutline, cartOutline, timeOutline, alertCircleOutline, closeOutline });
   }
 
   ngOnInit() {
@@ -305,5 +310,29 @@ export class PedidoPage implements OnInit, OnDestroy {
         this.aplicarCambioDeEstado(data);
       }
     }, 3000);
+  }
+  async abrirAvisoConfirmacion() {
+    const aviso = await this.modalController.create({
+      component: ConfirmModalComponent,
+      componentProps: {
+        mensaje: '¿Estás seguro de que querés enviar este pedido a la cocina?'
+      },
+      cssClass: 'modal-transparente' 
+    });
+
+    await aviso.present();
+
+    // Espera a ver qué botón tocaste (verde = true, rojo = false)
+    const { data } = await aviso.onDidDismiss();
+
+    if (data === true) {
+      // 1. Cierra el carrito flotante
+      if (this.modalCarrito) {
+        this.modalCarrito.dismiss(); 
+      }
+      
+      // 2. Ejecuta tu función original para mandar el pedido
+      this.enviarPedido(); 
+    }
   }
 }

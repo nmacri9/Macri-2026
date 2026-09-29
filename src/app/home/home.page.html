@@ -1,299 +1,444 @@
-<ion-header class="home-header">
-  <ion-toolbar>
-    <ion-title>Cepa</ion-title>
-    <button
-      id="profile-trigger"
-      class="profile-nav"
-      slot="end"
-      type="button"
-      [attr.aria-label]="'Abrir opciones de ' + nombreUsuario"
-      aria-haspopup="dialog"
-      [attr.aria-expanded]="menuPerfilAbierto"
-      [disabled]="cerrandoSesion"
-    >
-      @if (fotoUsuario) {
-      <img [src]="fotoUsuario" alt="" (error)="fotoUsuario = null" />
-      } @else {
-      <ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon>
-      }
-    </button>
-    <ion-popover
-      #profileMenu
-      trigger="profile-trigger"
-      class="profile-popover"
-      side="bottom"
-      alignment="end"
-      aria-label="Opciones de cuenta"
-      (didPresent)="menuPerfilAbierto = true"
-      (didDismiss)="menuPerfilAbierto = false"
-    >
-      <ng-template>
-        <div class="profile-menu">
-          <button type="button" (click)="profileMenu.dismiss()">
-            <ion-icon
-              name="person-circle-outline"
-              aria-hidden="true"
-            ></ion-icon>
-            Mi perfil
-          </button>
-          <button
-            type="button"
-            [disabled]="cerrandoSesion"
-            (click)="cerrarSesion(profileMenu)"
-          >
-            <ion-icon name="log-out-outline" aria-hidden="true"></ion-icon>
-            Cerrar sesión
-          </button>
-        </div>
-      </ng-template>
-    </ion-popover>
-  </ion-toolbar>
-</ion-header>
+<ion-content class="home-content ion-no-padding">
 
-<ion-content class="home-content">
-  
-  <!-- REFRESHER PARA ACTUALIZAR ESTADOS EN TIEMPO REAL TIRANDO PARA ABAJO -->
   <ion-refresher slot="fixed" (ionRefresh)="recargarPantalla($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-  <main class="home-container">
-    <!-- Encabezado dinámico según perfil -->
-    <section class="welcome-section" aria-labelledby="home-title">
-      <span class="welcome-eyebrow">Panel de gestión</span>
+  <ion-popover
+    #profileMenu
+    trigger="profile-trigger"
+    class="profile-popover"
+    side="bottom"
+    alignment="start"
+    aria-label="Opciones de cuenta"
+    (didPresent)="menuPerfilAbierto = true"
+    (didDismiss)="menuPerfilAbierto = false"
+  >
+    <ng-template>
+      <div class="profile-menu">
+        <button type="button" (click)="profileMenu.dismiss()">
+          <ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon>
+          Mi perfil ({{ rolEtiqueta }})
+        </button>
+        <button
+          type="button"
+          [disabled]="cerrandoSesion"
+          (click)="cerrarSesion(profileMenu)"
+        >
+          <ion-icon name="log-out-outline" aria-hidden="true"></ion-icon>
+          Cerrar sesión
+        </button>
+      </div>
+    </ng-template>
+  </ion-popover>
 
-      @if (esCliente) {
-      <h1 id="home-title">Bienvenido/a, {{ nombreUsuario }}</h1>
-      <p>Elegí una opción para continuar.</p>
-      } @else {
-      <h1 id="home-title">¿Qué querés cargar?</h1>
-      <p>Elegí una opción para comenzar a organizar tu restaurante.</p>
-      }
-    </section>
+  <div class="mp-layout">
 
-    @if (errorPerfil) {
-    <div class="home-notice" role="alert">
-      <p>{{ errorPerfil }}</p>
-      <button class="retry-button" type="button" (click)="cargarPerfil()" [disabled]="cargandoPerfil">Reintentar</button>
-    </div>
-    } @else {
-    @if (errorMesa) {
-    <div class="home-notice" role="alert">
-      <p>{{ errorMesa }}</p>
-      <button class="retry-button" type="button" (click)="cargarEstadoMesa()" [disabled]="cargandoMesa">Reintentar consulta de mesa</button>
-    </div>
-    }
-    @if (cargandoMesa) {
-    <p class="home-status" role="status">Consultando tu mesa…</p>
-    }
+    <!-- ================= 1. ZONA SUPERIOR ARENA ================= -->
+    <div class="top-sand-zone">
 
-    <nav class="menu-grid" aria-label="Opciones principales">
-      @if (puedeUsarChat) {
-      <a class="menu-option" routerLink="/chat-cliente">
-        <span class="menu-icon"
-          ><ion-icon name="chatbubbles-outline" aria-hidden="true"></ion-icon
-        ></span>
-        <span class="menu-copy">
-          <strong>{{ esMozo ? 'Chat del salón' : 'Consulta al mozo' }}</strong>
-          <small>Consultas y respuestas entre clientes y mozos</small>
-        </span>
-        <ion-icon
-          name="arrow-forward-outline"
-          class="menu-arrow"
-          aria-hidden="true"
-        ></ion-icon>
-      </a>
-      }
+      <header class="mp-header">
+        <div class="user-info">
+          <button
+            id="profile-trigger"
+            class="brand-circle"
+            type="button"
+            [attr.aria-label]="'Abrir opciones de ' + nombreUsuario"
+            [disabled]="cerrandoSesion"
+          >
+            @if (fotoUsuario) {
+              <img [src]="fotoUsuario" alt="" (error)="fotoUsuario = null" />
+            } @else {
+              <ion-icon name="wine-outline" aria-hidden="true"></ion-icon>
+            }
+          </button>
 
-      <!-- VISTA CLIENTE: Escaneo de mesa y Pedido -->
-      @if (esCliente) {
-      <!-- Opciones SIEMPRE disponibles para el cliente en la puerta -->
-        <a class="menu-option" (click)="escanearQRIngreso()" style="cursor: pointer">
-          <span class="menu-icon">
-            <ion-icon name="qr-code-outline"></ion-icon>
-          </span>
-          <span class="menu-copy">
-            <strong>Ingreso al local</strong>
-            <small>Escanear QR de entrada</small>
-          </span>
-          <ion-icon name="arrow-forward-outline" class="menu-arrow"></ion-icon>
-        </a>
+          <div class="greeting-text">
+            <span>Hola, {{ nombreUsuario }},</span>
+            <strong>{{ rolEtiqueta }}</strong>
+          </div>
+        </div>
 
-        <a class="menu-option" (click)="verificarAccesoMesa()" style="cursor: pointer">
-          <span class="menu-icon">
-            <ion-icon name="grid-outline" aria-hidden="true"></ion-icon>
-          </span>
-          <span class="menu-copy">
-            <strong>Escanear mesa</strong>
-            <small>Vincular mesa asignada por QR</small>
-          </span>
-          <ion-icon name="arrow-forward-outline" class="menu-arrow" aria-hidden="true"></ion-icon>
-        </a>
+        <!-- Campana de notificaciones -->
+        <div class="header-actions">
+          <button class="icon-circle-btn" type="button" (click)="accionBotonQR()">
+            <ion-icon name="notifications-outline"></ion-icon>
+            @if (notificacionesBadge > 0) {
+              <span class="notif-badge">{{ notificacionesBadge }}</span>
+            }
+          </button>
+        </div>
+      </header>
 
-        <!-- Opciones BLOQUEADAS hasta que se vincule a una mesa -->
-        <!-- @if (clienteVinculadoAMesa) { -->
-          <a class="menu-option" routerLink="/menu-productos">
-            <span class="menu-icon">
-              <ion-icon name="restaurant-outline" aria-hidden="true"></ion-icon>
-            </span>
-            <span class="menu-copy">
-              <strong>Menú de productos</strong>
-              <small>Conocé los platos, bebidas y sus precios</small>
-            </span>
-            <ion-icon name="arrow-forward-outline" class="menu-arrow" aria-hidden="true"></ion-icon>
-          </a>
-
-          <a class="menu-option" routerLink="/pedido">
-            <span class="menu-icon">
-              <ion-icon name="cart-outline" aria-hidden="true"></ion-icon>
-            </span>
-            <span class="menu-copy">
-              <strong>Hacer Pedido</strong>
-              <small>Elegí tus platos y bebidas favoritas</small>
-            </span>
-            <ion-icon name="arrow-forward-outline" class="menu-arrow" aria-hidden="true"></ion-icon>
-          </a>
+      <!-- 2. SOLAPAS CONTEXTUALES SEGÚN EL ROL -->
+      <div class="mp-folder-tabs">
+        @if (esCliente) {
+          <button class="folder-tab active" type="button">MI MESA</button>
+          <button class="folder-tab" type="button" routerLink="/menu-productos">CARTA</button>
+          <!-- Botones liberados siempre visibles para el cliente -->
+          <button class="folder-tab" type="button" routerLink="/pedido">PEDIDO</button>
+          <!-- Si la ruta de encuestas se llama distinto, cambiala acá -->
+          <button class="folder-tab" type="button" routerLink="/graficos-encuestas">ENCUESTAS</button>
+        } @else {
+          <button class="folder-tab active" type="button">PEDIDOS</button>
+          @if (esMetre) {
+            <button class="folder-tab" type="button" routerLink="/metre-asignacion">MESAS</button>
+          }
+          @if (puedeGestionarClientes) {
+            <button class="folder-tab" type="button" routerLink="/registro-empleado">EMPLEADOS</button>
+          }
+          <button class="folder-tab" type="button" routerLink="/menu-productos">MENÚ</button>
         }
-      <!-- } -->
+      </div>
 
-      <!-- VISTA METRE: Asignación de mesa -->
-      @if (esMetre) {
-      <a class="menu-option" routerLink="/metre-asignacion">
-        <span class="menu-icon">
-          <ion-icon name="people-outline" aria-hidden="true"></ion-icon>
-        </span>
-        <span class="menu-copy">
-          <strong>Asignar mesa</strong>
-          <small>Gestionar asignaciones a clientes</small>
-        </span>
-        <ion-icon
-          name="arrow-forward-outline"
-          class="menu-arrow"
-          aria-hidden="true"
-        ></ion-icon>
-      </a>
+    </div>
+
+    <!-- ================= 3. ZONA CENTRAL VERDE ================= -->
+    <main class="bottom-green-zone">
+
+      @if (errorPerfil) {
+        <div class="home-notice" role="alert">
+          <p>{{ errorPerfil }}</p>
+          <button class="retry-button" type="button" (click)="cargarPerfil()" [disabled]="cargandoPerfil">
+            Reintentar
+          </button>
+        </div>
+      }
+      @if (errorMesa) {
+        <div class="home-notice" role="alert">
+          <p>{{ errorMesa }}</p>
+          <button class="retry-button" type="button" (click)="cargarEstadoMesa()" [disabled]="cargandoMesa">
+            Reintentar consulta de mesa
+          </button>
+        </div>
       }
 
-      <!-- VISTA MOZO: Confirmar pedidos -->
-      @if (esMozo) {
-      <a class="menu-option" routerLink="/confirmar-pedido">
-        <span class="menu-icon">
-          <ion-icon
-            name="checkmark-circle-outline"
-            aria-hidden="true"
-          ></ion-icon>
-        </span>
-        <span class="menu-copy">
-          <strong>Confirmar Pedidos</strong>
-          <small>Revisar y aprobar los pedidos de las mesas</small>
-        </span>
-        <ion-icon
-          name="arrow-forward-outline"
-          class="menu-arrow"
-          aria-hidden="true"
-        ></ion-icon>
+      <!-- TARJETA PRINCIPAL DE ESTADO -->
+      <section class="mp-main-card">
+        <div class="card-status-header">
+          <span class="status-label">
+            @if (puedeGestionarClientes) { Estado del Salón }
+            @else if (esMetrePuro) { Recepción y Salón }
+            @else if (esMozo) { Servicio de Mesas }
+            @else if (puedeCargarPlatos) { Sector Cocina }
+            @else if (puedeCargarBebidas) { Sector Barra }
+            @else { Estado de tu Visita }
+          </span>
+        </div>
+
+        <h2 class="status-main-metric">
+          @if (puedeGestionarClientes) {
+            Mesas Ocupadas: {{ mesasOcupadas }}/{{ totalMesas }}
+          } @else if (esMetrePuro) {
+            En Espera: {{ listaEsperaCount }} clientes
+          } @else if (esMozo) {
+            Por Confirmar: {{ pedidosPorConfirmarCount }} pedidos
+          } @else if (puedeCargarPlatos || puedeCargarBebidas) {
+            En Preparación: {{ comandasActivasCount }}
+          } @else {
+            {{ estadoPedidoCliente }}
+          }
+        </h2>
+
+        <div class="status-trend">
+          <ion-icon name="arrow-up-outline"></ion-icon>
+          <span>
+            @if (puedeGestionarClientes || esMetrePuro) {
+              Ocupación {{ porcentajeOcupacion }}% ({{ listaEsperaCount }} en fila)
+            } @else if (esMozo) {
+              {{ mesasOcupadas }} mesas activas en salón
+            } @else if (puedeCargarPlatos || puedeCargarBebidas) {
+              Actualización en tiempo real
+            } @else if (totalPedidoCliente > 0) {
+              Total acumulado: ${{ totalPedidoCliente }} ({{ tiempoEstimadoCliente }} min)
+            } @else {
+              {{ clienteVinculadoAMesa ? 'Podés abrir la carta y pedir' : 'Escaneá el QR para continuar' }}
+            }
+          </span>
+        </div>
+
+        <!-- CÁPSULAS DE ACCIÓN SEGÚN PERMISOS DEL ROL -->
+        <div class="action-pills-grid">
+
+          <!-- 1. DUEÑO / SUPERVISOR -->
+          @if (puedeGestionarClientes) {
+            <a class="action-pill" routerLink="/clientes-pendientes">
+              <ion-icon name="people-outline"></ion-icon>
+              <span>Aprobar<br>clientes</span>
+            </a>
+            <a class="action-pill" routerLink="/alta-mesa">
+              <ion-icon name="grid-outline"></ion-icon>
+              <span>Crear<br>mesa</span>
+            </a>
+            <a class="action-pill" routerLink="/registro-empleado">
+              <ion-icon name="person-add-outline"></ion-icon>
+              <span>Registrar<br>empleado</span>
+            </a>
+            <a class="action-pill" routerLink="/metre-asignacion">
+              <ion-icon name="list-outline"></ion-icon>
+              <span>Asignar<br>mesa</span>
+            </a>
+          }
+
+          <!-- 2. METRE PURO -->
+          @if (esMetrePuro) {
+            <a class="action-pill" routerLink="/metre-asignacion">
+              <ion-icon name="people-outline"></ion-icon>
+              <span>Asignar<br>mesa</span>
+            </a>
+            <a class="action-pill" routerLink="/menu-productos">
+              <ion-icon name="restaurant-outline"></ion-icon>
+              <span>Ver<br>carta</span>
+            </a>
+          }
+
+          <!-- 3. MOZO -->
+          @if (esMozo) {
+            <a class="action-pill" routerLink="/confirmar-pedido">
+              <ion-icon name="checkmark-circle-outline"></ion-icon>
+              <span>Confirmar<br>pedidos</span>
+            </a>
+            <a class="action-pill" routerLink="/chat-cliente">
+              <ion-icon name="chatbubbles-outline"></ion-icon>
+              <span>Chat del<br>salón</span>
+            </a>
+            <a class="action-pill" routerLink="/menu-productos">
+              <ion-icon name="book-outline"></ion-icon>
+              <span>Ver<br>carta</span>
+            </a>
+          }
+
+          <!-- 4. COCINERO -->
+          @if (puedeCargarPlatos) {
+            <a class="action-pill" routerLink="/cocina">
+              <ion-icon name="list-outline"></ion-icon>
+              <span>Gestionar<br>comandas</span>
+            </a>
+            <a class="action-pill" routerLink="/alta-plato">
+              <ion-icon name="restaurant-outline"></ion-icon>
+              <span>Nuevo<br>plato</span>
+            </a>
+            <a class="action-pill" routerLink="/menu-productos">
+              <ion-icon name="book-outline"></ion-icon>
+              <span>Ver<br>carta</span>
+            </a>
+          }
+
+          <!-- 5. CANTINERO (BARRA) -->
+          @if (puedeCargarBebidas) {
+            <a class="action-pill" routerLink="/cocina">
+              <ion-icon name="list-outline"></ion-icon>
+              <span>Comandas<br>barra</span>
+            </a>
+            <a class="action-pill" routerLink="/alta-bebida">
+              <ion-icon name="wine-outline"></ion-icon>
+              <span>Nueva<br>bebida</span>
+            </a>
+            <a class="action-pill" routerLink="/menu-productos">
+              <ion-icon name="book-outline"></ion-icon>
+              <span>Ver<br>carta</span>
+            </a>
+          }
+
+          <!-- 6. CLIENTE (REGISTRADO Y ANÓNIMO) -->
+          @if (esCliente) {
+            <a class="action-pill" (click)="escanearQRIngreso()" style="cursor: pointer">
+              <ion-icon name="qr-code-outline"></ion-icon>
+              <span>Ingreso<br>al local</span>
+            </a>
+            <a class="action-pill" (click)="verificarAccesoMesa()" style="cursor: pointer">
+              <ion-icon name="grid-outline"></ion-icon>
+              <span>Escanear<br>mesa</span>
+            </a>
+            <a class="action-pill" routerLink="/pedido">
+              <ion-icon name="cart-outline"></ion-icon>
+              <span>Hacer<br>pedido</span>
+            </a>
+            @if (puedeUsarChat) {
+              <a class="action-pill" routerLink="/chat-cliente">
+                <ion-icon name="chatbubbles-outline"></ion-icon>
+                <span>Consulta<br>al mozo</span>
+              </a>
+            }
+          }
+
+        </div>
+      </section>
+
+      <!-- ================= 4. SECCIÓN "AHORA" ================= -->
+      <section class="ahora-section">
+        <div class="section-header">
+          <div>
+            <h3>Ahora</h3>
+            <a (click)="accionBotonQR()" style="cursor: pointer">
+              Conocer todos <ion-icon name="arrow-forward-outline"></ion-icon>
+            </a>
+          </div>
+        </div>
+
+        <div class="ahora-cards-grid">
+          @if (puedeGestionarClientes) {
+            <a class="ahora-card" routerLink="/clientes-pendientes">
+              <div class="ahora-top">
+                <span class="ahora-pill-tag">DECISIÓN</span>
+                <span class="timer-badge">{{ clientesPendientesCount }}</span>
+              </div>
+              <div>
+                <h4>Clientes pendientes</h4>
+                <p>{{ clientesPendientesCount }} solicitudes por revisar</p>
+              </div>
+            </a>
+
+            <a class="ahora-card" routerLink="/metre-asignacion">
+              <div class="ahora-top">
+                <span class="ahora-brand-circle">Cepa</span>
+                <span class="timer-badge">FILA: {{ listaEsperaCount }}</span>
+              </div>
+              <div>
+                <h4>Lista de espera</h4>
+                <p>Asignar mesas disponibles</p>
+              </div>
+            </a>
+          } @else if (esMetrePuro) {
+            <a class="ahora-card" routerLink="/metre-asignacion">
+              <div class="ahora-top">
+                <span class="ahora-pill-tag">PUERTA</span>
+                <span class="timer-badge">{{ listaEsperaCount }}</span>
+              </div>
+              <div>
+                <h4>Fila de entrada</h4>
+                <p>{{ listaEsperaCount }} esperando mesa</p>
+              </div>
+            </a>
+
+            <a class="ahora-card" routerLink="/menu-productos">
+              <div class="ahora-top">
+                <span class="ahora-brand-circle">Cepa</span>
+                <span class="timer-badge">{{ mesasOcupadas }}/{{ totalMesas }}</span>
+              </div>
+              <div>
+                <h4>Salón activo</h4>
+                <p>Ver carta y disponibilidad</p>
+              </div>
+            </a>
+          } @else if (esMozo) {
+            <a class="ahora-card" routerLink="/confirmar-pedido">
+              <div class="ahora-top">
+                <span class="ahora-pill-tag">COMANDAS</span>
+                <span class="timer-badge">{{ pedidosPorConfirmarCount }}</span>
+              </div>
+              <div>
+                <h4>Confirmar pedidos</h4>
+                <p>Aprobar o enviar a revisión</p>
+              </div>
+            </a>
+
+            <a class="ahora-card" routerLink="/chat-cliente">
+              <div class="ahora-top">
+                <span class="ahora-brand-circle">Chat</span>
+                <span class="timer-badge">EN VIVO</span>
+              </div>
+              <div>
+                <h4>Consultas del salón</h4>
+                <p>Responder a las mesas</p>
+              </div>
+            </a>
+          } @else if (puedeCargarPlatos || puedeCargarBebidas) {
+            <a class="ahora-card" routerLink="/cocina">
+              <div class="ahora-top">
+                <span class="ahora-pill-tag">SECTOR</span>
+                <span class="timer-badge">{{ comandasActivasCount }}</span>
+              </div>
+              <div>
+                <h4>Comandas en cola</h4>
+                <p>Marcar pedidos como listos</p>
+              </div>
+            </a>
+
+            <a class="ahora-card" [routerLink]="puedeCargarPlatos ? '/alta-plato' : '/alta-bebida'">
+              <div class="ahora-top">
+                <span class="ahora-brand-circle">Cepa</span>
+                <span class="timer-badge">ALTA</span>
+              </div>
+              <div>
+                <h4>{{ puedeCargarPlatos ? 'Nuevo plato' : 'Nueva bebida' }}</h4>
+                <p>Sumar producto a la carta</p>
+              </div>
+            </a>
+          } @else {
+            <a class="ahora-card" [routerLink]="clienteVinculadoAMesa ? '/pedido' : null" (click)="!clienteVinculadoAMesa && accionBotonQR()">
+              <div class="ahora-top">
+                <span class="ahora-pill-tag">MI PEDIDO</span>
+                <span class="timer-badge">{{ tiempoEstimadoCliente }}m</span>
+              </div>
+              <div>
+                <h4>{{ estadoPedidoCliente }}</h4>
+                <p>{{ clienteVinculadoAMesa ? 'Tocá para ver o editar tu pedido' : 'Escaneá el QR para habilitar tu mesa' }}</p>
+              </div>
+            </a>
+
+            <a class="ahora-card" [routerLink]="pedidoConfirmadoCliente ? '/juegos' : '/menu-productos'">
+              <div class="ahora-top">
+                <span class="ahora-brand-circle">Cepa</span>
+                <span class="timer-badge">{{ pedidoConfirmadoCliente ? 'PROMO' : 'CARTA' }}</span>
+              </div>
+              <div>
+                <h4>{{ pedidoConfirmadoCliente ? 'Juegos y Descuentos' : 'Nuestro Menú' }}</h4>
+                <p>{{ pedidoConfirmadoCliente ? 'Jugá y ganá descuentos' : 'Explorá platos y bebidas' }}</p>
+              </div>
+            </a>
+          }
+        </div>
+      </section>
+
+      <!-- ================= 5. ACTIVIDADES RECIENTES / ACCESOS ================= -->
+      <section class="activity-section">
+        <div class="section-header-simple">
+          <h3>{{ esCliente ? 'Accesos del salón' : 'Actividades recientes' }}</h3>
+        </div>
+
+        <div class="activity-list">
+          @for (item of actividadesRecientes; track item.texto) {
+            <a class="activity-row" [routerLink]="item.ruta">
+              <div class="activity-icon">
+                <ion-icon [name]="item.icono"></ion-icon>
+              </div>
+              <span>{{ item.texto }}</span>
+            </a>
+          }
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ================= 6. BARRA INFERIOR ================= -->
+    <nav class="mp-bottom-dock" aria-label="Navegación inferior">
+      <a class="dock-item active" routerLink="/home">
+        <ion-icon name="home-outline"></ion-icon>
+        <span>INICIO</span>
       </a>
-      }
 
-      <!-- VISTA DUEÑO / SUPERVISOR: Opciones administrativas y altas -->
-      @if (puedeGestionarClientes) {
-      <a class="menu-option" routerLink="/alta-mesa">
-        <span class="menu-icon">
-          <ion-icon name="grid-outline" aria-hidden="true"></ion-icon>
-        </span>
-        <span class="menu-copy">
-          <strong>Nueva mesa</strong>
-          <small>Configurar un nuevo espacio en el salón</small>
-        </span>
-        <ion-icon
-          name="arrow-forward-outline"
-          class="menu-arrow"
-          aria-hidden="true"
-        ></ion-icon>
+      <a class="dock-item" routerLink="/menu-productos">
+        <ion-icon name="book-outline"></ion-icon>
+        <span>MENÚ</span>
       </a>
 
-      <a class="menu-option" routerLink="/registro-empleado">
-        <span class="menu-icon">
-          <ion-icon name="person-add-outline" aria-hidden="true"></ion-icon>
-        </span>
-        <span class="menu-copy">
-          <strong>Registrar un empleado</strong>
-          <small>Sumá una persona al equipo</small>
-        </span>
-        <ion-icon
-          name="arrow-forward-outline"
-          class="menu-arrow"
-          aria-hidden="true"
-        ></ion-icon>
-      </a>
+      <div class="qr-center-slot">
+        <button class="qr-fab-btn" type="button" (click)="accionBotonQR()">
+          <ion-icon name="qr-code-outline"></ion-icon>
+        </button>
+      </div>
 
-      } @if (puedeCargarPlatos) {
-      <a class="menu-option" routerLink="/alta-plato">
-        <span class="menu-icon">
-          <ion-icon name="restaurant-outline" aria-hidden="true"></ion-icon>
-        </span>
-        <span class="menu-copy">
-          <strong>Nuevo plato</strong>
-          <small>Agregá una propuesta al menú</small>
-        </span>
-        <ion-icon
-          name="arrow-forward-outline"
-          class="menu-arrow"
-          aria-hidden="true"
-        ></ion-icon>
-      </a>
-
-      <!-- NUEVA TARJETA PARA COMANDAS -->
-<a class="menu-option" routerLink="/cocina">
-  
-  <span class="menu-icon">
-    
-    <ion-icon name="list-outline"></ion-icon>
-  </span>
-  
-  <span class="menu-copy">
-    <strong>Gestionar comandas</strong>
-    <small>Visualizá y despachá los pedidos entrantes</small>
-  </span>
-  
-  <ion-icon name="arrow-forward-outline" class="menu-arrow"></ion-icon>
-</a>
-
-
-
-      } @if (puedeCargarBebidas) {
-      <a class="menu-option" routerLink="/alta-bebida">
-        <span class="menu-icon">
-          <ion-icon name="wine-outline" aria-hidden="true"></ion-icon>
-        </span>
-        <span class="menu-copy">
-          <strong>Nueva bebida</strong>
-          <small>Completá la carta de bebidas</small>
-        </span>
-        <ion-icon
-          name="arrow-forward-outline"
-          class="menu-arrow"
-          aria-hidden="true"
-        ></ion-icon>
-      </a>
-
-      } @if (puedeGestionarClientes) {
-      <a class="menu-option" routerLink="/clientes-pendientes">
-        <span class="menu-icon">
-          <ion-icon name="people-outline" aria-hidden="true"></ion-icon>
-        </span>
-        <span class="menu-copy">
-          <strong>Clientes pendientes</strong>
-          <small>Revisá las solicitudes de registro</small>
-        </span>
-        <ion-icon
-          name="arrow-forward-outline"
-          class="menu-arrow"
-          aria-hidden="true"
-        ></ion-icon>
-      </a>
-      }
+      <button
+        class="dock-item dock-item-end"
+        type="button"
+        [disabled]="cerrandoSesion"
+        (click)="cerrarSesion(profileMenu)"
+      >
+        <ion-icon name="menu-outline"></ion-icon>
+        <span>MÁS</span>
+      </button>
     </nav>
-    }
-  </main>
+
+  </div>
 </ion-content>

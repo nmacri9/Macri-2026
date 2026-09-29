@@ -1,6 +1,16 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
 import { RouterLink, Router } from '@angular/router';
-import { IonContent, IonHeader, IonIcon, IonPopover, IonTitle, IonToolbar, NavController, ToastController, Platform, ActionSheetController, IonRefresher, IonRefresherContent } from '@ionic/angular';
+import {
+  IonContent,
+  IonIcon,
+  IonPopover,
+  NavController,
+  ToastController,
+  Platform,
+  ActionSheetController,
+  IonRefresher,
+  IonRefresherContent
+} from '@ionic/angular';
 import { SupabaseService } from '../services/supabase.service';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { FCM } from '@capacitor-community/fcm';
@@ -21,19 +31,40 @@ import {
   qrCodeOutline,
   listOutline,
   pieChartOutline,
-  closeOutline
+  closeOutline,
+  searchOutline,
+  notificationsOutline,
+  eyeOutline,
+  eyeOffOutline,
+  chevronForwardOutline,
+  arrowUpOutline,
+  flashOutline,
+  homeOutline,
+  bookOutline,
+  statsChartOutline,
+  menuOutline,
+  gameControllerOutline,
+  timeOutline
 } from 'ionicons/icons';
 import { AuthService } from '../services/auth.service';
 import { ChatPushService } from '../services/chat-push.service';
+
+export interface ActividadItem {
+  icono: string;
+  texto: string;
+  ruta: string;
+}
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
-  imports: [RouterLink, IonContent, IonHeader, IonIcon, IonPopover, IonTitle, IonToolbar, IonRefresher, IonRefresherContent],
+  imports: [RouterLink, IonContent, IonIcon, IonPopover, IonRefresher, IonRefresherContent],
 })
 export class HomePage {
   nombreUsuario = 'Usuario';
+  rolUsuario = '';
+  rolEtiqueta = 'Panel';
   fotoUsuario: string | null = null;
   menuPerfilAbierto = false;
   cerrandoSesion = false;
@@ -44,7 +75,7 @@ export class HomePage {
   private clienteHabilitado = false;
   private revisionPerfil = 0;
   private revisionMesa = 0;
-  
+
   usuarioActual: any = null;
 
   // Controles de visibilidad por Rol
@@ -52,16 +83,37 @@ export class HomePage {
   puedeCargarPlatos = false;
   puedeCargarBebidas = false;
   esMetre = false;
+  esMetrePuro = false;
   esCliente = false;
   puedeUsarChat = false;
   esMozo = false;
   clienteVinculadoAMesa = false;
   clienteConMesaAsignada = false;
 
+  // Métricas en tiempo real para el Dashboard estilo Mercado Pago
+  mostrarMetricas = true;
+  notificacionesBadge = 0;
+  totalMesas = 0;
+  mesasOcupadas = 0;
+  porcentajeOcupacion = 0;
+  clientesPendientesCount = 0;
+  listaEsperaCount = 0;
+  pedidosPorConfirmarCount = 0;
+  comandasActivasCount = 0;
+
+  // Estado en vivo para el Cliente
+  estadoPedidoCliente = 'Sin pedido activo';
+  totalPedidoCliente = 0;
+  tiempoEstimadoCliente = 0;
+  pedidoConfirmadoCliente = false;
+
+  // Lista dinámica inferior
+  actividadesRecientes: ActividadItem[] = [];
+
   constructor(
-    private cdr: ChangeDetectorRef, 
+    private cdr: ChangeDetectorRef,
     private authService: AuthService,
-    private navController: NavController, 
+    private navController: NavController,
     private toastController: ToastController,
     private platform: Platform,
     private actionSheetCtrl: ActionSheetController,
@@ -84,7 +136,20 @@ export class HomePage {
       qrCodeOutline,
       listOutline,
       pieChartOutline,
-      closeOutline
+      closeOutline,
+      searchOutline,
+      notificationsOutline,
+      eyeOutline,
+      eyeOffOutline,
+      chevronForwardOutline,
+      arrowUpOutline,
+      flashOutline,
+      homeOutline,
+      bookOutline,
+      statsChartOutline,
+      menuOutline,
+      gameControllerOutline,
+      timeOutline
     });
   }
 
@@ -92,7 +157,10 @@ export class HomePage {
     return this.cargarPerfil();
   }
 
-  // Función para el pull-to-refresh
+  alternarMetricas() {
+    this.mostrarMetricas = !this.mostrarMetricas;
+  }
+
   async recargarPantalla(event: any) {
     await this.cargarPerfil();
     event.target.complete();
@@ -134,18 +202,19 @@ export class HomePage {
     this.puedeCargarPlatos = false;
     this.puedeCargarBebidas = false;
     this.esMetre = false;
+    this.esMetrePuro = false;
     this.esCliente = false;
     this.esMozo = false;
     this.puedeUsarChat = false;
     this.clienteConMesaAsignada = false;
-    this.clienteVinculadoAMesa = false; // <--- REINICIAR LA VARIABLE
+    this.clienteVinculadoAMesa = false;
     this.cdr.markForCheck();
 
     try {
       const usuario = await this.authService.obtenerUsuarioActual();
       if (revision !== this.revisionPerfil) return;
       if (!usuario) throw new Error('No se pudo obtener el usuario actual.');
-      
+
       this.usuarioActual = usuario;
       this.nombreUsuario = usuario.email || 'Usuario';
       this.fotoUsuario = usuario.user_metadata?.['foto_url'] || null;
@@ -155,12 +224,25 @@ export class HomePage {
       if (revision !== this.revisionPerfil) return;
       if (!perfil) throw new Error('No se pudo obtener el perfil actual.');
       void this.chatPush.actualizar();
-      
+
       const nombreCompleto = [perfil.nombres, perfil.apellidos].filter(Boolean).join(' ');
       this.nombreUsuario = nombreCompleto || perfil.email || this.nombreUsuario;
       this.fotoUsuario = perfil.foto_url || this.fotoUsuario;
-      
+
       const rol = String(perfil.rol ?? '').trim().toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      this.rolUsuario = rol;
+
+      const etiquetasRol: Record<string, string> = {
+        'DUENO': 'Dueño / Manager',
+        'SUPERVISOR': 'Supervisor',
+        'METRE': 'Metre de Salón',
+        'MOZO': 'Mozo',
+        'COCINERO': 'Chef / Cocina',
+        'CANTINERO': 'Bartender / Barra',
+        'CLIENTE_REGISTRADO': 'Cliente',
+        'CLIENTE_ANONIMO': 'Invitado'
+      };
+      this.rolEtiqueta = etiquetasRol[rol] || rol;
 
       // =========================================================================
       // GESTIÓN DINÁMICA DE CANALES PUSH
@@ -173,22 +255,21 @@ export class HomePage {
           if (['DUENO', 'SUPERVISOR'].includes(rol)) {
             await FCM.subscribeTo({ topic: 'aprobacion_pendientes' });
           }
-          
-          if (['METRE'].includes(rol)) { 
+          if (['METRE'].includes(rol)) {
             await FCM.subscribeTo({ topic: 'metre_lista_espera' });
           }
-          if (['MOZO', 'mozo'].includes(rol) || this.esMozo) {
+          if (['MOZO', 'mozo'].includes(rol)) {
             await FCM.subscribeTo({ topic: 'mozos' });
           }
-          if (this.esCliente) {
-          const { data: authData } = await this.supabase.getClient().auth.getUser();
-          if (authData?.user?.id) {
-            await FCM.subscribeTo({ topic: `cliente_${authData.user.id}` });
+          if (['CLIENTE_REGISTRADO', 'CLIENTE_ANONIMO'].includes(rol)) {
+            const { data: authData } = await this.supabase.getClient().auth.getUser();
+            if (authData?.user?.id) {
+              await FCM.subscribeTo({ topic: `cliente_${authData.user.id}` });
+            }
+          }
+        } catch (err) {
+          console.error('Error configurando topics de FCM:', err);
         }
-      }
-    } catch (err) {
-      console.error('Error configurando topics de FCM:', err);
-    }
       }
       // =========================================================================
 
@@ -212,7 +293,8 @@ export class HomePage {
       this.puedeCargarPlatos = perfil.estado === 'ACTIVO' && rol === 'COCINERO';
       this.puedeCargarBebidas = perfil.estado === 'ACTIVO' && rol === 'CANTINERO';
       this.esMetre = ['METRE', 'SUPERVISOR', 'DUENO'].includes(rol);
-      this.esMozo = (rol === 'MOZO' && perfil.estado === 'ACTIVO');
+      this.esMetrePuro = perfil.estado === 'ACTIVO' && rol === 'METRE';
+      this.esMozo = rol === 'MOZO' && perfil.estado === 'ACTIVO';
       this.esCliente = ['CLIENTE_REGISTRADO', 'CLIENTE_ANONIMO'].includes(rol);
       this.clienteHabilitado = this.esCliente
         && (rol === 'CLIENTE_ANONIMO' ? perfil.estado === 'ACTIVO' : perfil.estado === 'APROBADO');
@@ -221,6 +303,8 @@ export class HomePage {
       if (this.esCliente) {
         await this.cargarEstadoMesa();
       }
+
+      await this.cargarMetricasDashboard(rol);
     } catch (error) {
       if (revision !== this.revisionPerfil) return;
       console.error('No se pudo cargar el perfil del usuario:', error);
@@ -233,6 +317,203 @@ export class HomePage {
     }
   }
 
+  // =========================================================================
+  // CONEXIÓN REAL A SUPABASE PARA EL DASHBOARD POR ROL
+  // =========================================================================
+  async cargarMetricasDashboard(rol: string) {
+    const db = this.supabase.getClient();
+
+    try {
+      // 1. Métricas de Mesas y Asignaciones (Dueño, Supervisor, Metre, Mozo)
+      if (!this.esCliente) {
+        const [mesasRes, ocupadasRes, esperaRes] = await Promise.allSettled([
+          db.from('mesas').select('*', { count: 'exact', head: true }),
+          db.from('asignaciones').select('*', { count: 'exact', head: true }).eq('estado', 'asignado'),
+          db.from('asignaciones').select('*', { count: 'exact', head: true }).eq('estado', 'esperando')
+        ]);
+
+        if (mesasRes.status === 'fulfilled') this.totalMesas = mesasRes.value.count || 0;
+        if (ocupadasRes.status === 'fulfilled') this.mesasOcupadas = ocupadasRes.value.count || 0;
+        if (esperaRes.status === 'fulfilled') this.listaEsperaCount = esperaRes.value.count || 0;
+
+        this.porcentajeOcupacion = this.totalMesas > 0
+          ? Math.round((this.mesasOcupadas / this.totalMesas) * 100)
+          : 0;
+      }
+
+      // 2. Datos específicos para DUEÑO / SUPERVISOR
+      if (this.puedeGestionarClientes) {
+        const { count } = await db
+          .from('usuarios')
+          .select('*', { count: 'exact', head: true })
+          .eq('estado', 'PENDIENTE');
+
+        this.clientesPendientesCount = count || 0;
+        this.notificacionesBadge = this.clientesPendientesCount;
+
+        const [ultEmp, ultPlato, ultMesa] = await Promise.allSettled([
+          db.from('usuarios').select('nombres, apellidos').neq('rol', 'CLIENTE_REGISTRADO').order('created_at', { ascending: false }).limit(1).maybeSingle(),
+          db.from('productos').select('nombre').order('created_at', { ascending: false }).limit(1).maybeSingle(),
+          db.from('mesas').select('numero').order('created_at', { ascending: false }).limit(1).maybeSingle()
+        ]);
+
+        const nombreEmp = ultEmp.status === 'fulfilled' && ultEmp.value.data
+          ? `${ultEmp.value.data.nombres || ''} ${ultEmp.value.data.apellidos || ''}`.trim()
+          : 'Personal activo';
+        const nombrePlato = ultPlato.status === 'fulfilled' && ultPlato.value.data?.nombre
+          ? ultPlato.value.data.nombre
+          : 'Carta actualizada';
+        const numMesa = ultMesa.status === 'fulfilled' && ultMesa.value.data?.numero
+          ? `Mesa ${ultMesa.value.data.numero}`
+          : 'Salón configurado';
+
+        this.actividadesRecientes = [
+          { icono: 'person-add-outline', texto: `Último alta: “${nombreEmp}”`, ruta: '/registro-empleado' },
+          { icono: 'restaurant-outline', texto: `Producto en carta: “${nombrePlato}”`, ruta: '/menu-productos' },
+          { icono: 'grid-outline', texto: `Última mesa: “${numMesa}”`, ruta: '/alta-mesa' }
+        ];
+      }
+
+      // 3. Datos específicos para METRE
+      if (this.esMetrePuro) {
+        this.notificacionesBadge = this.listaEsperaCount;
+        
+        const { data: ultimosEspera } = await db
+          .from('asignaciones')
+          .select(`
+            created_at,
+            usuarios (nombres, apellidos)
+          `)
+          .eq('estado', 'esperando')
+          .order('created_at', { ascending: false })
+          .limit(3);
+
+        if (ultimosEspera && ultimosEspera.length > 0) {
+          this.actividadesRecientes = ultimosEspera.map((asignacion: any) => {
+            const cliente = asignacion.usuarios;
+            const nombre = cliente ? `${cliente.nombres} ${cliente.apellidos}`.trim() : 'Un cliente';
+            return {
+              icono: 'person-add-outline',
+              texto: `${nombre} se anotó en espera`,
+              ruta: '/metre-asignacion'
+            };
+          });
+        } else {
+          this.actividadesRecientes = [
+            { icono: 'people-outline', texto: 'No hay clientes recientes en espera', ruta: '/metre-asignacion' }
+          ];
+        }
+      }
+
+      // 4. Datos específicos para MOZO
+      if (this.esMozo) {
+        const { count } = await db
+          .from('pedidos')
+          .select('*', { count: 'exact', head: true })
+          .eq('estado', 'pendiente_confirmacion');
+
+        this.pedidosPorConfirmarCount = count || 0;
+        this.notificacionesBadge = this.pedidosPorConfirmarCount;
+        this.actividadesRecientes = [
+          { icono: 'checkmark-circle-outline', texto: `Pedidos por confirmar: ${this.pedidosPorConfirmarCount}`, ruta: '/confirmar-pedido' },
+          { icono: 'chatbubbles-outline', texto: 'Abrir canal de consultas de mesas', ruta: '/chat-cliente' },
+          { icono: 'book-outline', texto: 'Ver carta de productos', ruta: '/menu-productos' }
+        ];
+      }
+
+      // 5. Datos específicos para COCINERO / CANTINERO
+      if (this.puedeCargarPlatos || this.puedeCargarBebidas) {
+        const columnaSector = this.puedeCargarPlatos ? 'estado_cocina' : 'estado_bar';
+        const { count } = await db
+          .from('pedidos')
+          .select('*', { count: 'exact', head: true })
+          .eq(columnaSector, 'en_preparacion');
+
+        this.comandasActivasCount = count || 0;
+        this.notificacionesBadge = this.comandasActivasCount;
+        this.actividadesRecientes = [
+          { icono: 'list-outline', texto: `Comandas en preparación: ${this.comandasActivasCount}`, ruta: '/cocina' },
+          {
+            icono: this.puedeCargarPlatos ? 'restaurant-outline' : 'wine-outline',
+            texto: this.puedeCargarPlatos ? 'Agregar nuevo plato a la carta' : 'Agregar nueva bebida a la carta',
+            ruta: this.puedeCargarPlatos ? '/alta-plato' : '/alta-bebida'
+          },
+          { icono: 'book-outline', texto: 'Ver menú completo', ruta: '/menu-productos' }
+        ];
+      }
+
+      // 6. Datos específicos para CLIENTE
+      if (this.esCliente && this.usuarioActual) {
+        const { data: pedidoActivo } = await db
+          .from('pedidos')
+          .select('estado, total, tiempo_estimado')
+          .eq('cliente_id', this.usuarioActual.id)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (pedidoActivo) {
+          this.totalPedidoCliente = pedidoActivo.total || 0;
+          this.tiempoEstimadoCliente = pedidoActivo.tiempo_estimado || 0;
+          this.pedidoConfirmadoCliente = ['confirmado', 'en_preparacion', 'listo', 'entregado'].includes(pedidoActivo.estado);
+
+          const mapaEstados: Record<string, string> = {
+            'pendiente_confirmacion': 'Esperando al mozo',
+            'rechazado_mozo': 'Revisar pedido',
+            'confirmado': 'En preparación',
+            'en_preparacion': 'En preparación',
+            'listo': '¡Listo para servir!'
+          };
+          this.estadoPedidoCliente = mapaEstados[pedidoActivo.estado] || pedidoActivo.estado;
+        } else {
+          this.estadoPedidoCliente = this.clienteVinculadoAMesa ? 'Mesa habilitada' : 'En recepción';
+        }
+
+        this.actividadesRecientes = [
+          { icono: 'book-outline', texto: 'Ver Carta Digital completa', ruta: '/menu-productos' },
+          { icono: 'pie-chart-outline', texto: 'Resultados de Encuestas', ruta: '/graficos-encuestas' },
+          ...(this.puedeUsarChat
+            ? [{ icono: 'chatbubbles-outline', texto: 'Consultar al Mozo por Chat', ruta: '/chat-cliente' }]
+            : [])
+        ];
+      }
+    } catch (err) {
+      console.warn('Algunas métricas secundarias no pudieron cargarse:', err);
+    } finally {
+      this.cdr.markForCheck();
+    }
+  }
+
+  // =========================================================================
+  // CONTROL DEL BOTÓN QR CENTRAL
+  // =========================================================================
+  accionBotonQR() {
+    if (this.esCliente) {
+      if (this.clienteConMesaAsignada) {
+        this.verificarAccesoMesa();
+      } else {
+        this.escanearQRIngreso();
+      }
+      return;
+    }
+    if (this.esMozo) {
+      this.router.navigate(['/confirmar-pedido']);
+      return;
+    }
+    if (this.esMetrePuro) {
+      this.router.navigate(['/metre-asignacion']);
+      return;
+    }
+    if (this.puedeCargarPlatos || this.puedeCargarBebidas) {
+      this.router.navigate(['/cocina']);
+      return;
+    }
+    this.router.navigate(['/clientes-pendientes']);
+  }
+
+  // =========================================================================
+  // LÓGICA DE ASIGNACIONES (CLIENTE)
+  // =========================================================================
   async cargarEstadoMesa() {
     if (!this.clienteHabilitado || !this.usuarioActual) return;
     const revision = ++this.revisionMesa;
@@ -246,23 +527,24 @@ export class HomePage {
 
     try {
       const { data, error } = await this.supabase.getClient()
-        .from('asignaciones_mesa')
-        .select('estado_escaneo')
+        .from('asignaciones')
+        .select('estado')
         .eq('cliente_id', clienteId)
-        .eq('activa', true)
+        .in('estado', ['esperando', 'asignado'])
+        .order('created_at', { ascending: false })
+        .limit(1)
         .maybeSingle();
+
       if (revision !== this.revisionMesa) return;
       if (error) throw error;
 
       this.clienteConMesaAsignada = !!data;
-      this.clienteVinculadoAMesa = data?.estado_escaneo === 'OCUPADA';
-      this.puedeUsarChat = this.clienteConMesaAsignada;
+      this.clienteVinculadoAMesa = data?.estado === 'asignado';
+      this.puedeUsarChat = this.clienteVinculadoAMesa;
     } catch (error) {
       if (revision !== this.revisionMesa) return;
       console.error('No se pudo consultar la mesa del cliente:', error);
-      this.errorMesa = (error as { code?: string })?.code === 'PGRST116'
-        ? 'Encontramos más de una mesa asignada a tu usuario. Pedile al metre que revise tu asignación.'
-        : 'No pudimos consultar tu mesa asignada. Podés seguir usando las opciones de ingreso y escaneo.';
+      this.errorMesa = 'No pudimos consultar tu estado de asignación. Podés seguir usando las opciones de ingreso.';
     } finally {
       if (revision === this.revisionMesa) {
         this.cargandoMesa = false;
@@ -270,10 +552,6 @@ export class HomePage {
       }
     }
   }
-
-  // =========================================================================
-  // PUNTO 9: LÓGICA DE ESCANEO DE INGRESO Y LISTA DE ESPERA
-  // =========================================================================
 
   async escanearQRIngreso() {
     let contenidoQR = '';
@@ -286,17 +564,16 @@ export class HomePage {
         }
 
         const { camera } = await BarcodeScanner.requestPermissions();
-        
+
         if (camera === 'granted' || camera === 'limited') {
           const { barcodes } = await BarcodeScanner.scan({
             formats: [BarcodeFormat.QrCode],
           });
-          
+
           if (barcodes && barcodes.length > 0) {
-            contenidoQR = barcodes[0].rawValue ?? ''; 
+            contenidoQR = barcodes[0].rawValue ?? '';
           }
         } else {
-          console.log('Permiso de cámara denegado');
           return;
         }
       } catch (error) {
@@ -304,8 +581,7 @@ export class HomePage {
         return;
       }
     } else {
-      // Puente WEB para probar en PC sin cámara
-      console.log('Simulando escaneo de QR de ingreso en la PC...');
+      // Puente web para pruebas en PC
       contenidoQR = 'QR_INGRESO_CEPA';
     }
 
@@ -358,17 +634,17 @@ export class HomePage {
 
     try {
       const { data: existente, error: errorConsulta } = await this.supabase.getClient()
-        .from('lista_espera')
+        .from('asignaciones')
         .select('*')
         .eq('cliente_id', this.usuarioActual.id)
-        .eq('estado', 'ESPERANDO') 
+        .in('estado', ['esperando', 'asignado'])
         .maybeSingle();
 
       if (errorConsulta) throw errorConsulta;
 
       if (existente) {
         const toast = await this.toastController.create({
-          message: 'Ya te encuentras anotado en la lista de espera.',
+          message: existente.estado === 'esperando' ? 'Ya te encuentras anotado en la lista de espera.' : 'Ya tenés una mesa asignada.',
           duration: 3000,
           color: 'warning',
           position: 'bottom'
@@ -378,11 +654,11 @@ export class HomePage {
       }
 
       const { error: errorInsert } = await this.supabase.getClient()
-        .from('lista_espera')
+        .from('asignaciones')
         .insert({
           cliente_id: this.usuarioActual.id,
-          nombre: this.nombreUsuario,
-          estado: 'ESPERANDO'
+          cantidad_personas: 1, 
+          estado: 'esperando'
         });
 
       if (errorInsert) throw errorInsert;
@@ -396,10 +672,9 @@ export class HomePage {
       await toast.present();
 
       await this.notificarMetre();
-
+      await this.cargarEstadoMesa(); 
     } catch (error: any) {
       console.error('DETALLE DEL ERROR EN SUPABASE:', error);
-      
       const toast = await this.toastController.create({
         message: `Error al anotarte: ${error.message || 'Error desconocido'}`,
         duration: 4000,
@@ -415,9 +690,10 @@ export class HomePage {
 
     try {
       const { data, error } = await this.supabase.getClient()
-        .from('lista_espera')
+        .from('asignaciones')
         .select('*')
         .eq('cliente_id', this.usuarioActual.id)
+        .in('estado', ['esperando', 'asignado'])
         .single();
 
       if (error || !data) {
@@ -433,7 +709,6 @@ export class HomePage {
       }
 
       this.router.navigate(['/cliente-escaneo-mesa']);
-
     } catch (err) {
       console.error('Error al verificar acceso a mesa:', err);
       const toast = await this.toastController.create({
@@ -450,7 +725,7 @@ export class HomePage {
     try {
       await this.supabase.getClient().functions.invoke('enviar-notificacion', {
         body: {
-          topic: 'metre_lista_espera', 
+          topic: 'metre_lista_espera',
           titulo: 'Nuevo cliente en lista de espera',
           cuerpo: `${this.nombreUsuario} está esperando una mesa.`
         }

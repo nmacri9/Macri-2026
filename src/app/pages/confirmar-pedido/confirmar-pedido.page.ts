@@ -17,7 +17,6 @@ interface PedidoPendiente {
   id: string;
   cliente_id: string; 
   mesa_id: number;
-  mesas?: { numero: number };
   items: ProductoCarrito[];
   total: number;
   tiempo_estimado: number;
@@ -77,7 +76,7 @@ export class ConfirmarPedidoPage implements OnInit, OnDestroy {
     try {
       const { data, error } = await this.supabase.getClient()
         .from('pedidos')
-        .select('*, mesas(numero)')
+        .select('*')
         .eq('estado', 'pendiente_confirmacion')
         .order('created_at', { ascending: true });
 
@@ -107,7 +106,7 @@ export class ConfirmarPedidoPage implements OnInit, OnDestroy {
   async confirmarPedido(pedido: PedidoPendiente) {
     const modal = await this.modalCtrl.create({
       component: ConfirmModalComponent,
-      componentProps: { mensaje: `¿Confirmar el pedido de la Mesa ${pedido.mesas?.numero ?? pedido.mesa_id}?` },
+      componentProps: { mensaje: `¿Confirmar el pedido de la Mesa ${pedido.mesa_id}?` },
       cssClass: 'modal-alerta'
     });
 
@@ -129,7 +128,7 @@ export class ConfirmarPedidoPage implements OnInit, OnDestroy {
       this.pedidos = this.pedidos.filter(p => p.id !== pedido.id);
 
       const toast = await this.toastCtrl.create({
-        message: `Pedido de Mesa ${pedido.mesas?.numero ?? pedido.mesa_id} confirmado y derivado a los sectores.`,
+        message: `Pedido de Mesa ${pedido.mesa_id} confirmado y derivado a los sectores.`,
         duration: 2500,
         position: 'middle',
         cssClass: 'toast-exito',
@@ -150,7 +149,7 @@ export class ConfirmarPedidoPage implements OnInit, OnDestroy {
   async rechazarPedido(pedido: PedidoPendiente) {
     const modal = await this.modalCtrl.create({
       component: ConfirmModalComponent,
-      componentProps: { mensaje: `¿Solicitar modificaciones a la Mesa ${pedido.mesas?.numero ?? pedido.mesa_id}?` },
+      componentProps: { mensaje: `¿Solicitar modificaciones a la Mesa ${pedido.mesa_id}?` },
       cssClass: 'modal-alerta'
     });
 
@@ -172,7 +171,7 @@ export class ConfirmarPedidoPage implements OnInit, OnDestroy {
       this.pedidos = this.pedidos.filter(p => p.id !== pedido.id);
 
       const toast = await this.toastCtrl.create({
-        message: `Mesa ${pedido.mesas?.numero ?? pedido.mesa_id} enviada a corrección.`,
+        message: `Mesa ${pedido.mesa_id} enviada a corrección.`,
         duration: 2500,
         color: 'warning',
         icon: 'close-circle-outline'
@@ -180,7 +179,7 @@ export class ConfirmarPedidoPage implements OnInit, OnDestroy {
       await toast.present();
 
       try {
-        const numeroMesa = pedido.mesas?.numero ?? pedido.mesa_id;
+        const numeroMesa = pedido.mesa_id;
         await this.supabase.invocarEdgeFunction('enviar-notificacion', {
           titulo: 'Problemas con tu pedido',
           cuerpo: `El mozo solicitó que revises el pedido de la Mesa ${numeroMesa}. Por favor, modificalo.`,

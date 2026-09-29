@@ -9,6 +9,7 @@ import { Subscription } from 'rxjs';
 import { CarritoService } from '../../services/carrito.service';
 import { ProductoCarrito } from '../../interfaces/carrito.model';
 import { SupabaseService } from '../../services/supabase.service';
+import { MesasService } from '../../services/mesas.service';
 import { CepaHeaderComponent } from '../../shared/components/cepa-header/cepa-header.component';
 import { CepaSpinnerComponent } from '../../shared/components/cepa-spinner/cepa-spinner.component';
 import { IonModal } from '@ionic/angular/common';
@@ -46,8 +47,13 @@ export class PedidoPage implements OnInit, OnDestroy {
   constructor(
     private carritoService: CarritoService,
     private supabase: SupabaseService,
+<<<<<<< HEAD
     private cdr: ChangeDetectorRef,
     private modalController: ModalController,
+=======
+    private mesasService: MesasService,
+    private cdr: ChangeDetectorRef
+>>>>>>> 1caab85b132bffdf6f645f572a0ad12095e92b2b
   ) {
     addIcons({ addOutline, removeOutline, cartOutline, timeOutline, alertCircleOutline, closeOutline });
   }
@@ -175,16 +181,8 @@ export class PedidoPage implements OnInit, OnDestroy {
         await FCM.subscribeTo({ topic: `cliente_${userData.user.id}` });
       } catch {}
 
-      const { data: asignacionDB } = await this.supabase.getClient()
-        .from('asignaciones_mesa')
-        .select('mesa_id, mesas(numero)')
-        .eq('cliente_id', userData.user.id)
-        .is('fecha_fin', null)
-        .order('fecha_asignacion', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      const asignacion = asignacionDB ?? { mesa_id: 2, mesas: { numero: 1 } };
+      const asignacion = await this.mesasService.obtenerAsignacionActiva(userData.user.id);
+      if (!asignacion?.vinculada) throw new Error('Escaneá tu mesa asignada antes de realizar un pedido.');
       const eraRechazado = this.estadoPedido === 'rechazado_mozo';
 
       let actualizadoConExito = false;
@@ -213,7 +211,7 @@ export class PedidoPage implements OnInit, OnDestroy {
           .from('pedidos')
           .insert({
             cliente_id: userData.user.id,
-            mesa_id: asignacion.mesa_id,
+            mesa_id: asignacion.mesaId,
             items: this.items, 
             total: this.total,
             tiempo_estimado: this.tiempoEstimado,
@@ -233,7 +231,7 @@ export class PedidoPage implements OnInit, OnDestroy {
         this.escucharCambiosDeEstado(this.pedidoId);
       }
 
-      const numeroMesa = (asignacion as any).mesas?.numero ?? asignacion.mesa_id;
+      const numeroMesa = asignacion.mesaId;
 
       try {
         await this.supabase.invocarEdgeFunction('enviar-notificacion', {
@@ -311,6 +309,7 @@ export class PedidoPage implements OnInit, OnDestroy {
       }
     }, 3000);
   }
+<<<<<<< HEAD
   async abrirAvisoConfirmacion() {
     const aviso = await this.modalController.create({
       component: ConfirmModalComponent,
@@ -336,3 +335,6 @@ export class PedidoPage implements OnInit, OnDestroy {
     }
   }
 }
+=======
+}
+>>>>>>> 1caab85b132bffdf6f645f572a0ad12095e92b2b

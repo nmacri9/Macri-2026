@@ -36,7 +36,6 @@
 
     <!-- ================= 1. ZONA SUPERIOR ARENA ================= -->
     <div class="top-sand-zone">
-
       <header class="mp-header">
         <div class="user-info">
           <button
@@ -75,9 +74,7 @@
         @if (esCliente) {
           <button class="folder-tab active" type="button">MI MESA</button>
           <button class="folder-tab" type="button" routerLink="/menu-productos">CARTA</button>
-          <!-- Botones liberados siempre visibles para el cliente -->
           <button class="folder-tab" type="button" routerLink="/pedido">PEDIDO</button>
-          <!-- Si la ruta de encuestas se llama distinto, cambiala acá -->
           <button class="folder-tab" type="button" routerLink="/graficos-encuestas">ENCUESTAS</button>
         } @else {
           <button class="folder-tab active" type="button">PEDIDOS</button>
@@ -90,8 +87,7 @@
           <button class="folder-tab" type="button" routerLink="/menu-productos">MENÚ</button>
         }
       </div>
-
-    </div>
+    </div> <!-- FIN ZONA SUPERIOR ARENA -->
 
     <!-- ================= 3. ZONA CENTRAL VERDE ================= -->
     <main class="bottom-green-zone">

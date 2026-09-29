@@ -32,7 +32,7 @@ export class ChatClientePage implements OnDestroy {
   readonly numeroMesa = signal<number | null>(null);
   readonly mesaValida = computed(() => {
     const numero = this.numeroMesa();
-    return numero !== null && Number.isInteger(numero) && numero >= 1 && numero <= 9999;
+    return numero !== null && Number.isSafeInteger(numero) && numero >= 1;
   });
   readonly puedeEscribir = computed(() => {
     const persona = this.participante();

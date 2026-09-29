@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ChatPushService } from './chat-push.service';
 import { SupabaseService } from './supabase.service';
+import { AuthService } from './auth.service';
 
 const mocks = vi.hoisted(() => ({
   native: vi.fn(), subscribeTo: vi.fn(), unsubscribeFrom: vi.fn()
@@ -11,10 +12,10 @@ vi.mock('@capacitor-community/fcm', () => ({ FCM: mocks }));
 describe('Suscripciones push del chat', () => {
   const getSession = vi.fn();
   const onAuthStateChange = vi.fn();
-  const rpc = vi.fn();
+  const obtenerPerfil = vi.fn();
   const crear = () => new ChatPushService({
-    getClient: () => ({ auth: { getSession, onAuthStateChange }, rpc })
-  } as unknown as SupabaseService);
+    getClient: () => ({ auth: { getSession, onAuthStateChange } })
+  } as unknown as SupabaseService, { obtenerPerfil } as unknown as AuthService);
 
   beforeEach(() => {
     vi.resetAllMocks();
@@ -23,7 +24,7 @@ describe('Suscripciones push del chat', () => {
     mocks.subscribeTo.mockResolvedValue({});
     mocks.unsubscribeFrom.mockResolvedValue({});
     getSession.mockResolvedValue({ data: { session: { user: { id: 'mozo' } } } });
-    rpc.mockResolvedValue({ data: { id: 'mozo', rol: 'MOZO' }, error: null });
+    obtenerPerfil.mockResolvedValue({ id: 'mozo', rol: 'MOZO', estado: 'ACTIVO' });
   });
 
   it('suscribe cada dispositivo del mozo al mismo topic', async () => {
@@ -37,7 +38,8 @@ describe('Suscripciones push del chat', () => {
     const service = crear();
     service.activar();
     await vi.waitFor(() => expect(mocks.subscribeTo).toHaveBeenCalledWith({ topic: 'mozos' }));
-    rpc.mockResolvedValue({ data: { id: 'cliente', rol: 'CLIENTE_ANONIMO' }, error: null });
+    getSession.mockResolvedValue({ data: { session: { user: { id: 'cliente' } } } });
+    obtenerPerfil.mockResolvedValue({ id: 'cliente', rol: 'CLIENTE_ANONIMO', estado: 'ACTIVO' });
     await service.actualizar();
     expect(mocks.unsubscribeFrom).toHaveBeenCalledWith({ topic: 'mozos' });
     expect(mocks.subscribeTo).toHaveBeenLastCalledWith({ topic: 'chat_cliente_cliente' });
@@ -52,12 +54,12 @@ describe('Suscripciones push del chat', () => {
     await service.actualizar();
     expect(mocks.unsubscribeFrom).toHaveBeenCalledWith({ topic: 'chat_cliente_anterior' });
     expect(mocks.subscribeTo).not.toHaveBeenCalled();
-    expect(rpc).not.toHaveBeenCalled();
+    expect(obtenerPerfil).not.toHaveBeenCalled();
   });
 
   it('limpia los topics aunque el nuevo usuario no pueda participar', async () => {
     localStorage.setItem('cepa.chat.push.topics', JSON.stringify(['mozos']));
-    rpc.mockResolvedValue({ data: null, error: { code: '42501' } });
+    obtenerPerfil.mockResolvedValue({ id: 'mozo', rol: 'METRE', estado: 'ACTIVO' });
     const service = crear();
     service.activar();
     await service.actualizar();

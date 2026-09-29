@@ -23,7 +23,6 @@ type DisponibilidadMesa = 'VACIA' | 'OCUPADA' | 'RESERVADA';
 
 interface Mesa {
   id?: number;
-  numero: number;
   comensales: number;
   tipo: TipoMesa;
   disponibilidad: DisponibilidadMesa;
@@ -66,7 +65,6 @@ export class AltaMesaPage implements OnInit {
     addIcons({ cameraOutline, closeOutline, gridOutline, peopleOutline, listOutline });
 
     this.mesaForm = this.fb.group({
-      numero: ['', [Validators.required, Validators.pattern(/^[0-9]+$/)]],
       comensales: ['', [Validators.required, Validators.pattern(/^[0-9]+$/)]],
       tipo: ['', Validators.required],
       disponibilidad: ['VACIA', Validators.required]
@@ -142,30 +140,14 @@ export class AltaMesaPage implements OnInit {
       return;
     }
 
-    const numero = Number(this.mesaForm.value.numero);
     const supabase = this.supabaseService.getClient();
 
     this.guardando = true;
 
     try {
-      // 1. Verificar duplicado en la tabla 'mesas'
-      const { data: mesaExistente, error: errorBusqueda } = await supabase
-        .from('mesas')
-        .select('id')
-        .eq('numero', numero)
-        .limit(1);
-
-      if (errorBusqueda) throw errorBusqueda;
-
-      if (mesaExistente && mesaExistente.length > 0) {
-        this.errorGeneral = 'Ya existe una mesa con ese número.';
-        await Haptics.notification({ type: NotificationType.Error });
-        return;
-      }
-
-      // 2. Subir imagen
-      const fotoFile = this.dataUrlAFile(this.fotoPreview, `mesa-${numero}.jpg`);
-      const rutaFoto = `mesa/mesa-${numero}-${Date.now()}.jpg`;
+      const identificadorFoto = crypto.randomUUID();
+      const fotoFile = this.dataUrlAFile(this.fotoPreview, `mesa-${identificadorFoto}.jpg`);
+      const rutaFoto = `mesa/mesa-${identificadorFoto}.jpg`;
       const { error: errorUpload } = await supabase.storage
         .from('productos')
         .upload(rutaFoto, fotoFile);
@@ -183,14 +165,13 @@ export class AltaMesaPage implements OnInit {
       const { data: mesaCreada, error: errorInsert } = await supabase
         .from('mesas')
         .insert({
-          numero: numero,
           tipo: this.mesaForm.value.tipo,
           capacidad: Number(this.mesaForm.value.comensales),
           foto_url: fotoData.publicUrl,
           disponibilidad: this.normalizarDisponibilidad(this.mesaForm.value.disponibilidad),
           qr_token: qrTokenGenerado
         })
-        .select('id, numero, tipo, capacidad, foto_url, disponibilidad, qr_token')
+        .select('id, tipo, capacidad, foto_url, disponibilidad, qr_token')
         .single();
 
       if (errorInsert) throw errorInsert;
@@ -198,7 +179,7 @@ export class AltaMesaPage implements OnInit {
       this.mesas = [
         ...this.mesas,
         this.mapearMesa(mesaCreada)
-      ].sort((a, b) => a.numero - b.numero);
+      ].sort((a, b) => (a.id ?? 0) - (b.id ?? 0));
 
       await Haptics.notification({ type: NotificationType.Success });
       this.mesaForm.reset({ disponibilidad: 'VACIA' });
@@ -220,8 +201,8 @@ export class AltaMesaPage implements OnInit {
     try {
       const { data, error } = await supabase
         .from('mesas')
-        .select('id, numero, tipo, capacidad, foto_url, disponibilidad, qr_token')
-        .order('numero', { ascending: true });
+        .select('id, tipo, capacidad, foto_url, disponibilidad, qr_token')
+        .order('id', { ascending: true });
 
       if (error) throw error;
       this.mesas = (data ?? []).map(mesa => this.mapearMesa(mesa));
@@ -258,7 +239,6 @@ export class AltaMesaPage implements OnInit {
     }
   }
 
-  get numero() { return this.mesaForm.get('numero')!; }
   get comensales() { return this.mesaForm.get('comensales')!; }
   get tipo() { return this.mesaForm.get('tipo')!; }
   get disponibilidad() { return this.mesaForm.get('disponibilidad')!; }
@@ -266,7 +246,6 @@ export class AltaMesaPage implements OnInit {
   private mapearMesa(mesa: any): Mesa {
     return {
       id: mesa.id,
-      numero: mesa.numero,
       comensales: mesa.capacidad ?? 0,
       tipo: mesa.tipo,
       disponibilidad: this.normalizarDisponibilidad(mesa.disponibilidad),

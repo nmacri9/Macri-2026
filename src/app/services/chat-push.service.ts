@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Capacitor } from '@capacitor/core';
 import { FCM } from '@capacitor-community/fcm';
 import { SupabaseService } from './supabase.service';
-import { ChatParticipante } from '../interfaces/chat-mensaje';
+import { AuthService } from './auth.service';
 
 const STORAGE_KEY = 'cepa.chat.push.topics';
 
@@ -11,7 +11,7 @@ export class ChatPushService {
   private registrado = false;
   private cola: Promise<void> = Promise.resolve();
 
-  constructor(private supabase: SupabaseService) {}
+  constructor(private supabase: SupabaseService, private auth: AuthService) {}
 
   activar() {
     if (!Capacitor.isNativePlatform()) return;
@@ -44,10 +44,11 @@ export class ChatPushService {
     const { data: { session } } = await client.auth.getSession();
     let deseados: string[] = [];
     if (session) {
-      const { data, error } = await client.rpc('chat_participante');
-      if (error?.code === '42501') return;
-      if (error) throw error;
-      const persona = data as ChatParticipante;
+      const persona = await this.auth.obtenerPerfil();
+      if (!persona || persona.id !== session.user.id) return;
+      const habilitado = persona.rol === 'CLIENTE_REGISTRADO' ? persona.estado === 'APROBADO'
+        : ['MOZO', 'CLIENTE_ANONIMO'].includes(persona.rol) && persona.estado === 'ACTIVO';
+      if (!habilitado) return;
       deseados = [persona.rol === 'MOZO' ? 'mozos' : `chat_cliente_${persona.id}`];
     }
     for (const topic of deseados) {

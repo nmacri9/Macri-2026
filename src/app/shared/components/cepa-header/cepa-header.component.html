@@ -1,9 +1,53 @@
 <ion-header class="cepa-header">
     <ion-toolbar>
-    <ion-buttons slot="start">
-        <ion-back-button [defaultHref]="defaultHref" text="" icon="arrow-back-outline"></ion-back-button>
-    </ion-buttons>
+        <ion-buttons slot="start">
+        <ion-back-button 
+            *ngIf="mostrarVolver" 
+            [defaultHref]="defaultHref" 
+            text="" 
+            icon="arrow-back-outline">
+        </ion-back-button>
+        </ion-buttons>
 
-    <ion-title class="cepa-title">{{ titulo }}</ion-title>
+        <ion-title class="cepa-title">{{ titulo }}</ion-title>
+
+        <!-- Contenedor Derecho: Nombre, Rol y Avatar -->
+        <div slot="end" class="header-user-badge">
+        <div class="user-info" *ngIf="nombreUsuario">
+            <span class="user-name">{{ nombreUsuario }}</span>
+            <small class="user-role">{{ rolUsuario }}</small>
+        </div>
+
+        <button
+            id="header-profile-trigger"
+            class="profile-nav"
+            type="button"
+            [disabled]="cerrandoSesion"
+        >
+            <img *ngIf="fotoUsuario" [src]="fotoUsuario" alt="Perfil" (error)="fotoUsuario = null" />
+            <ion-icon *ngIf="!fotoUsuario" name="person-circle-outline"></ion-icon>
+        </button>
+
+        <ion-popover
+            #headerProfileMenu
+            trigger="header-profile-trigger"
+            class="profile-popover"
+            side="bottom"
+            alignment="end"
+        >
+            <ng-template>
+            <div class="profile-menu">
+                <button type="button" (click)="headerProfileMenu.dismiss()">
+                <ion-icon name="person-circle-outline"></ion-icon>
+                Mi perfil
+                </button>
+                <button type="button" [disabled]="cerrandoSesion" (click)="cerrarSesion(headerProfileMenu)">
+                <ion-icon name="log-out-outline"></ion-icon>
+                Cerrar sesión
+                </button>
+            </div>
+            </ng-template>
+        </ion-popover>
+        </div>
     </ion-toolbar>
 </ion-header>

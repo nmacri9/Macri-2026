@@ -19,15 +19,6 @@
       <h3 class="section-label">Datos de la mesa</h3>
 
       <ion-item class="field" lines="none">
-        <ion-icon name="grid-outline" slot="start"></ion-icon>
-        <ion-input formControlName="numero" label="Número de mesa" labelPlacement="floating" type="text" inputmode="numeric"></ion-input>
-      </ion-item>
-      <small class="field-error" *ngIf="numero.invalid && (numero.touched || formEnviado)">
-        <span *ngIf="numero.errors?.['required']">El número es obligatorio.</span>
-        <span *ngIf="numero.errors?.['pattern']">Ingresá solamente números.</span>
-      </small>
-
-      <ion-item class="field" lines="none">
         <ion-icon name="people-outline" slot="start"></ion-icon>
         <ion-input formControlName="comensales" label="Cantidad de comensales" labelPlacement="floating" type="text" inputmode="numeric"></ion-input>
       </ion-item>
@@ -74,9 +65,9 @@
   <section class="mesas-section" *ngIf="mesas.length > 0">
     <h3 class="section-label">Mesas registradas</h3>
     <article class="mesa-card" *ngFor="let mesa of mesas">
-      <img [src]="mesa.foto" [alt]="'Foto de la mesa ' + mesa.numero" class="mesa-photo">
+      <img [src]="mesa.foto" [alt]="'Foto de la mesa ' + mesa.id" class="mesa-photo">
       <div class="mesa-data">
-        <strong>Mesa {{ mesa.numero }}</strong>
+        <strong>Mesa {{ mesa.id }}</strong>
         <small>{{ mesa.comensales }} comensales · {{ mesa.tipo === 'ESTANDAR' ? 'Estándar' : mesa.tipo === 'MOVILIDAD_REDUCIDA' ? 'Movilidad reducida' : 'VIP' }}</small>
         <ion-select aria-label="Cambiar disponibilidad" [value]="mesa.disponibilidad" [interfaceOptions]="{ cssClass: 'alerta-tema-mesa' }" (ionChange)="cambiarDisponibilidad(mesa, $event.detail.value)">
           <ion-select-option value="VACIA">Vacía</ion-select-option>

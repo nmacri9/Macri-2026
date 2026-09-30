@@ -41,7 +41,7 @@ export class PedidoPage implements OnInit, OnDestroy {
   enviando = false;
   errorPedido: string | undefined;
   esClienteRegistrado = false;
-
+  filtroActivo: string = 'plato';
   private subs: Subscription[] = [];
   private canalRealtime: any;
   private intervaloChequeo: any;
@@ -163,6 +163,27 @@ export class PedidoPage implements OnInit, OnDestroy {
       cantidad: 1,
     };
     this.carritoService.agregarProducto(item);
+  }
+  // Busca el producto en el carrito y devuelve cuántos hay
+  obtenerCantidad(producto: any): number {
+    const item = this.items.find((i: any) => i.nombre === producto.nombre);
+    return item ? item.cantidad : 0;
+  }
+
+  // Resta directo desde la grilla
+  restarDelMenu(producto: any) {
+    const item = this.items.find((i: any) => i.nombre === producto.nombre);
+    if (item) this.restar(item); // Llama a tu función restar() que ya tenías para el modal
+  }
+
+  // Suma directo desde la grilla
+  sumarDelMenu(producto: any) {
+    const item = this.items.find((i: any) => i.nombre === producto.nombre);
+    if (item) {
+      this.sumar(item); // Llama a tu función sumar()
+    } else {
+      this.agregarAlCarrito(producto);
+    }
   }
 
   sumar(item: ProductoCarrito) {

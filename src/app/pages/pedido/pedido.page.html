@@ -19,35 +19,64 @@
         </div>
       </div>
 
-      <section class="carrito-section" style="padding-bottom: 80px;">
-        <h3 class="section-label">Platos y Bebidas</h3>
+      <section class="carrito-section" style="padding-bottom: 100px;">
+        
+        <!-- Pestañas de Filtro (Tabs) -->
+        <div class="filtros-categoria">
+          <button class="filtro-btn" [class.activo]="filtroActivo === 'plato'" (click)="filtroActivo = 'plato'">
+            PLATOS
+            <div class="indicador"></div>
+          </button>
+          <button class="filtro-btn" [class.activo]="filtroActivo === 'bebida'" (click)="filtroActivo = 'bebida'">
+            BEBIDAS
+            <div class="indicador"></div>
+          </button>
+        </div>
         
         <div *ngIf="cargandoMenu" style="text-align: center; padding: 20px;">
           <app-cepa-spinner></app-cepa-spinner>
         </div>
 
         <div *ngIf="!cargandoMenu && productosMenu.length === 0" style="color: #ccc; font-size: 14px; text-align: center;">
-          No hay platos disponibles en este momento.
+          No hay productos disponibles en este momento.
         </div>
 
-        <ion-item class="carrito-item" lines="none" *ngFor="let prod of productosMenu">
-          <div class="carrito-item-info">
-            <span class="carrito-item-nombre">{{ prod.nombre }}</span>
-            <div class="menu-item-meta">
-              <span class="badge-tipo">{{ prod.tipo }}</span>
-              <span class="meta-dot">&bull;</span>
-              <span class="meta-precio">${{ prod.precio }}</span>
-              <span class="meta-dot">&bull;</span>
-              <small class="meta-tiempo">
-                <ion-icon name="time-outline"></ion-icon> 
-                {{ prod.tiempo_elaboracion || prod.tiempoElaboracion || 0 }} min
-              </small>
+        <!-- Grilla de 2 Columnas -->
+        <div class="productos-grid" *ngIf="!cargandoMenu">
+          <ng-container *ngFor="let prod of productosMenu">
+            <!-- Compara el tipo del producto con el filtro activo -->
+            <!-- OJO: Le sacamos el click general a la tarjeta -->
+            <div class="producto-card" *ngIf="prod.tipo?.toLowerCase() === filtroActivo">
+              <div class="prod-header">
+                <span class="prod-nombre">{{ prod.nombre }}</span>
+                <span class="badge-tipo">
+                  <ion-icon name="time-outline" style="margin-right: 4px; vertical-align: middle;"></ion-icon>
+                  {{ prod.tiempo_elaboracion || prod.tiempoElaboracion || 0 }} min
+                </span>
+              </div>
+              <div class="prod-footer">
+                <span class="prod-precio">${{ prod.precio }}</span>
+                
+                <!-- Botón clásico + (Se muestra si NO está en el carrito) -->
+                <div class="btn-agregar-cuadrado" *ngIf="obtenerCantidad(prod) === 0" (click)="agregarAlCarrito(prod)">
+                  <ion-icon name="add-outline"></ion-icon>
+                </div>
+
+                <!-- Pastilla - 1 + (Se muestra si YA está en el carrito) -->
+                <div class="controles-inline" *ngIf="obtenerCantidad(prod) > 0">
+                  <ion-button fill="clear" class="btn-control-inline" (click)="restarDelMenu(prod)">
+                    <ion-icon name="remove-outline"></ion-icon>
+                  </ion-button>
+                  <span class="cantidad-inline">{{ obtenerCantidad(prod) }}</span>
+                  <ion-button fill="clear" class="btn-control-inline" (click)="sumarDelMenu(prod)">
+                    <ion-icon name="add-outline"></ion-icon>
+                  </ion-button>
+                </div>
+
+              </div>
             </div>
-          </div>
-          <ion-button class="btn-agregar" slot="end" (click)="agregarAlCarrito(prod)">
-            <ion-icon name="add-outline"></ion-icon>
-          </ion-button>
-        </ion-item>
+          </ng-container>
+        </div>
       </section>
 
     </ng-container>

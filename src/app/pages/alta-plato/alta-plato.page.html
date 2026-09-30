@@ -37,16 +37,25 @@
         Ingrese una descripción válida.
       </div>
 
-      <ion-item class="alta-item" lines="none">
-        <ion-icon name="time-outline" slot="start"></ion-icon>
-        <ion-input
-          formControlName="tiempo_elaboracion"
-          type="number"
-          placeholder="Tiempo de elaboración (minutos)">
-        </ion-input>
-      </ion-item>
+      <!-- Selector de tiempo (Reemplaza al ion-input) -->
+      <p class="alta-section-label" style="margin-top: 0 px; margin-bottom: 8px;">Tiempo de elaboración</p>
+      
+      <div class="tiempo-selector">
+        <button type="button" class="tiempo-btn" 
+                [class.activo]="platoForm.get('tiempo_elaboracion')?.value === 5" 
+                (click)="platoForm.get('tiempo_elaboracion')?.setValue(5)">5 MIN</button>
+                
+        <button type="button" class="tiempo-btn" 
+                [class.activo]="platoForm.get('tiempo_elaboracion')?.value === 15" 
+                (click)="platoForm.get('tiempo_elaboracion')?.setValue(15)">15 MIN</button>
+                
+        <button type="button" class="tiempo-btn" 
+                [class.activo]="platoForm.get('tiempo_elaboracion')?.value === 30" 
+                (click)="platoForm.get('tiempo_elaboracion')?.setValue(30)">30 MIN</button>
+      </div>
+      
       <div class="error-text" *ngIf="platoForm.get('tiempo_elaboracion')?.touched && platoForm.get('tiempo_elaboracion')?.invalid">
-        Ingrese un tiempo válido en minutos.
+        Seleccione un tiempo.
       </div>
 
       <ion-item class="alta-item" lines="none">
@@ -61,23 +70,43 @@
         Ingrese un precio válido.
       </div>
 
-      <p class="alta-section-label">Fotografías (3 requeridas)</p>
+     
+      <!-- ============================================
+           Visor de Fotos (Flechas Laterales)
+           ============================================ -->
+      <div class="fotos-container">
+        
+        <!-- Título centrado arriba -->
+        <div class="fotos-header-center">
+          <span class="fotos-title">FOTO {{ fotoActivaIndex + 1 }} DE 3</span>
+        </div>
 
-      <div class="fotos-grid">
-        <div class="foto-card" *ngFor="let slot of [0, 1, 2]; let i = index">
-          <div class="foto-box">
-            <img *ngIf="previews[i]" [src]="previews[i]" alt="Foto {{ i + 1 }}" />
-            <span *ngIf="!previews[i]">Foto {{ i + 1 }}</span>
+        <!-- Fila central: Flecha < | FOTO | Flecha > -->
+        <div class="foto-visor-row">
+          <ion-button fill="clear" class="btn-flecha" (click)="anteriorFoto()" [disabled]="fotoActivaIndex === 0">
+            <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
+          </ion-button>
+
+          <div class="foto-caja">
+            <img *ngIf="previews[fotoActivaIndex]" [src]="previews[fotoActivaIndex]" alt="Foto {{ fotoActivaIndex + 1 }}" />
+            <span *ngIf="!previews[fotoActivaIndex]">Agregar imagen...</span>
           </div>
 
-          <div class="foto-actions">
-            <ion-button size="small" fill="outline" class="foto-btn" (click)="seleccionarFoto(i, 'camera')">
-              <ion-icon slot="icon-only" name="camera-outline"></ion-icon>
-            </ion-button>
-            <ion-button size="small" fill="outline" class="foto-btn" (click)="seleccionarFoto(i, 'photos')">
-              <ion-icon slot="icon-only" name="images-outline"></ion-icon>
-            </ion-button>
-          </div>
+          <ion-button fill="clear" class="btn-flecha" (click)="siguienteFoto()" [disabled]="fotoActivaIndex === 2">
+            <ion-icon slot="icon-only" name="chevron-forward-outline"></ion-icon>
+          </ion-button>
+        </div>
+
+        <!-- Botones de Acción (Cámara y Galería) centrados abajo -->
+        <div class="foto-botones-row">
+          <ion-button fill="outline" class="btn-foto-abajo" (click)="seleccionarFoto(fotoActivaIndex, 'camera')">
+            <ion-icon name="camera-outline" slot="start"></ion-icon>
+            Cámara
+          </ion-button>
+          <ion-button fill="outline" class="btn-foto-abajo" (click)="seleccionarFoto(fotoActivaIndex, 'photos')">
+            <ion-icon name="images-outline" slot="start"></ion-icon>
+            Galería
+          </ion-button>
         </div>
       </div>
 
@@ -89,10 +118,9 @@
         {{ mensajeExito }}
       </div>
 
-    <ion-button expand="block" type="submit" class="alta-submit">
-        Registrar Plato
-    </ion-button>
+      <ion-button expand="block" type="submit" class="alta-submit">
+          Registrar Plato
+      </ion-button>
     </form>
   </div>
 </ion-content>
-

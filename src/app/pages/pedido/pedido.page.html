@@ -67,13 +67,13 @@
       <div class="estado-espera">
         <ion-icon name="cart-outline" class="estado-icono-exito"></ion-icon>
         <h2 class="page-title">¡Pedido confirmado!</h2>
-        <p class="estado-subtitle">Tu pedido fue derivado a cocina/bar. Podés ver el seguimiento o jugar por descuentos.</p>
+        <p class="estado-subtitle">Tu pedido fue derivado a cocina/bar. Podés ver el seguimiento{{ esClienteRegistrado ? ' o jugar por descuentos' : '' }}.</p>
         
         <div style="margin-top: 25px; display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 320px;">
           <ion-button expand="block" routerLink="/estado-pedido" class="btn-submit">
             Ver Estado del Pedido
           </ion-button>
-          <ion-button expand="block" fill="outline" routerLink="/juegos" style="--color: #dbcbb9; --border-color: #dbcbb9; height: 50px;">
+          <ion-button *ngIf="esClienteRegistrado" expand="block" fill="outline" routerLink="/juegos" style="--color: #dbcbb9; --border-color: #dbcbb9; height: 50px;">
             Ir a Juegos
           </ion-button>
         </div>

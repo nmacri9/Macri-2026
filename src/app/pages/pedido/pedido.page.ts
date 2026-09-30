@@ -10,6 +10,7 @@ import { CarritoService } from '../../services/carrito.service';
 import { ProductoCarrito } from '../../interfaces/carrito.model';
 import { SupabaseService } from '../../services/supabase.service';
 import { MesasService } from '../../services/mesas.service';
+import { AuthService } from '../../services/auth.service';
 import { CepaHeaderComponent } from '../../shared/components/cepa-header/cepa-header.component';
 import { CepaSpinnerComponent } from '../../shared/components/cepa-spinner/cepa-spinner.component';
 import { IonModal } from '@ionic/angular/common';
@@ -39,6 +40,7 @@ export class PedidoPage implements OnInit, OnDestroy {
   pedidoId: string | null = null;
   enviando = false;
   errorPedido: string | undefined;
+  esClienteRegistrado = false;
 
   private subs: Subscription[] = [];
   private canalRealtime: any;
@@ -50,11 +52,13 @@ export class PedidoPage implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private modalController: ModalController,
     private mesasService: MesasService,
+    private authService: AuthService,
   ) {
     addIcons({ addOutline, removeOutline, cartOutline, timeOutline, alertCircleOutline, closeOutline });
   }
 
   ngOnInit() {
+    void this.cargarRolCliente();
     this.cargarMenuReal();
     this.verificarPedidoActivoYSuscribirPush();
 
@@ -78,6 +82,17 @@ export class PedidoPage implements OnInit, OnDestroy {
         this.cdr.detectChanges();
       })
     );
+  }
+
+  private async cargarRolCliente() {
+    try {
+      const perfil = await this.authService.obtenerPerfil();
+      this.esClienteRegistrado = perfil?.rol === 'CLIENTE_REGISTRADO' && perfil.estado === 'APROBADO';
+    } catch {
+      this.esClienteRegistrado = false;
+    } finally {
+      this.cdr.markForCheck();
+    }
   }
 
   ngOnDestroy() {

@@ -86,6 +86,7 @@ export class HomePage {
   esMetre = false;
   esMetrePuro = false;
   esCliente = false;
+  esClienteRegistrado = false;
   puedeUsarChat = false;
   esMozo = false;
   clienteVinculadoAMesa = false;
@@ -206,6 +207,7 @@ export class HomePage {
     this.esMetre = false;
     this.esMetrePuro = false;
     this.esCliente = false;
+    this.esClienteRegistrado = false;
     this.esMozo = false;
     this.puedeUsarChat = false;
     this.clienteConMesaAsignada = false;
@@ -299,6 +301,7 @@ export class HomePage {
       this.esMetrePuro = perfil.estado === 'ACTIVO' && rol === 'METRE';
       this.esMozo = rol === 'MOZO' && perfil.estado === 'ACTIVO';
       this.esCliente = ['CLIENTE_REGISTRADO', 'CLIENTE_ANONIMO'].includes(rol);
+      this.esClienteRegistrado = rol === 'CLIENTE_REGISTRADO' && perfil.estado === 'APROBADO';
       this.clienteHabilitado = this.esCliente
         && (rol === 'CLIENTE_ANONIMO' ? perfil.estado === 'ACTIVO' : perfil.estado === 'APROBADO');
       this.puedeUsarChat = this.esMozo;
@@ -529,22 +532,11 @@ export class HomePage {
     this.cdr.markForCheck();
 
     try {
-      const tieneAsignacion = await this.mesasService.tieneAsignacionActiva(clienteId);
+      const asignacion = await this.mesasService.obtenerAsignacionActiva(clienteId);
       if (revision !== this.revisionMesa) return;
-
-      this.clienteConMesaAsignada = tieneAsignacion;
-      
-      if (tieneAsignacion) {
-        const data = await this.mesasService.obtenerAsignacionActiva(clienteId);
-        if (revision !== this.revisionMesa) return;
-        
-        // Atamos la nueva lógica de tu compañero a tus botones visuales
-        this.clienteVinculadoAMesa = !!data?.vinculada;
-        this.puedeUsarChat = this.clienteVinculadoAMesa;
-      } else {
-        this.clienteVinculadoAMesa = false;
-        this.puedeUsarChat = false;
-      }
+      this.clienteConMesaAsignada = !!asignacion;
+      this.clienteVinculadoAMesa = !!asignacion?.vinculada;
+      this.puedeUsarChat = this.clienteVinculadoAMesa;
     } catch (error) {
       if (revision !== this.revisionMesa) return;
       console.error('No se pudo consultar la mesa del cliente:', error);

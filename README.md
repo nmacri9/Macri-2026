@@ -276,6 +276,16 @@ Servicio desacoplado enfocado exclusivamente en la gestión del estado en memori
 
 ---
 
+## Jugá con Cepa
+
+El acceso del home aparece para clientes registrados aprobados con una mesa asignada. La primera partida de cada juego puede dar descuento: Ahorcado 20%, Memoria 15% o Verdadero o falso 10%. Si pierde uno, puede intentar otro por su premio. Solo se aplica el primer descuento que gana; desde entonces todos los juegos quedan disponibles para jugar por diversión. La app recuerda qué juegos ya intentó en el dispositivo; la base solo guarda `asignaciones.descuento_obtenido`.
+
+Para habilitar los juegos en una base de Supabase existente, aplicá la migración [`supabase/migrations/20260930160000_juegos_descuentos.sql`](./supabase/migrations/20260930160000_juegos_descuentos.sql) con una cuenta administradora. El código de la app no crea la columna ni la función automáticamente. La base solo guarda el porcentaje obtenido; no conoce los juegos ni sus intentos.
+
+El premio se registra para la visita, pero aún no modifica el total del pedido ni el cobro. Como la app resuelve la partida, antes de usar este dato para cobrar hace falta validar las victorias en el servidor.
+
+---
+
 ## 📸 Índice de Imágenes del Proyecto
 
 > _A continuación se detallan todas las capturas correspondientes a íconos, pantallas de presentación, formularios y listados del proyecto._

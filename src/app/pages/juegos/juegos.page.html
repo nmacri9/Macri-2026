@@ -1,0 +1,115 @@
+<ion-content class="juegos-content">
+  <main class="arcade">
+    <nav class="topbar" aria-label="Navegación de juegos">
+      <a routerLink="/home" class="back-link"><ion-icon name="arrow-back-outline" aria-hidden="true"></ion-icon><span>Inicio</span></a>
+      <span class="brand">CEPA <i>·</i> CLUB</span>
+    </nav>
+
+    @if (error) {
+      <div class="notice" role="alert">
+        <span>{{ error }}</span>
+        @if (!disponible) { <button type="button" (click)="cargarPremio()" [disabled]="cargando"><ion-icon name="refresh-outline" aria-hidden="true"></ion-icon> Reintentar</button> }
+        @else if (resultadoPendiente !== null) { <button type="button" (click)="guardarResultado()" [disabled]="procesando"><ion-icon name="refresh-outline" aria-hidden="true"></ion-icon> Guardar resultado</button> }
+      </div>
+    }
+
+    @if (cargando) {
+      <div class="loading" role="status">Preparando tus juegos…</div>
+    } @else if (disponible) {
+      @if (!juegoActivo) {
+        <header class="hero">
+          <div class="hero-copy">
+            <span class="kicker">UN MOMENTO PARA JUGAR</span>
+            <h1>Jugá con<br><em>Cepa.</em></h1>
+            <p>{{ premiosDisponibles ? 'La primera partida de cada juego puede darte un descuento. Después seguí jugando por diversión.' : 'Jugá cuando quieras. Los descuentos todavía no están habilitados.' }}</p>
+          </div>
+          <div class="prize-stamp" aria-label="Descuento obtenido: {{ descuento }} por ciento">
+            <ion-icon name="trophy-outline" aria-hidden="true"></ion-icon>
+            <strong>{{ descuento }}%</strong>
+            <span>TU PREMIO</span>
+          </div>
+        </header>
+
+        <div class="section-title"><h2>Elegí tu desafío</h2><span>01 / 03</span></div>
+        <section class="game-list" aria-label="Elegir juego">
+          @for (juego of juegos; track juego.id) {
+            <button class="game-option" type="button" (click)="elegirJuego(juego.id)" [disabled]="procesando">
+              <div class="option-head"><span class="level">{{ juego.dificultad }}</span><span class="percent" [class.free]="!puedeGanarDescuento(juego.id)">{{ puedeGanarDescuento(juego.id) ? juego.premio + '%' : 'LIBRE' }}</span></div>
+              <div class="option-body">
+                <div><strong>{{ juego.titulo }}</strong><p>{{ juego.descripcion }}</p></div>
+                @if (juego.id === 'ahorcado') { <span class="preview-word" aria-hidden="true">C _ P A</span> }
+                @else if (juego.id === 'memoria') { <span class="preview-cards" aria-hidden="true"><b>?</b><b>?</b><b>?</b><b>?</b></span> }
+                @else { <span class="preview-vf" aria-hidden="true">V <i>/</i> F</span> }
+              </div>
+              <span class="option-footer">{{ puedeGanarDescuento(juego.id) ? 'Jugar por ' + juego.premio + '% →' : 'Jugar por diversión →' }}</span>
+            </button>
+          }
+        </section>
+        <p class="rules-note">{{ !premiosDisponibles ? 'Cuando se habiliten los descuentos, vas a poder competir por uno en la primera partida de cada juego.' : descuento > 0 ? 'Ya ganaste tu único descuento. Podés seguir jugando todas las veces que quieras.' : 'Solo la primera partida de cada juego puede dar premio. Se aplica el primer descuento que ganes.' }}</p>
+      } @else {
+        <button class="all-games" type="button" (click)="volverAJuegos()" [disabled]="procesando || resultadoPendiente !== null"><ion-icon name="arrow-back-outline" aria-hidden="true"></ion-icon> Todos los juegos</button>
+
+        <header class="play-header">
+          <span class="kicker">{{ primerIntentoConPremio ? 'PARTIDA CON PREMIO' : 'PARTIDA POR DIVERSIÓN' }}</span>
+          <h1>{{ juegoActivo === 'ahorcado' ? 'Ahorcado' : juegoActivo === 'memoria' ? 'Memoria' : 'Verdadero o falso' }}</h1>
+          @if (juegoActivo === 'ahorcado') { <p>Descubrí la palabra antes de acumular 6 errores.</p> }
+          @if (juegoActivo === 'memoria') { <p>Encontrá todas las parejas en 18 movimientos.</p> }
+          @if (juegoActivo === 'verdadero-falso') { <p>Acertá al menos 3 de las 5 preguntas.</p> }
+        </header>
+
+        @if (juegoActivo === 'ahorcado') {
+          <section class="play-surface hangman" aria-label="Partida de ahorcado">
+            <div class="play-meta"><span>Errores</span><strong>{{ errores }} / 6</strong></div>
+            <div class="mistakes" aria-hidden="true">
+              @for (paso of [1,2,3,4,5,6]; track paso) { <span [class.filled]="errores >= paso"></span> }
+            </div>
+            <div class="word" aria-label="Palabra por descubrir">
+              @for (letra of mascara.split(''); track $index) { <span>{{ letra === '·' ? '' : letra }}</span> }
+            </div>
+            <p class="play-hint">Tocá una letra para probar</p>
+            <div class="keyboard" aria-label="Elegir letra">
+              @for (letra of abecedario; track letra) {
+                <button type="button" (click)="adivinar(letra)" [disabled]="procesando || terminado || letras.includes(letra)" [class.correct]="letras.includes(letra) && mascara.includes(letra)">{{ letra }}</button>
+              }
+            </div>
+          </section>
+        }
+
+        @if (juegoActivo === 'memoria') {
+          <section class="play-surface" aria-label="Partida de memoria">
+            <div class="play-meta"><span>Movimientos</span><strong>{{ movimientos }} / 18</strong></div>
+            <div class="card-grid">
+              @for (carta of cartas; track carta.id) {
+                <button class="memory-card" type="button" (click)="girarCarta(carta.id)"
+                  [disabled]="procesando || terminado || carta.encontrada || carta.visible"
+                  [class.revealed]="carta.visible" [class.matched]="carta.encontrada"
+                  [attr.aria-label]="carta.visible || carta.encontrada ? nombresCartas[carta.simbolo].largo : 'Carta ' + (carta.id + 1) + ' boca abajo'">
+                  <span>{{ carta.visible || carta.encontrada ? nombresCartas[carta.simbolo].corto : '?' }}</span>
+                </button>
+              }
+            </div>
+            <p class="play-hint">Elegí dos cartas para buscar la pareja.</p>
+          </section>
+        }
+
+        @if (juegoActivo === 'verdadero-falso') {
+          <section class="play-surface quiz" aria-label="Partida de verdadero o falso">
+            <div class="play-meta"><span>Pregunta {{ preguntaActual < 5 ? preguntaActual + 1 : 5 }} / 5</span><strong>{{ aciertos }} aciertos</strong></div>
+            @if (preguntaActual < preguntas.length) {
+              <div class="question"><span>¿QUÉ DECÍS?</span><h2>{{ preguntas[preguntaActual].texto }}</h2></div>
+              <div class="answer-buttons">
+                <button type="button" (click)="responder(true)" [disabled]="procesando || terminado"><b>V</b> Verdadero</button>
+                <button type="button" (click)="responder(false)" [disabled]="procesando || terminado"><b>F</b> Falso</button>
+              </div>
+              @if (respuestaAnterior) { <p class="answer-feedback" role="status">{{ respuestaAnterior }} Seguimos con la próxima.</p> }
+            }
+          </section>
+        }
+
+        @if (resultado) {
+          <div class="result" role="status"><ion-icon name="trophy-outline" aria-hidden="true"></ion-icon><strong>{{ terminado && resultado.startsWith('¡Ganaste') ? '¡Bien jugado!' : 'Fin de la partida' }}</strong><p>{{ resultado }}</p><button type="button" (click)="volverAJuegos()">Ver otros juegos →</button></div>
+        }
+      }
+    }
+  </main>
+</ion-content>

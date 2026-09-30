@@ -373,16 +373,29 @@
               </div>
             </a>
 
-            <a class="ahora-card" [routerLink]="pedidoConfirmadoCliente ? '/juegos' : '/menu-productos'">
+            @if (esClienteRegistrado && clienteConMesaAsignada) {
+            <a class="ahora-card" routerLink="/juegos">
               <div class="ahora-top">
-                <span class="ahora-brand-circle">Cepa</span>
-                <span class="timer-badge">{{ pedidoConfirmadoCliente ? 'PROMO' : 'CARTA' }}</span>
+                <ion-icon name="game-controller-outline" class="juegos-icon" aria-hidden="true"></ion-icon>
+                <span class="timer-badge">3 JUEGOS</span>
               </div>
               <div>
-                <h4>{{ pedidoConfirmadoCliente ? 'Juegos y Descuentos' : 'Nuestro Menú' }}</h4>
-                <p>{{ pedidoConfirmadoCliente ? 'Jugá y ganá descuentos' : 'Explorá platos y bebidas' }}</p>
+                <h4>Jugá con Cepa</h4>
+                <p>Ganá y obtené descuentos</p>
               </div>
             </a>
+            } @else {
+            <a class="ahora-card" routerLink="/menu-productos">
+              <div class="ahora-top">
+                <span class="ahora-brand-circle">Cepa</span>
+                <span class="timer-badge">CARTA</span>
+              </div>
+              <div>
+                <h4>Nuestro Menú</h4>
+                <p>Explorá platos y bebidas</p>
+              </div>
+            </a>
+            }
           }
         </div>
       </section>

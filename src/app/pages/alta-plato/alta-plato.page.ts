@@ -16,8 +16,16 @@ import {
   IonFooter,
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { cameraOutline, imagesOutline, restaurantOutline, documentTextOutline, timeOutline, cashOutline } from 'ionicons/icons';
-import { CepaSpinnerComponent } from '../../shared/components/cepa-spinner/cepa-spinner.component';
+import { 
+  cameraOutline, 
+  imagesOutline, 
+  restaurantOutline, 
+  documentTextOutline, 
+  timeOutline, 
+  cashOutline,
+  chevronBackOutline,
+  chevronForwardOutline
+} from 'ionicons/icons';import { CepaSpinnerComponent } from '../../shared/components/cepa-spinner/cepa-spinner.component';
 import { CepaHeaderComponent } from '../../shared/components/cepa-header/cepa-header.component';
 import { ModalController } from '@ionic/angular';
 import { ConfirmModalComponent } from '../../shared/confirm-modal/confirm-modal.component';
@@ -48,6 +56,7 @@ export class AltaPlatoPage implements OnInit {
   cargando: boolean = false;
   mensajeError: string = '';
   mensajeExito: string = '';
+  fotoActivaIndex: number = 0;
 
   constructor(
     private fb: FormBuilder,
@@ -61,7 +70,9 @@ export class AltaPlatoPage implements OnInit {
       'restaurant-outline': restaurantOutline,
       'document-text-outline': documentTextOutline,
       'time-outline': timeOutline,
-      'cash-outline': cashOutline
+      'cash-outline': cashOutline,
+      'chevron-back-outline': chevronBackOutline,
+      'chevron-forward-outline': chevronForwardOutline
     });
   }
 
@@ -174,5 +185,16 @@ export class AltaPlatoPage implements OnInit {
   private async notificarError(mensaje: string) {
     this.mensajeError = mensaje;
     await Haptics.impact({ style: ImpactStyle.Heavy });
+  }
+  anteriorFoto() {
+    if (this.fotoActivaIndex > 0) {
+      this.fotoActivaIndex--;
+    }
+  }
+
+  siguienteFoto() {
+    if (this.fotoActivaIndex < 2) {
+      this.fotoActivaIndex++;
+    }
   }
 }

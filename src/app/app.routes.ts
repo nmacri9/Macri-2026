@@ -34,6 +34,12 @@ export const routes: Routes = [
     canActivate: [roleGuard],
   },
   {
+    path: 'juegos',
+    loadComponent: () => import('./pages/juegos/juegos.page').then((m) => m.JuegosPage),
+    canActivate: [roleGuard, mesaGuard],
+    data: { roles: ['CLIENTE_REGISTRADO'], requiereEscaneo: false },
+  },
+  {
     path: '',
     redirectTo: 'splash',
     pathMatch: 'full',

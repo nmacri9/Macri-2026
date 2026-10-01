@@ -1,4 +1,4 @@
-import { ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectorRef, NgZone } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ClientesPendientesPage } from './clientes-pendientes.page';
@@ -22,7 +22,8 @@ describe('Clientes pendientes', () => {
     page = new ClientesPendientesPage(
       { markForCheck: vi.fn() } as unknown as ChangeDetectorRef,
       {} as ModalController,
-      { listarPendientes, resolver } as unknown as ClientesService
+      { listarPendientes, resolver } as unknown as ClientesService,
+      { run: (accion: () => unknown) => accion() } as NgZone
     );
     page.clientesPendientes = [cliente];
   });

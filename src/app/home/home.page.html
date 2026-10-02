@@ -187,10 +187,6 @@
               <ion-icon name="chatbubbles-outline"></ion-icon>
               <span>Chat del<br>salón</span>
             </a>
-            <a class="action-pill" routerLink="/menu-productos">
-              <ion-icon name="book-outline"></ion-icon>
-              <span>Ver<br>carta</span>
-            </a>
           }
 
           <!-- 4. COCINERO -->
@@ -203,10 +199,6 @@
               <ion-icon name="restaurant-outline"></ion-icon>
               <span>Nuevo<br>plato</span>
             </a>
-            <a class="action-pill" routerLink="/menu-productos">
-              <ion-icon name="book-outline"></ion-icon>
-              <span>Ver<br>carta</span>
-            </a>
           }
 
           <!-- 5. CANTINERO (BARRA) -->
@@ -218,10 +210,6 @@
             <a class="action-pill" routerLink="/alta-bebida">
               <ion-icon name="wine-outline"></ion-icon>
               <span>Nueva<br>bebida</span>
-            </a>
-            <a class="action-pill" routerLink="/menu-productos">
-              <ion-icon name="book-outline"></ion-icon>
-              <span>Ver<br>carta</span>
             </a>
           }
 
@@ -410,32 +398,45 @@
     </main>
 
     <!-- ================= 6. BARRA INFERIOR ================= -->
-    <nav class="mp-bottom-dock" aria-label="Navegación inferior">
-      <a class="dock-item active" routerLink="/home">
+    <nav class="mp-bottom-dock" aria-label="Navegación inferior" style="display: flex; justify-content: space-between; align-items: center;">
+      
+      <!-- Lado Izquierdo -->
+      <a class="dock-item active" routerLink="/home" style="flex: 1; display: flex; flex-direction: column; align-items: center;">
         <ion-icon name="home-outline"></ion-icon>
         <span>INICIO</span>
       </a>
 
-      <a class="dock-item" routerLink="/menu-productos">
-        <ion-icon name="book-outline"></ion-icon>
-        <span>CARTA</span>
-      </a>
+      <!-- Solo Cliente -->
+      @if (esCliente) {
+        <a class="dock-item" routerLink="/menu-productos" style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+          <ion-icon name="book-outline"></ion-icon>
+          <span>CARTA</span>
+        </a>
+      }
 
-      <div class="qr-center-slot">
-        <button class="qr-fab-btn" type="button" (click)="accionBotonQR()">
-          <ion-icon name="qr-code-outline"></ion-icon>
+      <!-- Centro: Burbuja decorativa (sin QR para empleados) -->
+      <div class="qr-center-slot" style="flex: 0 0 auto;">
+        <button class="qr-fab-btn" type="button" 
+                (click)="esCliente ? accionBotonQR() : null" 
+                [style.cursor]="esCliente ? 'pointer' : 'default'">
+          @if (esCliente) {
+            <ion-icon name="qr-code-outline"></ion-icon>
+          }
         </button>
       </div>
 
+      <!-- Lado Derecho -->
       <button
-        class="dock-item dock-item-end"
+        class="dock-item"
         type="button"
+        style="flex: 1; display: flex; flex-direction: column; align-items: center; background: none; border: none;"
         [disabled]="cerrandoSesion"
         (click)="cerrarSesion(profileMenu)"
       >
         <ion-icon name="log-out-outline"></ion-icon>
         <span>SALIR</span>
       </button>
+
     </nav>
 
   </div>

@@ -350,7 +350,7 @@ export class HomePage {
       // 2. Datos específicos para DUEÑO / SUPERVISOR
       if (this.puedeGestionarClientes) {
         const { count } = await db
-          .from('usuarios')
+          .from('clientes')
           .select('*', { count: 'exact', head: true })
           .eq('estado', 'PENDIENTE');
 
@@ -736,6 +736,23 @@ export class HomePage {
       });
     } catch (error) {
       console.error('Error al notificar al metre:', error);
+    }
+  }
+
+  async contarClientesPendientes() {
+    try {
+      const { count, error } = await this.supabase.getClient()
+        .from('clientes') // Apuntamos a tu tabla real
+        .select('*', { count: 'exact', head: true })
+        .eq('estado', 'PENDIENTE'); 
+
+      if (error) throw error;
+      
+      this.clientesPendientesCount = count || 0;
+      this.cdr.detectChanges();
+    } catch (error) {
+      console.error('Error al contar clientes:', error);
+      this.clientesPendientesCount = 0;
     }
   }
 }

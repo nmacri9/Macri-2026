@@ -1,40 +1,40 @@
 <app-cepa-header titulo="Escanear Mesa" defaultHref="/home"></app-cepa-header>
 
-<ion-content class="escaneo-container">
+<ion-content class="escaneo-container content-bg">
     <div class="content-wrapper">
+        
         <div class="card-info">
-        <ion-icon name="qr-code-outline" class="qr-icon"></ion-icon>
-        <h2>Vincular Mesa</h2>
-        <p>Escaneá el código QR que se encuentra sobre la mesa que te asignó el Metre.</p>
+            <ion-icon name="qr-code-outline" class="qr-icon"></ion-icon>
+            <h2>Vincular Mesa</h2>
+            <p>Escaneá el código QR que se encuentra sobre la mesa que te asignó el Metre.</p>
+            
+            <!-- NUEVO: Alerta indicando qué mesa buscar -->
+            <div class="alerta-mesa" *ngIf="mesaAsignadaNumero">
+                <h3>Tu mesa es la N° {{ mesaAsignadaNumero }}</h3>
+                <small>Acercate a esa mesa y escaneá su código QR.</small>
+            </div>
         </div>
 
         <!-- Botón principal para escanear en teléfono -->
         @if (esNativo) {
-        <ion-button expand="block" class="btn-escaneo" (click)="escanearMesa()" [disabled]="escaneando">
-        <ion-icon slot="start" name="camera-outline"></ion-icon>
-        Escanear QR de Mesa
-        </ion-button>
+            <ion-button expand="block" class="btn-escaneo" (click)="escanearMesa()" [disabled]="escaneando">
+                <ion-icon slot="start" name="camera-outline"></ion-icon>
+                Escanear QR de Mesa
+            </ion-button>
         }
 
         <!-- Panel de Pruebas / Simulación (Para pruebas en Web o Emulador) -->
         @if (!esNativo) {
-        <div class="panel-pruebas">
-        <span class="label-pruebas">Botones de prueba (Simulador):</span>
-        <div class="grid-botones">
-            <ion-button fill="outline" size="small" (click)="simularEscaneoMesa(1)">
-            Mesa 1
-            </ion-button>
-            <ion-button fill="outline" size="small" (click)="simularEscaneoMesa(2)">
-            Mesa 2
-            </ion-button>
-            <ion-button fill="outline" size="small" (click)="simularEscaneoMesa(3)">
-            Mesa 3
-            </ion-button>
-            <ion-button fill="outline" size="small" (click)="simularEscaneoMesa(28)">
-            Mesa 28
-            </ion-button>
-        </div>
-        </div>
+            <div class="panel-pruebas">
+                <span class="label-pruebas">Botones de prueba (Simulador):</span>
+                <div class="grid-botones">
+                    <ion-button fill="outline" size="small" (click)="simularEscaneoMesa(1)">Mesa 1</ion-button>
+                    <ion-button fill="outline" size="small" (click)="simularEscaneoMesa(2)">Mesa 2</ion-button>
+                    <ion-button fill="outline" size="small" (click)="simularEscaneoMesa(3)">Mesa 3</ion-button>
+                    <ion-button fill="outline" size="small" (click)="simularEscaneoMesa(28)">Mesa 28</ion-button>
+                </div>
+            </div>
         }
+        
     </div>
 </ion-content>

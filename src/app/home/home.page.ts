@@ -253,29 +253,36 @@ export class HomePage {
       // GESTIÓN DINÁMICA DE CANALES PUSH
       // =========================================================================
       if (this.platform.is('capacitor')) {
-        try {
-          await FCM.unsubscribeFrom({ topic: 'aprobacion_pendientes' });
-          await FCM.unsubscribeFrom({ topic: 'metre_lista_espera' });
+      try {
+      await FCM.unsubscribeFrom({ topic: 'aprobacion_pendientes' });
+      await FCM.unsubscribeFrom({ topic: 'metre_lista_espera' });
 
-          if (['DUENO', 'SUPERVISOR'].includes(rol)) {
-            await FCM.subscribeTo({ topic: 'aprobacion_pendientes' });
-          }
-          if (['METRE'].includes(rol)) {
-            await FCM.subscribeTo({ topic: 'metre_lista_espera' });
-          }
-          if (['MOZO', 'mozo'].includes(rol)) {
-            await FCM.subscribeTo({ topic: 'mozos' });
-          }
-          if (['CLIENTE_REGISTRADO', 'CLIENTE_ANONIMO'].includes(rol)) {
-            const { data: authData } = await this.supabase.getClient().auth.getUser();
-            if (authData?.user?.id) {
-              await FCM.subscribeTo({ topic: `cliente_${authData.user.id}` });
-            }
-          }
-        } catch (err) {
-          console.error('Error configurando topics de FCM:', err);
+      if (['DUENO', 'SUPERVISOR'].includes(rol)) {
+        await FCM.subscribeTo({ topic: 'aprobacion_pendientes' });
+      }
+      if (['METRE'].includes(rol)) {
+        await FCM.subscribeTo({ topic: 'metre_lista_espera' });
+      }
+      if (['MOZO', 'mozo'].includes(rol)) {
+        await FCM.subscribeTo({ topic: 'mozos' });
+      }
+      // NUEVO: Suscripciones para Cocina y Bar
+      if (['COCINERO'].includes(rol)) {
+        await FCM.subscribeTo({ topic: 'cocina' });
+      }
+      if (['CANTINERO'].includes(rol)) {
+        await FCM.subscribeTo({ topic: 'bar' });
+      }
+      if (['CLIENTE_REGISTRADO', 'CLIENTE_ANONIMO'].includes(rol)) {
+        const { data: authData } = await this.supabase.getClient().auth.getUser();
+        if (authData?.user?.id) {
+          await FCM.subscribeTo({ topic: `cliente_${authData.user.id}` });
         }
       }
+    } catch (err) {
+      console.error('Error configurando topics de FCM:', err);
+    }
+  }
       // =========================================================================
 
       // Fallback de fotos locales para el acceso rápido

@@ -18,6 +18,7 @@ import { BarcodeScanner, BarcodeFormat } from '@capacitor-mlkit/barcode-scanning
 export class ClienteEscaneoMesaPage {
     escaneando: boolean = false;
     readonly esNativo = Capacitor.isNativePlatform();
+    mesaAsignadaNumero: number | null = null;
 
     constructor(
         private mesasService: MesasService,
@@ -30,6 +31,22 @@ export class ClienteEscaneoMesaPage {
         'camera-outline': cameraOutline
         });
     }
+
+    async ionViewWillEnter() {
+    try {
+        const usuario = await this.authService.obtenerUsuarioActual();
+        if (usuario) {
+            const asignacion = await this.mesasService.obtenerAsignacionActiva(usuario.id);
+            
+            // Usamos 'as any' para decirle a TypeScript que ignore la validación estricta acá
+            if (asignacion && (asignacion as any).numero) {
+                this.mesaAsignadaNumero = (asignacion as any).numero;
+            }
+        }
+    } catch (error) {
+        console.warn('No se pudo obtener el número de mesa previo al escaneo', error);
+    }
+}
 
     async procesarQRLeido(qrData: string) {
         try {

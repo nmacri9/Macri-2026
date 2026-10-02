@@ -126,14 +126,16 @@ export class ConfirmarPedidoPage implements OnInit, OnDestroy {
       await this.pedidosService.confirmarPedidoYRutear(pedido.id, mozoId);
 
       try {
-      await this.supabase.invocarEdgeFunction('enviar-notificacion', {
-        titulo: '¡Pedido Confirmado! 👨‍🍳',
-        cuerpo: `El mozo confirmó tu pedido y ya está en preparación.`,
-        topic: `cliente_${pedido.cliente_id}` // Usamos el ID del cliente para mandarle solo a él
-      });
-    } catch (pushError) {
-      console.warn('El pedido se confirmó pero falló la push al cliente:', pushError);
-    }
+        // 1. Notificación al Cliente
+        await this.supabase.invocarEdgeFunction('enviar-notificacion', {
+          titulo: '¡Pedido Confirmado!',
+          cuerpo: `El mozo confirmó tu pedido y ya está en preparación.`,
+          topic: `cliente_${pedido.cliente_id}`
+        });
+
+      } catch (pushError) {
+        console.warn('El pedido se confirmó pero fallaron las notificaciones push:', pushError);
+      }
 
       this.pedidos = this.pedidos.filter(p => p.id !== pedido.id);
 

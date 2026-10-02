@@ -7,8 +7,8 @@ import {
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { checkmarkCircleOutline } from 'ionicons/icons';
+import { FCM } from '@capacitor-community/fcm'; // <-- AGREGADO
 import { SupabaseService } from '../../services/supabase.service';
-
 
 import { CepaHeaderComponent } from '../../shared/components/cepa-header/cepa-header.component';
 import { CepaSpinnerComponent } from '../../shared/components/cepa-spinner/cepa-spinner.component';
@@ -41,6 +41,7 @@ export class CocinaPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.suscribirCanalCocina(); // <-- AGREGADO
     this.cargarPedidos();
     this.escucharNuevosPedidos();
   }
@@ -48,6 +49,16 @@ export class CocinaPage implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.canalCocina) {
       this.canalCocina.unsubscribe();
+    }
+  }
+
+  // <-- FUNCIÓN AGREGADA -->
+  private async suscribirCanalCocina() {
+    try {
+      await FCM.subscribeTo({ topic: 'cocina' });
+      console.log('Suscrito al topic de cocina');
+    } catch (err) {
+      console.warn('FCM no disponible en navegador web:', err);
     }
   }
 
@@ -94,7 +105,6 @@ export class CocinaPage implements OnInit, OnDestroy {
       .subscribe();
   }
 
-  
   async abrirModalConfirmacion(pedidoId: string) {
     const modal = await this.modalCtrl.create({
       component: ConfirmModalComponent,
@@ -106,10 +116,8 @@ export class CocinaPage implements OnInit, OnDestroy {
 
     await modal.present();
 
-    
     const { data } = await modal.onDidDismiss();
 
-    
     if (data === true) {
       this.marcarComoListo(pedidoId);
     }

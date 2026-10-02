@@ -13,12 +13,21 @@ import {
     IonIcon,
     IonTextarea,
     ModalController
-    } from '@ionic/angular';
-    import { addIcons } from 'ionicons';
-    import { cameraOutline, imagesOutline, wineOutline, documentTextOutline, timeOutline, cashOutline } from 'ionicons/icons';
-    import { CepaSpinnerComponent } from '../../shared/components/cepa-spinner/cepa-spinner.component';
-    import { CepaHeaderComponent } from '../../shared/components/cepa-header/cepa-header.component';
-    import { ConfirmModalComponent } from '../../shared/confirm-modal/confirm-modal.component';
+} from '@ionic/angular';
+import { addIcons } from 'ionicons';
+import { 
+    cameraOutline, 
+    imagesOutline, 
+    wineOutline, 
+    documentTextOutline, 
+    timeOutline, 
+    cashOutline,
+    chevronBackOutline,
+    chevronForwardOutline 
+} from 'ionicons/icons';
+import { CepaSpinnerComponent } from '../../shared/components/cepa-spinner/cepa-spinner.component';
+import { CepaHeaderComponent } from '../../shared/components/cepa-header/cepa-header.component';
+import { ConfirmModalComponent } from '../../shared/confirm-modal/confirm-modal.component';
 
 @Component({
     selector: 'app-alta-bebida',
@@ -37,14 +46,15 @@ import {
         CepaSpinnerComponent,
         CepaHeaderComponent
     ]
-    })
-    export class AltaBebidaPage implements OnInit {
+})
+export class AltaBebidaPage implements OnInit {
     formBebida!: FormGroup;
     fotos: (File | null)[] = [null, null, null];
     previews: (string | null)[] = [null, null, null];
     cargando: boolean = false;
     mensajeError: string = '';
     mensajeExito: string = '';
+    fotoActivaIndex: number = 0; // Control del carrusel
 
     constructor(
         private cdr: ChangeDetectorRef,
@@ -53,12 +63,14 @@ import {
         private modalCtrl: ModalController 
     ) {
         addIcons({
-        'camera-outline': cameraOutline,
-        'images-outline': imagesOutline,
-        'wine-outline': wineOutline,
-        'document-text-outline': documentTextOutline,
-        'time-outline': timeOutline,
-        'cash-outline': cashOutline
+            'camera-outline': cameraOutline,
+            'images-outline': imagesOutline,
+            'wine-outline': wineOutline,
+            'document-text-outline': documentTextOutline,
+            'time-outline': timeOutline,
+            'cash-outline': cashOutline,
+            'chevron-back-outline': chevronBackOutline,
+            'chevron-forward-outline': chevronForwardOutline
         });
     }
 
@@ -75,29 +87,41 @@ import {
 
     async seleccionarFoto(index: number, fuente: 'camera' | 'photos') {
         try {
-        const image = await Camera.getPhoto({
-            quality: 60,
-            allowEditing: false,
-            resultType: CameraResultType.Base64,
-            source: fuente === 'camera' ? CameraSource.Camera : CameraSource.Photos
-        });
+            const image = await Camera.getPhoto({
+                quality: 60,
+                allowEditing: false,
+                resultType: CameraResultType.Base64,
+                source: fuente === 'camera' ? CameraSource.Camera : CameraSource.Photos
+            });
 
-        if (image.base64String) {
-            const byteCharacters = atob(image.base64String);
-            const byteNumbers = new Array(byteCharacters.length);
-            for (let i = 0; i < byteCharacters.length; i++) {
-            byteNumbers[i] = byteCharacters.charCodeAt(i);
+            if (image.base64String) {
+                const byteCharacters = atob(image.base64String);
+                const byteNumbers = new Array(byteCharacters.length);
+                for (let i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                }
+                const byteArray = new Uint8Array(byteNumbers);
+                const blob = new Blob([byteArray], { type: `image/${image.format || 'jpeg'}` });
+                const file = new File([blob], `bebida_foto_${index + 1}.${image.format || 'jpg'}`, { type: `image/${image.format || 'jpeg'}` });
+
+                this.fotos[index] = file;
+                this.previews[index] = `data:image/${image.format || 'jpeg'};base64,${image.base64String}`;
+                this.cdr.detectChanges();
             }
-            const byteArray = new Uint8Array(byteNumbers);
-            const blob = new Blob([byteArray], { type: `image/${image.format || 'jpeg'}` });
-            const file = new File([blob], `bebida_foto_${index + 1}.${image.format || 'jpg'}`, { type: `image/${image.format || 'jpeg'}` });
-
-            this.fotos[index] = file;
-            this.previews[index] = `data:image/${image.format || 'jpeg'};base64,${image.base64String}`;
-            this.cdr.detectChanges();
-        }
         } catch (error) {
-        console.log('Selección cancelada o fallo cámara', error);
+            console.log('Selección cancelada o fallo cámara', error);
+        }
+    }
+
+    anteriorFoto() {
+        if (this.fotoActivaIndex > 0) {
+            this.fotoActivaIndex--;
+        }
+    }
+
+    siguienteFoto() {
+        if (this.fotoActivaIndex < 2) {
+            this.fotoActivaIndex++;
         }
     }
 
@@ -105,73 +129,69 @@ import {
         this.mensajeError = '';
         this.mensajeExito = '';
 
-        // Atajamos el error específico del patrón de texto primero
         if (this.formBebida.get('nombre')?.hasError('pattern') || this.formBebida.get('descripcion')?.hasError('pattern')) {
             await this.notificarError('El nombre y la descripción solo pueden contener letras y espacios. Los números van en el campo de tiempo.');
             return;
         }
 
-        // 1. Validaciones de formulario y fotos
         if (this.formBebida.invalid) {
-        this.formBebida.markAllAsTouched();
-        await this.notificarError('Por favor complete todos los campos requeridos con valores válidos.');
-        return;
+            this.formBebida.markAllAsTouched();
+            await this.notificarError('Por favor complete todos los campos requeridos con valores válidos.');
+            return;
         }
 
         const fotosCompletas = this.fotos.filter(f => f !== null) as File[];
         if (fotosCompletas.length !== 3) {
-        await this.notificarError('Debe ingresar obligatoriamente las 3 fotografías requeridas.');
-        return;
+            await this.notificarError('Debe ingresar obligatoriamente las 3 fotografías requeridas.');
+            return;
         }
 
-        // 2. Abrir Modal de Confirmación Global de tu compañero
         const modal = await this.modalCtrl.create({
-        component: ConfirmModalComponent,
-        componentProps: {
-            mensaje: '¿Desea dar de alta esta nueva bebida en la carta?'
-        },
-        cssClass: 'modal-alerta'
+            component: ConfirmModalComponent,
+            componentProps: {
+                mensaje: '¿Desea dar de alta esta nueva bebida en la carta?'
+            },
+            cssClass: 'modal-alerta'
         });
 
         await modal.present();
 
-        // 3. Esperar la decisión del usuario (Confirmar = true, Cancelar = false)
         const { data: confirmado } = await modal.onDidDismiss();
 
         if (!confirmado) {
-        return; // El usuario tocó Cancelar, no se guarda nada
+            return; 
         }
 
-        // 4. Si confirmó, procedemos a guardar
         this.cargando = true;
         this.cdr.detectChanges();
 
         try {
-        const nuevaBebida: Producto = {
-            nombre: this.formBebida.value.nombre,
-            descripcion: this.formBebida.value.descripcion,
-            tipo: 'BEBIDA',
-            precio: Number(this.formBebida.value.precio),
-            tiempo_elaboracion: Number(this.formBebida.value.tiempo_elaboracion),
-            activo: true
-        };
+            const nuevaBebida: Producto = {
+                nombre: this.formBebida.value.nombre,
+                descripcion: this.formBebida.value.descripcion,
+                tipo: 'BEBIDA',
+                precio: Number(this.formBebida.value.precio),
+                tiempo_elaboracion: Number(this.formBebida.value.tiempo_elaboracion),
+                activo: true
+            };
 
-        await this.productosService.crearProductoConImagenes(nuevaBebida, fotosCompletas);
+            await this.productosService.crearProductoConImagenes(nuevaBebida, fotosCompletas);
 
-        this.mensajeExito = '¡Bebida registrada con éxito en la carta!';
-        
-        this.formBebida.reset();
-        this.formBebida.markAsPristine();
-        this.formBebida.markAsUntouched();
+            this.mensajeExito = '¡Bebida registrada con éxito en la carta!';
+            
+            this.formBebida.reset();
+            this.formBebida.markAsPristine();
+            this.formBebida.markAsUntouched();
 
-        this.fotos = [null, null, null];
-        this.previews = [null, null, null];
+            this.fotos = [null, null, null];
+            this.previews = [null, null, null];
+            this.fotoActivaIndex = 0;
 
         } catch (err: any) {
-        await this.notificarError(err.message || 'Ocurrió un error al guardar la bebida.');
+            await this.notificarError(err.message || 'Ocurrió un error al guardar la bebida.');
         } finally {
-        this.cargando = false;
-        this.cdr.detectChanges();
+            this.cargando = false;
+            this.cdr.detectChanges();
         }
     }
 

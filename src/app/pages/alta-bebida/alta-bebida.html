@@ -1,24 +1,18 @@
-    <app-cepa-header [titulo]="'Carga de Bebidas'"></app-cepa-header>
+<app-cepa-header titulo="Carga de Bebidas"></app-cepa-header>
 
+<ion-content class="alta-content" [fullscreen]="true">
 
-    <ion-content class="alta-content" [fullscreen]="true">
-    <!-- Spinner / Indicador de Carga Excluyente -->
-    <app-cepa-spinner 
-        *ngIf="cargando" 
-        [texto]="'Cargando bebida en la carta...'">
-    </app-cepa-spinner>
+  <app-cepa-spinner *ngIf="cargando" texto="Cargando bebida en la carta..."></app-cepa-spinner>
 
-    <div class="alta-container" *ngIf="!cargando">
+  <div class="alta-container" *ngIf="!cargando">
 
-        <div class="alta-header">
-        <p class="alta-title">CANTINERO</p>
+    <div class="alta-header">
+        <p class="alta-subtitle">CANTINERO</p>
         <div class="alta-divider"></div>
         </div>
 
-        <form [formGroup]="formBebida" (ngSubmit)="guardar()">
+        <form [formGroup]="formBebida" (ngSubmit)="guardar()" id="formAltaBebida">
 
-        <!-- Nombre de la bebida -->
-        
         <ion-item class="alta-item" lines="none">
             <ion-icon name="wine-outline" slot="start"></ion-icon>
             <ion-input
@@ -31,7 +25,6 @@
             El nombre es obligatorio.
         </div>
 
-        <!-- Descripción -->
         <ion-item class="alta-item" lines="none">
             <ion-icon name="document-text-outline" slot="start"></ion-icon>
             <ion-textarea
@@ -44,20 +37,27 @@
             Ingrese una descripción válida.
         </div>
 
-        <!-- Tiempo de elaboración -->
-        <ion-item class="alta-item" lines="none">
-            <ion-icon name="time-outline" slot="start"></ion-icon>
-            <ion-input
-            formControlName="tiempo_elaboracion"
-            type="number"
-            placeholder="Tiempo de elaboración (minutos)">
-            </ion-input>
-        </ion-item>
+        <!-- Selector de tiempo -->
+        <p class="alta-section-label" style="margin-top: 0px; margin-bottom: 8px;">Tiempo de preparación</p>
+        
+        <div class="tiempo-selector">
+            <button type="button" class="tiempo-btn" 
+                    [class.activo]="formBebida.get('tiempo_elaboracion')?.value === 5" 
+                    (click)="formBebida.get('tiempo_elaboracion')?.setValue(5)">5 MIN</button>
+                    
+            <button type="button" class="tiempo-btn" 
+                    [class.activo]="formBebida.get('tiempo_elaboracion')?.value === 15" 
+                    (click)="formBebida.get('tiempo_elaboracion')?.setValue(15)">15 MIN</button>
+                    
+            <button type="button" class="tiempo-btn" 
+                    [class.activo]="formBebida.get('tiempo_elaboracion')?.value === 30" 
+                    (click)="formBebida.get('tiempo_elaboracion')?.setValue(30)">30 MIN</button>
+        </div>
+        
         <div class="error-text" *ngIf="formBebida.get('tiempo_elaboracion')?.touched && formBebida.get('tiempo_elaboracion')?.invalid">
-            Ingrese un tiempo válido en minutos.
+            Seleccione un tiempo.
         </div>
 
-        <!-- Precio -->
         <ion-item class="alta-item" lines="none">
             <ion-icon name="cash-outline" slot="start"></ion-icon>
             <ion-input
@@ -70,28 +70,40 @@
             Ingrese un precio válido.
         </div>
 
-        <!-- Sección de Fotos -->
-        <p class="alta-section-label">Fotografías (3 requeridas)</p>
-
-        <div class="fotos-grid">
-            <div class="foto-card" *ngFor="let slot of [0, 1, 2]; let i = index">
-            <div class="foto-box">
-                <img *ngIf="previews[i]" [src]="previews[i]" alt="Foto {{ i + 1 }}" />
-                <span *ngIf="!previews[i]">Foto {{ i + 1 }}</span>
+        <!-- Visor de Fotos (Flechas Laterales) -->
+        <div class="fotos-container">
+            
+            <div class="fotos-header-center">
+            <span class="fotos-title">FOTO {{ fotoActivaIndex + 1 }} DE 3</span>
             </div>
 
-            <div class="foto-actions">
-                <ion-button size="small" fill="outline" class="foto-btn" (click)="seleccionarFoto(i, 'camera')">
-                <ion-icon slot="icon-only" name="camera-outline"></ion-icon>
-                </ion-button>
-                <ion-button size="small" fill="outline" class="foto-btn" (click)="seleccionarFoto(i, 'photos')">
-                <ion-icon slot="icon-only" name="images-outline"></ion-icon>
-                </ion-button>
+            <div class="foto-visor-row">
+            <ion-button fill="clear" class="btn-flecha" (click)="anteriorFoto()" [disabled]="fotoActivaIndex === 0">
+                <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
+            </ion-button>
+
+            <div class="foto-caja">
+                <img *ngIf="previews[fotoActivaIndex]" [src]="previews[fotoActivaIndex]" alt="Foto {{ fotoActivaIndex + 1 }}" />
+                <span *ngIf="!previews[fotoActivaIndex]">Agregar imagen...</span>
             </div>
+
+            <ion-button fill="clear" class="btn-flecha" (click)="siguienteFoto()" [disabled]="fotoActivaIndex === 2">
+                <ion-icon slot="icon-only" name="chevron-forward-outline"></ion-icon>
+            </ion-button>
+            </div>
+
+            <div class="foto-botones-row">
+            <ion-button fill="outline" class="btn-foto-abajo" (click)="seleccionarFoto(fotoActivaIndex, 'camera')">
+                <ion-icon name="camera-outline" slot="start"></ion-icon>
+                Cámara
+            </ion-button>
+            <ion-button fill="outline" class="btn-foto-abajo" (click)="seleccionarFoto(fotoActivaIndex, 'photos')">
+                <ion-icon name="images-outline" slot="start"></ion-icon>
+                Galería
+            </ion-button>
             </div>
         </div>
 
-        <!-- Banners de Notificación inline -->
         <div class="banner-error" *ngIf="mensajeError">
             {{ mensajeError }}
         </div>
@@ -100,11 +112,9 @@
             {{ mensajeExito }}
         </div>
 
-        <!-- Botón Submit -->
         <ion-button expand="block" type="submit" class="alta-submit">
             Registrar Bebida
         </ion-button>
-
         </form>
     </div>
 </ion-content>

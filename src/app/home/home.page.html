@@ -203,7 +203,7 @@
 
           <!-- 5. CANTINERO (BARRA) -->
           @if (puedeCargarBebidas) {
-            <a class="action-pill" routerLink="/cocina">
+            <a class="action-pill" routerLink="/barra">
               <ion-icon name="list-outline"></ion-icon>
               <span>Comandas<br>barra</span>
             </a>
@@ -317,7 +317,7 @@
               </div>
             </a>
           } @else if (puedeCargarPlatos || puedeCargarBebidas) {
-            <a class="ahora-card" routerLink="/cocina">
+            <a class="ahora-card" [routerLink]="puedeCargarPlatos ? '/cocina' : '/barra'">
               <div class="ahora-top">
                 <span class="ahora-pill-tag">SECTOR</span>
                 <span class="timer-badge">{{ comandasActivasCount }}</span>

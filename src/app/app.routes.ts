@@ -156,4 +156,9 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/cocina/cocina.page').then((m) => m.CocinaPage),
   },
+  {
+    path: 'barra',
+    loadComponent: () =>
+      import('./pages/barra/barra.page').then((m) => m.BarraPage),
+  },
 ];

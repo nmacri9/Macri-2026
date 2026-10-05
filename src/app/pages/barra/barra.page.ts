@@ -1,0 +1,145 @@
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { 
+  IonContent, IonCard, IonCardHeader, IonCardTitle, IonCardContent, 
+  IonBadge, IonList, IonItem, IonLabel, IonButton, IonIcon, 
+  ModalController 
+} from '@ionic/angular';
+import { addIcons } from 'ionicons';
+import { checkmarkCircleOutline } from 'ionicons/icons';
+import { FCM } from '@capacitor-community/fcm';
+import { SupabaseService } from '../../services/supabase.service';
+
+import { CepaHeaderComponent } from '../../shared/components/cepa-header/cepa-header.component';
+import { CepaSpinnerComponent } from '../../shared/components/cepa-spinner/cepa-spinner.component';
+import { ConfirmModalComponent } from '../../shared/confirm-modal/confirm-modal.component';
+
+@Component({
+  selector: 'app-barra', 
+  templateUrl: './barra.page.html', 
+  styleUrls: ['./barra.page.scss'], 
+  standalone: true,
+  imports: [
+    CommonModule, 
+    IonContent, IonCard, IonCardHeader, IonCardTitle, IonCardContent, 
+    IonBadge, IonList, IonItem, IonLabel, IonButton, IonIcon,
+    CepaHeaderComponent, CepaSpinnerComponent 
+  ]
+})
+export class BarraPage implements OnInit, OnDestroy {
+  
+  pedidosBarra: any[] = [];
+  private canalBarra: any;
+  cargando = false; 
+
+  constructor(
+    private supabase: SupabaseService,
+    private cdr: ChangeDetectorRef,
+    private modalCtrl: ModalController 
+  ) {
+    addIcons({ checkmarkCircleOutline });
+  }
+
+  ngOnInit() {
+    this.suscribirCanalBarra();
+    this.cargarPedidos();
+    this.escucharNuevosPedidos();
+  }
+
+  ngOnDestroy() {
+    if (this.canalBarra) {
+      this.canalBarra.unsubscribe();
+    }
+  }
+
+  private async suscribirCanalBarra() {
+    try {
+      await FCM.subscribeTo({ topic: 'bar' });
+      console.log('Suscrito al topic de bar');
+    } catch (err) {
+      console.warn('FCM no disponible en navegador web:', err);
+    }
+  }
+
+  async cargarPedidos() {
+    this.cargando = true; 
+    try {
+      const { data, error } = await this.supabase.getClient()
+        .from('pedidos')
+        .select('*')
+        .eq('estado_bar', 'en_preparacion') 
+        .order('created_at', { ascending: true });
+
+      if (error) throw error;
+      this.procesarYFiltrar(data || []);
+    } catch (error) {
+      console.error('Error al cargar pedidos de barra:', error);
+    } finally {
+      this.cargando = false; 
+      this.cdr.detectChanges();
+    }
+  }
+
+  procesarYFiltrar(pedidosDB: any[]) {
+    const pedidosFiltrados = pedidosDB.map(pedido => {
+      return {
+        ...pedido,
+        // Filtramos para que el cantinero solo vea bebidas
+        items: pedido.items.filter((item: any) => item.tipo === 'BEBIDA')
+      };
+    });
+    // Solo mostramos pedidos que tengan al menos 1 bebida
+    this.pedidosBarra = pedidosFiltrados.filter(pedido => pedido.items.length > 0);
+    this.cdr.detectChanges();
+  }
+
+  escucharNuevosPedidos() {
+    this.canalBarra = this.supabase.getClient()
+      .channel('pedidos_bar')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'pedidos' },
+        () => {
+          this.cargarPedidos();
+        }
+      )
+      .subscribe();
+  }
+
+  async abrirModalConfirmacion(pedidoId: string) {
+    const modal = await this.modalCtrl.create({
+      component: ConfirmModalComponent,
+      componentProps: {
+        mensaje: '¿Despachar bebidas al mozo?'
+      },
+      cssClass: 'modal-transparente' 
+    });
+
+    await modal.present();
+
+    const { data } = await modal.onDidDismiss();
+
+    if (data === true) {
+      this.marcarComoListo(pedidoId);
+    }
+  }
+
+  async marcarComoListo(pedidoId: string) {
+    this.cargando = true; 
+    this.cdr.detectChanges();
+    try {
+      const { error } = await this.supabase.getClient()
+        .from('pedidos')
+        .update({ estado_bar: 'listo' })
+        .eq('id', pedidoId);
+
+      if (error) throw error;
+      console.log(`¡Bebidas del pedido ${pedidoId} despachadas!`);
+    } catch (error) {
+      console.error('Error al actualizar pedido:', error);
+    } finally {
+      this.cargando = false; 
+      this.cdr.detectChanges();
+    }
+  }
+}

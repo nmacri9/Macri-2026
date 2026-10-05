@@ -174,6 +174,12 @@ export class HomePage {
     if (this.cerrandoSesion) return;
     this.cerrandoSesion = true;
     try {
+      try {
+        await FCM.deleteInstance();
+      } catch (fcmError) {
+        console.warn('FCM no disponible para borrar instancia:', fcmError);
+      }
+
       await this.authService.logout();
       await menu.dismiss();
       await this.navController.navigateRoot('/login', { replaceUrl: true });
@@ -256,6 +262,9 @@ export class HomePage {
       try {
       await FCM.unsubscribeFrom({ topic: 'aprobacion_pendientes' });
       await FCM.unsubscribeFrom({ topic: 'metre_lista_espera' });
+      await FCM.unsubscribeFrom({ topic: 'cocina' }); 
+      await FCM.unsubscribeFrom({ topic: 'bar' });    
+      await FCM.unsubscribeFrom({ topic: 'mozos' });
 
       if (['DUENO', 'SUPERVISOR'].includes(rol)) {
         await FCM.subscribeTo({ topic: 'aprobacion_pendientes' });
@@ -517,8 +526,12 @@ export class HomePage {
       this.router.navigate(['/metre-asignacion']);
       return;
     }
-    if (this.puedeCargarPlatos || this.puedeCargarBebidas) {
+    if (this.puedeCargarPlatos) {
       this.router.navigate(['/cocina']);
+      return;
+    }
+    if (this.puedeCargarBebidas) {
+      this.router.navigate(['/barra']);
       return;
     }
     this.router.navigate(['/clientes-pendientes']);

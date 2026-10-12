@@ -1,5 +1,6 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
 import { RouterLink, Router } from '@angular/router';
+import { PedidosService } from '../services/pedidos.service';
 import {
   IonContent,
   IonIcon,
@@ -9,7 +10,8 @@ import {
   Platform,
   ActionSheetController,
   IonRefresher,
-  IonRefresherContent
+  IonRefresherContent,
+  IonButton
 } from '@ionic/angular';
 import { SupabaseService } from '../services/supabase.service';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
@@ -44,7 +46,7 @@ import {
   statsChartOutline,
   menuOutline,
   gameControllerOutline,
-  timeOutline
+  timeOutline,
 } from 'ionicons/icons';
 import { AuthService } from '../services/auth.service';
 import { ChatPushService } from '../services/chat-push.service';
@@ -60,7 +62,7 @@ export interface ActividadItem {
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
-  imports: [RouterLink, IonContent, IonIcon, IonPopover, IonRefresher, IonRefresherContent],
+  imports: [RouterLink, IonContent, IonIcon, IonPopover, IonRefresher, IonRefresherContent, IonButton],
 })
 export class HomePage {
   nombreUsuario = 'Usuario';
@@ -113,6 +115,10 @@ export class HomePage {
   // Lista dinámica inferior
   actividadesRecientes: ActividadItem[] = [];
 
+  clienteRecibioPedido = false;
+  pedidoEntregadoPorMozo = false;
+  pedidoIdCliente: string | null = null;
+
   constructor(
     private cdr: ChangeDetectorRef,
     private authService: AuthService,
@@ -123,7 +129,8 @@ export class HomePage {
     private router: Router,
     private supabase: SupabaseService,
     private chatPush: ChatPushService,
-    private mesasService: MesasService
+    private mesasService: MesasService,
+    private pedidosService: PedidosService
   ) {
     addIcons({
       arrowForwardOutline,
@@ -468,16 +475,20 @@ export class HomePage {
       if (this.esCliente && this.usuarioActual) {
         const { data: pedidoActivo } = await db
           .from('pedidos')
-          .select('estado, total, tiempo_estimado')
+          .select('id, estado, total, tiempo_estimado')
           .eq('cliente_id', this.usuarioActual.id)
           .order('created_at', { ascending: false })
           .limit(1)
           .maybeSingle();
 
         if (pedidoActivo) {
+          this.pedidoIdCliente = pedidoActivo.id;
           this.totalPedidoCliente = pedidoActivo.total || 0;
           this.tiempoEstimadoCliente = pedidoActivo.tiempo_estimado || 0;
           this.pedidoConfirmadoCliente = ['confirmado', 'en_preparacion', 'listo', 'entregado'].includes(pedidoActivo.estado);
+
+          this.pedidoEntregadoPorMozo = pedidoActivo.estado === 'entregado';
+          this.clienteRecibioPedido = pedidoActivo.estado === 'recibido';
 
           const mapaEstados: Record<string, string> = {
             'pendiente_confirmacion': 'Esperando al mozo',
@@ -773,6 +784,40 @@ export class HomePage {
     } catch (error) {
       console.error('Error al contar clientes:', error);
       this.clientesPendientesCount = 0;
+    }
+  }
+
+  async confirmarRecepcion() {
+    console.log('ID del pedido a confirmar:', this.pedidoIdCliente); // Para ver en consola qué tiene
+
+    if (!this.pedidoIdCliente) {
+      const toast = await this.toastController.create({
+        message: 'Error: No se encontró el ID del pedido. Refrescá la pantalla deslizando hacia abajo.',
+        duration: 3000,
+        color: 'danger'
+      });
+      await toast.present();
+      return;
+    }
+    
+    try {
+      await this.pedidosService.confirmarRecepcionCliente(this.pedidoIdCliente);
+      
+      this.clienteRecibioPedido = true;
+      this.pedidoEntregadoPorMozo = false;
+      this.estadoPedidoCliente = 'Disfrutá tu comida';
+      
+      const toast = await this.toastController.create({
+        message: '¡Gracias por confirmar! Se han desbloqueado los juegos y la encuesta.',
+        duration: 3500,
+        color: 'success',
+        position: 'top'
+      });
+      await toast.present();
+      
+      this.cdr.detectChanges();
+    } catch (error) {
+      console.error('Error al confirmar recepción en la base de datos:', error);
     }
   }
 }

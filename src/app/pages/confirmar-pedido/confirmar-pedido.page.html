@@ -74,6 +74,16 @@
               Confirmar
             </ion-button>
           </div>
+          <div class="botones-accion" *ngIf="pedido.estado === 'listo_para_entregar'">
+            <ion-button
+              class="btn-confirmar"
+              style="width: 100%;"
+              [disabled]="confirmandoId === pedido.id"
+              (click)="entregarPedido(pedido)">
+              <ion-icon name="restaurant-outline" slot="start"></ion-icon>
+              Entregar Pedido
+            </ion-button>
+          </div>
         </div>
 
       </div>

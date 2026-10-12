@@ -339,26 +339,50 @@
               </div>
             </a>
           } @else {
-            <a class="ahora-card" [routerLink]="clienteVinculadoAMesa ? '/pedido' : null" (click)="!clienteVinculadoAMesa && accionBotonQR()">
+            <!-- Tarjeta Principal del Cliente -->
+            <a class="ahora-card" [routerLink]="clienteVinculadoAMesa && !clienteRecibioPedido ? '/pedido' : null" (click)="!clienteVinculadoAMesa && accionBotonQR()">
               <div class="ahora-top">
                 <span class="ahora-pill-tag">MI PEDIDO</span>
-                <span class="timer-badge">{{ tiempoEstimadoCliente }}m</span>
+                @if (tiempoEstimadoCliente > 0) {
+                  <span class="timer-badge">{{ tiempoEstimadoCliente }}m</span>
+                }
               </div>
               <div>
-                <h4>{{ estadoPedidoCliente === 'listo_para_entregar' ? '¡Tu pedido está listo!' : estadoPedidoCliente }}</h4>
-                <p>{{ clienteVinculadoAMesa ? 'Tocá para ver o editar tu pedido' : 'Escaneá el QR para habilitar tu mesa' }}</p>
+                <h4>{{ estadoPedidoCliente }}</h4>
+                @if (!clienteRecibioPedido) {
+                  <p>{{ clienteVinculadoAMesa ? 'Tocá para ver o editar tu pedido' : 'Escaneá el QR para habilitar tu mesa' }}</p>
+                } @else {
+                  <p>¡Buen provecho!</p>
+                }
               </div>
             </a>
 
+            <!-- BOTÓN DE CONFIRMACIÓN DE RECEPCIÓN (Punto 19) -->
+            @if (pedidoEntregadoPorMozo) {
+              <ion-button 
+                  expand="block" 
+                  color="success" 
+                  style="grid-column: 1 / -1; margin-bottom: 10px;"
+                  (click)="confirmarRecepcion()">
+                  <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
+                  ¡Confirmar que recibí mi pedido!
+              </ion-button>
+            }
+
+            <!-- ACCESO A JUEGOS (Bloqueado hasta recibir pedido) -->
             @if (esClienteRegistrado && clienteConMesaAsignada) {
-            <a class="ahora-card" routerLink="/juegos">
+            <a class="ahora-card" [routerLink]="clienteRecibioPedido ? '/juegos' : null" [style.opacity]="clienteRecibioPedido ? '1' : '0.5'">
               <div class="ahora-top">
                 <ion-icon name="game-controller-outline" class="juegos-icon" aria-hidden="true"></ion-icon>
                 <span class="timer-badge">3 JUEGOS</span>
               </div>
               <div>
                 <h4>Jugá con Cepa</h4>
-                <p>Ganá y obtené descuentos</p>
+                @if (clienteRecibioPedido) {
+                  <p>Ganá y obtené descuentos</p>
+                } @else {
+                  <p style="color: #ff9800; font-size: 11px;">🔒 Se habilita al recibir la comida</p>
+                }
               </div>
             </a>
             } @else {
@@ -373,7 +397,41 @@
               </div>
             </a>
             }
+
+            <!-- ACCESO A ENCUESTAS (Bloqueado hasta recibir pedido) -->
+            <a class="ahora-card" [routerLink]="clienteRecibioPedido ? '/graficos-encuestas' : null" [style.opacity]="clienteRecibioPedido ? '1' : '0.5'">
+              <div class="ahora-top">
+                <ion-icon name="pie-chart-outline" class="juegos-icon" aria-hidden="true"></ion-icon>
+                <span class="timer-badge">OPINIÓN</span>
+              </div>
+              <div>
+                <h4>Encuesta</h4>
+                @if (clienteRecibioPedido) {
+                  <p>Dejanos tu comentario</p>
+                } @else {
+                  <p style="color: #ff9800; font-size: 11px;">🔒 Se habilita al recibir la comida</p>
+                }
+              </div>
+            </a>
+            
+            <!-- ACCESO A PEDIR CUENTA (Bloqueado hasta recibir pedido) -->
+            <a class="ahora-card" [routerLink]="clienteRecibioPedido ? '/cuenta' : null" [style.opacity]="clienteRecibioPedido ? '1' : '0.5'">
+              <div class="ahora-top">
+                <ion-icon name="cash-outline" class="juegos-icon" aria-hidden="true"></ion-icon>
+                <span class="timer-badge">PAGAR</span>
+              </div>
+              <div>
+                <h4>Pedir la Cuenta</h4>
+                @if (clienteRecibioPedido) {
+                  <p>Pagar y dejar propina</p>
+                } @else {
+                  <p style="color: #ff9800; font-size: 11px;">🔒 Se habilita al recibir la comida</p>
+                }
+              </div>
+            </a>
+
           }
+          
         </div>
       </section>
 

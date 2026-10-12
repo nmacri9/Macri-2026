@@ -142,4 +142,30 @@ export class PedidosService {
             console.warn('Falló la notificación push:', err);
         }
     }
+
+    async entregarPedido(pedidoId: string, clienteId: string): Promise<void> {
+        const { error } = await this.supabase
+            .from('pedidos')
+            .update({ estado: 'entregado' })
+            .eq('id', pedidoId);
+
+        if (error) throw error;
+
+        // Avisamos al cliente para que confirme la recepción
+        await this.enviarNotificacion(
+            `cliente_${clienteId}`, 
+            '¡Tu pedido llegó a la mesa! 🍽️', 
+            'Por favor, confirmá la recepción en la app para habilitar los juegos y encuestas.'
+        );
+    }
+
+    // El cliente confirma que recibió la comida (esto desbloquea las acciones en el Home)
+    async confirmarRecepcionCliente(pedidoId: string): Promise<void> {
+        const { error } = await this.supabase
+            .from('pedidos')
+            .update({ estado: 'recibido' })
+            .eq('id', pedidoId);
+
+        if (error) throw error;
+    }
 }

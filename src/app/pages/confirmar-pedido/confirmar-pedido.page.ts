@@ -212,4 +212,41 @@ export class ConfirmarPedidoPage implements OnInit, OnDestroy {
       this.cdr.detectChanges();
     }
   }
+
+  async entregarPedido(pedido: PedidoPendiente) {
+    const modal = await this.modalCtrl.create({
+      component: ConfirmModalComponent,
+      componentProps: { mensaje: `¿Confirmar entrega en la Mesa ${pedido.mesa_id}?` },
+      cssClass: 'modal-alerta'
+    });
+
+    await modal.present();
+    const { data: confirmado } = await modal.onDidDismiss();
+    if (!confirmado) return;
+
+    this.confirmandoId = pedido.id;
+    this.cdr.detectChanges();
+
+    try {
+      await this.pedidosService.entregarPedido(pedido.id, pedido.cliente_id);
+
+      // Como la app escucha en tiempo real, el pedido desaparecerá o cambiará de estado automáticamente.
+      const toast = await this.toastCtrl.create({
+        message: `Pedido de Mesa ${pedido.mesa_id} entregado al cliente.`,
+        duration: 2500,
+        position: 'middle',
+        color: 'success',
+        icon: 'checkmark-circle-outline'
+      });
+      await toast.present();
+
+    } catch (error: any) {
+      console.error('Error al entregar pedido:', error);
+      await Haptics.impact({ style: ImpactStyle.Heavy });
+      this.errorMsg = 'No se pudo registrar la entrega.';
+    } finally {
+      this.confirmandoId = null;
+      this.cdr.detectChanges();
+    }
+  }
 }

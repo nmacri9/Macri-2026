@@ -22,6 +22,8 @@ interface PedidoPendiente {
   tiempo_estimado: number;
   estado: string;
   created_at?: string;
+  estado_cocina?: string; 
+  estado_bar?: string;
 }
 
 @Component({
@@ -77,14 +79,14 @@ export class ConfirmarPedidoPage implements OnInit, OnDestroy {
       const { data, error } = await this.supabase.getClient()
         .from('pedidos')
         .select('*')
-        .eq('estado', 'pendiente_confirmacion')
+        .in('estado', ['pendiente_confirmacion', 'confirmado', 'en_preparacion', 'listo_para_entregar'])
         .order('created_at', { ascending: true });
 
       if (error) throw error;
       this.pedidos = data ?? [];
 
     } catch (error: any) {
-      console.error('Error al cargar pedidos pendientes:', error);
+      console.error('Error al cargar pedidos:', error);
       this.errorMsg = 'No se pudieron cargar los pedidos.';
     } finally {
       this.cargando = false;

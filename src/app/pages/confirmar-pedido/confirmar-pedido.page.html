@@ -6,7 +6,7 @@
 
     <div class="lista-empty" *ngIf="pedidos.length === 0">
       <ion-icon name="restaurant-outline"></ion-icon>
-      <p>No hay pedidos pendientes por ahora.</p>
+      <p>No hay pedidos pendientes ni en curso por ahora.</p>
     </div>
 
     <div class="form-error" *ngIf="errorMsg">
@@ -31,11 +31,33 @@
           </li>
         </ul>
 
+        <!-- BLOQUE DE ESTADOS ACTIVOS -->
+        <div *ngIf="pedido.estado !== 'pendiente_confirmacion'" class="seccion-estado-activo">
+          
+          <div class="estados-grid">
+            <div class="estado-box" *ngIf="pedido.estado_cocina && pedido.estado_cocina !== 'no_aplica'" [class.listo]="pedido.estado_cocina === 'listo'">
+              <span class="box-label">Cocina</span>
+              <span class="box-value">{{ pedido.estado_cocina === 'listo' ? '✅ Listo' : '⏳ Preparando' }}</span>
+            </div>
+
+            <div class="estado-box" *ngIf="pedido.estado_bar && pedido.estado_bar !== 'no_aplica'" [class.listo]="pedido.estado_bar === 'listo'">
+              <span class="box-label">Barra</span>
+              <span class="box-value">{{ pedido.estado_bar === 'listo' ? '✅ Listo' : '⏳ Preparando' }}</span>
+            </div>
+          </div>
+
+          <div class="estado-banner" [class.listo-servir]="pedido.estado === 'listo_para_entregar'">
+            <ion-icon [name]="pedido.estado === 'listo_para_entregar' ? 'rocket-outline' : 'flame-outline'"></ion-icon>
+            <span>{{ pedido.estado === 'listo_para_entregar' ? '¡Listo para servir a la mesa!' : 'En preparación' }}</span>
+          </div>
+
+        </div>
+
         <div class="pedido-card-footer">
           <span class="pedido-total">Total: ${{ pedido.total }}</span>
           
-          <!-- Contenedor con clase formal para los dos botones -->
-          <div class="botones-accion">
+          <!-- BOTONES DE ACCIÓN: Solo si está pendiente -->
+          <div class="botones-accion" *ngIf="pedido.estado === 'pendiente_confirmacion'">
             <ion-button
               class="btn-rechazar"
               [disabled]="confirmandoId === pedido.id"

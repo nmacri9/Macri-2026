@@ -121,7 +121,7 @@
           } @else if (puedeCargarPlatos || puedeCargarBebidas) {
             En Preparación: {{ comandasActivasCount }}
           } @else {
-            {{ estadoPedidoCliente }}
+            {{ estadoPedidoCliente === 'listo_para_entregar' ? '¡Tu pedido está listo!' : estadoPedidoCliente }}
           }
         </h2>
 
@@ -345,7 +345,7 @@
                 <span class="timer-badge">{{ tiempoEstimadoCliente }}m</span>
               </div>
               <div>
-                <h4>{{ estadoPedidoCliente }}</h4>
+                <h4>{{ estadoPedidoCliente === 'listo_para_entregar' ? '¡Tu pedido está listo!' : estadoPedidoCliente }}</h4>
                 <p>{{ clienteVinculadoAMesa ? 'Tocá para ver o editar tu pedido' : 'Escaneá el QR para habilitar tu mesa' }}</p>
               </div>
             </a>

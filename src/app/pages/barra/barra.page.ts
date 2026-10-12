@@ -9,6 +9,7 @@ import { addIcons } from 'ionicons';
 import { checkmarkCircleOutline } from 'ionicons/icons';
 import { FCM } from '@capacitor-community/fcm';
 import { SupabaseService } from '../../services/supabase.service';
+import { PedidosService } from '../../services/pedidos.service'; 
 
 import { CepaHeaderComponent } from '../../shared/components/cepa-header/cepa-header.component';
 import { CepaSpinnerComponent } from '../../shared/components/cepa-spinner/cepa-spinner.component';
@@ -34,6 +35,7 @@ export class BarraPage implements OnInit, OnDestroy {
 
   constructor(
     private supabase: SupabaseService,
+    private pedidosService: PedidosService, 
     private cdr: ChangeDetectorRef,
     private modalCtrl: ModalController 
   ) {
@@ -71,6 +73,8 @@ export class BarraPage implements OnInit, OnDestroy {
         .order('created_at', { ascending: true });
 
       if (error) throw error;
+      
+
       this.procesarYFiltrar(data || []);
     } catch (error) {
       console.error('Error al cargar pedidos de barra:', error);
@@ -82,13 +86,15 @@ export class BarraPage implements OnInit, OnDestroy {
 
   procesarYFiltrar(pedidosDB: any[]) {
     const pedidosFiltrados = pedidosDB.map(pedido => {
+      console.log('Evaluando items del pedido:', pedido.items);
       return {
         ...pedido,
-        // Filtramos para que el cantinero solo vea bebidas
-        items: pedido.items.filter((item: any) => item.tipo === 'BEBIDA')
+        items: (pedido.items || []).filter((item: any) => {
+          console.log('   -> Tipo de item:', item.tipo);
+          return item.tipo === 'BEBIDA';
+        })
       };
     });
-    // Solo mostramos pedidos que tengan al menos 1 bebida
     this.pedidosBarra = pedidosFiltrados.filter(pedido => pedido.items.length > 0);
     this.cdr.detectChanges();
   }
@@ -128,13 +134,11 @@ export class BarraPage implements OnInit, OnDestroy {
     this.cargando = true; 
     this.cdr.detectChanges();
     try {
-      const { error } = await this.supabase.getClient()
-        .from('pedidos')
-        .update({ estado_bar: 'listo' })
-        .eq('id', pedidoId);
-
-      if (error) throw error;
+      await this.pedidosService.marcarSectorListo(pedidoId, 'bar'); 
       console.log(`¡Bebidas del pedido ${pedidoId} despachadas!`);
+      
+      await this.cargarPedidos(); 
+
     } catch (error) {
       console.error('Error al actualizar pedido:', error);
     } finally {

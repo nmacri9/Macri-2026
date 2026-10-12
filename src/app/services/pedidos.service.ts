@@ -91,4 +91,55 @@ export class PedidosService {
         console.warn('Falló la notificación push a los sectores:', err);
         }
     }
+
+    async marcarSectorListo(pedidoId: string, sector: 'cocina' | 'bar'): Promise<void> {
+        const campoSector = sector === 'cocina' ? 'estado_cocina' : 'estado_bar';
+
+        const { data, error: errorUpdate } = await this.supabase
+            .from('pedidos')
+            .update({ [campoSector]: 'listo' })
+            .eq('id', pedidoId)
+            .select();
+
+        console.log('Resultado del update en Supabase:', { data, errorUpdate });
+
+        if (errorUpdate) throw errorUpdate;
+        
+        if (!data || data.length === 0) {
+            throw new Error(`El pedido ${pedidoId} no se pudo actualizar. ¿Las políticas RLS de Supabase están bloqueando la escritura?`);
+        }
+
+        const { data: pedido, error: errorSelect } = await this.supabase
+            .from('pedidos')
+            .select('estado_cocina, estado_bar, cliente_id, mesa_id')
+            .eq('id', pedidoId)
+            .single();
+
+        if (errorSelect || !pedido) throw errorSelect;
+
+        const cocinaOk = pedido.estado_cocina === 'listo' || pedido.estado_cocina === 'no_aplica';
+        const barOk = pedido.estado_bar === 'listo' || pedido.estado_bar === 'no_aplica';
+
+        if (cocinaOk && barOk) {
+            const { error: errorFinal } = await this.supabase
+                .from('pedidos')
+                .update({ estado: 'listo_para_entregar' })
+                .eq('id', pedidoId);
+
+            if (errorFinal) throw errorFinal;
+
+            await this.enviarNotificacion('mozos', '¡Pedido Completo!', `La mesa ${pedido.mesa_id} está lista para servir.`);
+            await this.enviarNotificacion(`cliente_${pedido.cliente_id}`, '¡Tu pedido está listo!', 'El mozo lo está llevando a tu mesa.');
+        }
+    }
+
+    private async enviarNotificacion(topic: string, titulo: string, cuerpo: string): Promise<void> {
+        try {
+            await this.supabase.functions.invoke('enviar-notificacion', {
+                body: { topic, titulo, cuerpo }
+            });
+        } catch (err) {
+            console.warn('Falló la notificación push:', err);
+        }
+    }
 }

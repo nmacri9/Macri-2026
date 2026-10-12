@@ -13,6 +13,7 @@ import { SupabaseService } from '../../services/supabase.service';
 import { CepaHeaderComponent } from '../../shared/components/cepa-header/cepa-header.component';
 import { CepaSpinnerComponent } from '../../shared/components/cepa-spinner/cepa-spinner.component';
 import { ConfirmModalComponent } from '../../shared/confirm-modal/confirm-modal.component';
+import { PedidosService } from '../../services/pedidos.service';
 
 @Component({
   selector: 'app-cocina',
@@ -35,7 +36,8 @@ export class CocinaPage implements OnInit, OnDestroy {
   constructor(
     private supabase: SupabaseService,
     private cdr: ChangeDetectorRef,
-    private modalCtrl: ModalController 
+    private modalCtrl: ModalController,
+    private pedidosService: PedidosService
   ) {
     addIcons({ checkmarkCircleOutline });
   }
@@ -127,15 +129,13 @@ export class CocinaPage implements OnInit, OnDestroy {
     this.cargando = true; 
     this.cdr.detectChanges();
     try {
-      const { error } = await this.supabase.getClient()
-        .from('pedidos')
-        .update({ estado_cocina: 'listo' })
-        .eq('id', pedidoId);
-
-      if (error) throw error;
+      await this.pedidosService.marcarSectorListo(pedidoId, 'cocina');
       console.log(`¡Pedido ${pedidoId} despachado!`);
+      
+      await this.cargarPedidos(); 
+
     } catch (error) {
-      console.error('Error al actualizar pedido:', error);
+      console.error(' Error al actualizar pedido:', error);
     } finally {
       this.cargando = false; 
       this.cdr.detectChanges();

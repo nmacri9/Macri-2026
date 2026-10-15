@@ -1,0 +1,165 @@
+<app-cepa-header [titulo]="'Encuesta de Satisfacción'" [defaultHref]="'/home'"></app-cepa-header>
+
+<ion-content class="encuesta-content">
+  <app-cepa-spinner *ngIf="cargando" [texto]="textoSpinner"></app-cepa-spinner>
+
+  <main class="encuesta-wrapper" *ngIf="!cargando">
+
+    <!-- BLOQUEO 1: Si todavia no confirmo la recepción del pedido (Punto 19) -->
+    @if (sinPedidoRecibido) {
+      <section class="estado-card">
+        <div class="icono-circulo">
+          <ion-icon name="lock-closed-outline"></ion-icon>
+        </div>
+        <h2>Encuesta bloqueada</h2>
+        <p>Debés recibir tu pedido y confirmar su recepción en la mesa antes de completar la encuesta de tu estadía.</p>
+        <ion-button expand="block" class="btn-principal" routerLink="/home">
+          Volver al inicio
+        </ion-button>
+      </section>
+    }
+
+    <!-- BLOQUEO 2: Si ya respondio la encuesta en esta estadia (1 vez por estadia) -->
+    @else if (yaRespondio) {
+      <section class="estado-card">
+        <div class="icono-circulo exito">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+        </div>
+        <h2>¡Encuesta completada!</h2>
+        <p>Ya registraste tu opinión durante esta estadía. Solo se permite una encuesta por visita.</p>
+
+        <ion-button expand="block" class="btn-principal" routerLink="/graficos-encuestas">
+          <ion-icon name="bar-chart-outline" slot="start"></ion-icon>
+          Ver Gráficos de Resultados
+        </ion-button>
+
+        <ion-button expand="block" fill="outline" class="btn-secundario" routerLink="/home">
+          Volver al menú principal
+        </ion-button>
+      </section>
+    }
+
+    <!-- FORMULARIO ACTIVO CON 5 CONTROLES DISTINTOS -->
+    @else {
+      <form class="formulario-grid" (ngSubmit)="validarYConfirmar()">
+
+        <!-- CONTROL 1: Range (Calidad de comida) -->
+        <section class="control-card">
+          <div class="card-header">
+            <ion-icon name="star-outline"></ion-icon>
+            <h3>1. Calidad de la gastronomía</h3>
+            <span class="valor-destacado">{{ calidadComida }}/10</span>
+          </div>
+          <ion-range
+            [(ngModel)]="calidadComida"
+            name="calidadComida"
+            [min]="1"
+            [max]="10"
+            [step]="1"
+            [snaps]="true"
+            [ticks]="true">
+          </ion-range>
+          <div class="range-labels">
+            <small>1 (Mala)</small>
+            <small>10 (Excelente)</small>
+          </div>
+        </section>
+
+        <!-- CONTROL 2: Radio Group (Permite deseleccionar al volver a tocar) -->
+        <section class="control-card">
+          <div class="card-header">
+            <ion-icon name="happy-outline"></ion-icon>
+            <h3>2. Atención del mozo</h3>
+          </div>
+          <ion-radio-group [value]="atencionMozo" [allowEmptySelection]="true" class="radio-grid">
+            <div class="radio-opcion" [class.activa]="atencionMozo === 'Excelente'" (click)="toggleAtencion('Excelente')">
+              <ion-radio value="Excelente" style="pointer-events: none;"></ion-radio>
+              <span>Excelente</span>
+            </div>
+            <div class="radio-opcion" [class.activa]="atencionMozo === 'Buena'" (click)="toggleAtencion('Buena')">
+              <ion-radio value="Buena" style="pointer-events: none;"></ion-radio>
+              <span>Buena</span>
+            </div>
+            <div class="radio-opcion" [class.activa]="atencionMozo === 'Regular'" (click)="toggleAtencion('Regular')">
+              <ion-radio value="Regular" style="pointer-events: none;"></ion-radio>
+              <span>Regular</span>
+            </div>
+            <div class="radio-opcion" [class.activa]="atencionMozo === 'Mala'" (click)="toggleAtencion('Mala')">
+              <ion-radio value="Mala" style="pointer-events: none;"></ion-radio>
+              <span>Mala</span>
+            </div>
+          </ion-radio-group>
+        </section>
+
+        <!-- CONTROL 3: Select desplegable con diseño acorde a Cepa -->
+        <section class="control-card">
+          <div class="card-header">
+            <ion-icon name="time-outline"></ion-icon>
+            <h3>3. Tiempo de espera del pedido</h3>
+          </div>
+          <ion-select
+            [(ngModel)]="tiempoEspera"
+            name="tiempoEspera"
+            interface="popover"
+            [interfaceOptions]="selectOptions"
+            placeholder="Seleccioná una opción"
+            class="cepa-select">
+            <ion-select-option value="Rápido">Rápido (menos de lo esperado)</ion-select-option>
+            <ion-select-option value="Adecuado">Adecuado (en tiempo normal)</ion-select-option>
+            <ion-select-option value="Lento">Lento (demoró más de la cuenta)</ion-select-option>
+          </ion-select>
+        </section>
+
+        <!-- CONTROL 4: Checkboxes multiples (Aspectos destacados) -->
+        <section class="control-card">
+          <div class="card-header">
+            <ion-icon name="sparkles-outline"></ion-icon>
+            <h3>4. ¿Qué destacás de Cepa?</h3>
+          </div>
+          <div class="checkbox-grid">
+            @for (item of aspectos; track item.nombre) {
+              <label class="check-opcion" [class.activa]="item.seleccionado">
+                <ion-checkbox [(ngModel)]="item.seleccionado" [name]="'chk_' + item.nombre"></ion-checkbox>
+                <span>{{ item.nombre }}</span>
+              </label>
+            }
+          </div>
+        </section>
+
+        <!-- CONTROL 5: Toggle + Textarea (Recomendacion y Comentario) -->
+        <section class="control-card">
+          <div class="toggle-row">
+            <div>
+              <h3>5. ¿Nos recomendarías?</h3>
+              <small>{{ recomendaria ? 'Sí, volvería y lo recomiendo' : 'No por el momento' }}</small>
+            </div>
+            <ion-toggle [(ngModel)]="recomendaria" name="recomendaria"></ion-toggle>
+          </div>
+
+          <ion-textarea
+            [(ngModel)]="comentario"
+            name="comentario"
+            rows="3"
+            maxlength="200"
+            placeholder="Dejanos tu comentario sobre la experiencia..."
+            class="cepa-textarea">
+          </ion-textarea>
+        </section>
+
+        <div class="acciones-footer">
+          <ion-button type="submit" expand="block" class="btn-principal">
+            <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+            Enviar Encuesta
+          </ion-button>
+
+          <ion-button expand="block" fill="outline" class="btn-secundario" routerLink="/graficos-encuestas">
+            <ion-icon name="bar-chart-outline" slot="start"></ion-icon>
+            Ver Estadísticas Globales
+          </ion-button>
+        </div>
+
+      </form>
+    }
+
+  </main>
+</ion-content>

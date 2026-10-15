@@ -19,7 +19,11 @@ export const routes: Routes = [
         (m) => m.ChatClientePage
       ),
     canActivate: [roleGuard, mesaGuard],
-    data: { roles: ['MOZO', 'CLIENTE_REGISTRADO', 'CLIENTE_ANONIMO'], permitirMozo: true, requiereEscaneo: false },
+    data: {
+      roles: ['MOZO', 'CLIENTE_REGISTRADO', 'CLIENTE_ANONIMO'],
+      permitirMozo: true,
+      requiereEscaneo: false,
+    },
   },
   {
     path: 'register',
@@ -35,7 +39,8 @@ export const routes: Routes = [
   },
   {
     path: 'juegos',
-    loadComponent: () => import('./pages/juegos/juegos.page').then((m) => m.JuegosPage),
+    loadComponent: () =>
+      import('./pages/juegos/juegos.page').then((m) => m.JuegosPage),
     canActivate: [roleGuard, mesaGuard],
     data: { roles: ['CLIENTE_REGISTRADO'], requiereEscaneo: false },
   },
@@ -160,5 +165,17 @@ export const routes: Routes = [
     path: 'barra',
     loadComponent: () =>
       import('./pages/barra/barra.page').then((m) => m.BarraPage),
+  },
+  {
+    path: 'encuesta',
+    loadComponent: () =>
+      import('./pages/encuesta/encuesta.page').then((m) => m.EncuestaPage),
+  },
+  {
+    path: 'graficos-encuestas',
+    loadComponent: () =>
+      import('./pages/graficos-encuestas/graficos-encuestas.page').then(
+        (m) => m.GraficosEncuestasPage
+      ),
   },
 ];

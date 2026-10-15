@@ -282,3 +282,35 @@
   align-items: center;
   justify-content: center;
 }
+
+ion-popover.cepa-select-overlay {
+  --background: #1B3B2D;
+  --color: #E6D5C3;
+  --box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
+
+  &::part(content) {
+    background: #1B3B2D;
+    border: 1px solid #C8B29E;
+    border-radius: 14px;
+    padding: 4px;
+  }
+
+  ion-list {
+    background: #1B3B2D !important;
+    padding: 0;
+  }
+
+  ion-item {
+    --background: #1B3B2D;
+    --color: #E6D5C3;
+    --border-color: rgba(200, 178, 158, 0.2);
+    --ripple-color: #C8B29E;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+  }
+
+  ion-radio {
+    --color: #C8B29E;
+    --color-checked: #E6D5C3;
+  }
+}

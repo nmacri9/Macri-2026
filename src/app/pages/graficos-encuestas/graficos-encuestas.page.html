@@ -1,0 +1,82 @@
+<app-cepa-header [titulo]="'Resultados de Encuestas'" [defaultHref]="'/home'"></app-cepa-header>
+
+<ion-content class="graficos-content">
+  <app-cepa-spinner *ngIf="cargando" [texto]="'Procesando estadísticas...'"></app-cepa-spinner>
+
+  <main class="graficos-screen" *ngIf="!cargando">
+
+    <!-- 1. Indicadores superiores  -->
+    <section class="kpis-grid">
+      <div class="kpi-box">
+        <span class="kpi-valor">{{ totalEncuestas }}</span>
+        <span class="kpi-label">Opiniones</span>
+      </div>
+      <div class="kpi-box">
+        <span class="kpi-valor">{{ promedioComida }}/10</span>
+        <span class="kpi-label">Calidad Comida</span>
+      </div>
+      <div class="kpi-box">
+        <span class="kpi-valor">{{ porcentajeRecomienda }}%</span>
+        <span class="kpi-label">Recomiendan</span>
+      </div>
+    </section>
+
+    <!-- 2. Selector de Pantalla (1 Grafico por Pantalla) -->
+    <nav class="selector-pantallas">
+      <button type="button" [class.activo]="pantallaActual === 0" (click)="cambiarPantalla(0)">
+        <ion-icon name="pie-chart-outline"></ion-icon>
+        <span>1. Torta</span>
+      </button>
+      <button type="button" [class.activo]="pantallaActual === 1" (click)="cambiarPantalla(1)">
+        <ion-icon name="bar-chart-outline"></ion-icon>
+        <span>2. Barras</span>
+      </button>
+      <button type="button" [class.activo]="pantallaActual === 2" (click)="cambiarPantalla(2)">
+        <ion-icon name="trending-up-outline"></ion-icon>
+        <span>3. Lineal</span>
+      </button>
+    </nav>
+
+    <!-- 3. Tarjeta Central del unico Grafico en Pantalla -->
+    <section class="grafico-card">
+      <header class="grafico-header">
+        <span class="paso-badge">Pantalla {{ pantallaActual + 1 }} de 3</span>
+        @if (pantallaActual === 0) {
+          <h2>Atención del Personal</h2>
+          <p>Distribución porcentual de calificaciones a los mozos (Gráfico de Torta)</p>
+        } @else if (pantallaActual === 1) {
+          <h2>Aspectos Más Valorados</h2>
+          <p>Comparativa de puntos fuertes elegidos por los comensales (Gráfico de Barras)</p>
+        } @else {
+          <h2>Evolución Gastronómica</h2>
+          <p>Tendencia histórica de puntajes de nuestros platos (Gráfico Lineal)</p>
+        }
+      </header>
+
+      <div class="canvas-wrapper">
+        <canvas #chartCanvas></canvas>
+      </div>
+    </section>
+
+    <!-- 4. Botonera inferior grande de cambio de pantalla -->
+    <footer class="navegacion-footer">
+      <ion-button
+        class="btn-nav"
+        fill="outline"
+        [disabled]="pantallaActual === 0"
+        (click)="cambiarPantalla(pantallaActual - 1)">
+        <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+        Anterior
+      </ion-button>
+
+      <ion-button
+        class="btn-nav btn-siguiente"
+        [disabled]="pantallaActual === 2"
+        (click)="cambiarPantalla(pantallaActual + 1)">
+        Siguiente
+        <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+      </ion-button>
+    </footer>
+
+  </main>
+</ion-content>

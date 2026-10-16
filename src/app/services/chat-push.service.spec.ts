@@ -75,4 +75,15 @@ describe('Suscripciones push del chat', () => {
     expect(getSession).not.toHaveBeenCalled();
     expect(mocks.subscribeTo).not.toHaveBeenCalled();
   });
+
+  it.each([['DUENO', 'duenos'], ['SUPERVISOR', 'supervisores']])('suscribe %s a pagos y limpia al salir', async (rol, topic) => {
+    obtenerPerfil.mockResolvedValue({ id: 'mozo', rol, estado: 'ACTIVO' });
+    const service = crear();
+    service.activar();
+    await service.actualizar();
+    expect(mocks.subscribeTo).toHaveBeenCalledWith({ topic });
+    getSession.mockResolvedValue({ data: { session: null } });
+    await service.actualizar();
+    expect(mocks.unsubscribeFrom).toHaveBeenCalledWith({ topic });
+  });
 });

@@ -1,0 +1,77 @@
+<ion-content class="cuenta-content">
+  <main>
+    <nav aria-label="Navegación de la cuenta">
+      <a routerLink="/home"><ion-icon name="arrow-back-outline" aria-hidden="true" /> Volver</a>
+      <span>CEPA <span class="marca-detalle">/ Tu cuenta</span></span>
+    </nav>
+
+    @if (cargando) {
+      <section class="mensaje" role="status"><ion-spinner /><p>Consultando tu cuenta…</p></section>
+    } @else {
+      @if (error) {
+        <div class="error" role="alert">{{ error }}</div>
+        @if (!disponible) { <ion-button expand="block" (click)="cargar()">Volver a consultar</ion-button> }
+      }
+      @if (disponible && !cuenta) {
+        <section class="mensaje">
+          <ion-icon name="receipt-outline" class="icono-principal" aria-hidden="true" />
+          <h1>¿Pedimos la cuenta?</h1>
+          <p>Le avisamos al mozo. Después, escaneá el QR de la propina para ver el detalle y pagar.</p>
+          <ion-button expand="block" [disabled]="procesando" (click)="solicitar()">{{ procesando ? 'Solicitando…' : 'Solicitar cuenta' }}</ion-button>
+        </section>
+      }
+      @if (cuenta; as ticket) {
+        @if (ticket.estado === 'solicitada') {
+          <section class="mensaje">
+            <span class="etiqueta">Mesa {{ ticket.mesa_id }} · Solicitud registrada</span>
+            <ion-icon name="qr-code-outline" class="icono-principal" aria-hidden="true" />
+            <h1>Tu propina, con QR</h1>
+            <p>Escaneá el código del porcentaje que querés dejar. También necesitás leer el QR si elegís 0%.</p>
+            <p class="aclaracion">El ticket se habilita después de la lectura.</p>
+            <ion-button expand="block" [disabled]="procesando || !esNativo" (click)="escanear()">{{ procesando ? 'Leyendo…' : 'Escanear QR de propina' }}</ion-button>
+            @if (!esNativo) { <p class="aclaracion">Continuá desde la app del celular para usar la cámara.</p> }
+          </section>
+        } @else {
+          <header class="resumen" [class.pagada]="ticket.estado === 'pagada' || ticket.estado === 'confirmada'">
+            @if (ticket.estado === 'pagada' || ticket.estado === 'confirmada') { <ion-icon name="checkmark-circle" aria-hidden="true" /> }
+            <p>{{ ticket.estado === 'confirmada' ? 'Pago confirmado · Cuenta cerrada' : ticket.estado === 'pagada' ? 'Pago simulado realizado' : 'Total a pagar' }}</p>
+            <h1>{{ ticket.total | currency:'ARS':'symbol-narrow':'1.2-2' }}</h1>
+            <span>CEPA · Mesa {{ ticket.mesa_id }}</span>
+          </header>
+          <section class="ticket" aria-label="Detalle de la cuenta">
+            <h2>Detalle de tu consumo</h2>
+            @for (item of ticket.items; track $index) {
+              <div class="linea producto"><div><strong>{{ item.nombre }}</strong><small>{{ item.cantidad }} × {{ item.precio | currency:'ARS':'symbol-narrow':'1.2-2' }}</small></div><span>{{ item.cantidad * item.precio | currency:'ARS':'symbol-narrow':'1.2-2' }}</span></div>
+            }
+            <div class="importes">
+              <div class="linea"><span>Subtotal</span><span>{{ ticket.subtotal | currency:'ARS':'symbol-narrow':'1.2-2' }}</span></div>
+              @if (ticket.descuento_porcentaje > 0) {
+                <div class="linea descuento"><span>Descuento de juegos ({{ ticket.descuento_porcentaje }}%)</span><span>−{{ ticket.descuento | currency:'ARS':'symbol-narrow':'1.2-2' }}</span></div>
+              }
+              <div class="linea"><span>Propina ({{ ticket.propina_porcentaje }}%)<small>{{ satisfaccion[ticket.propina_porcentaje ?? 0] }}</small></span><span>{{ ticket.propina | currency:'ARS':'symbol-narrow':'1.2-2' }}</span></div>
+              <div class="linea total"><strong>Total</strong><strong>{{ ticket.total | currency:'ARS':'symbol-narrow':'1.2-2' }}</strong></div>
+            </div>
+            <p class="aclaracion">Propina calculada sobre el consumo con descuento.</p>
+            @if (ticket.pagada_en) {
+              <p class="aclaracion">{{ ticket.pagada_en | date:'dd/MM/yyyy HH:mm' }} · Operación {{ ticket.id }}</p>
+            }
+          </section>
+          @if (ticket.estado === 'lista') {
+            <ion-button expand="block" [disabled]="procesando" (click)="pagar()">{{ procesando ? 'Procesando…' : 'Confirmar pago simulado' }}</ion-button>
+            <ion-button expand="block" fill="clear" [disabled]="procesando || !esNativo" (click)="escanear()">Cambiar propina con otro QR</ion-button>
+            <p class="aclaracion centrada">Es una simulación. No se debita dinero.</p>
+          } @else if (ticket.estado === 'pagada') {
+            <aside class="aviso" role="status"><strong>Esperando la confirmación del mozo</strong><p>Tu pago simulado está registrado. La mesa sigue asignada hasta que el mozo lo confirme.</p></aside>
+            <ion-button expand="block" fill="clear" [disabled]="procesando" (click)="cargar()">Actualizar estado</ion-button>
+          } @else {
+            <p class="centrada">Gracias por compartir tu mesa con nosotros.</p>
+            <ion-button expand="block" routerLink="/home">Volver al inicio</ion-button>
+          }
+        }
+        @if (avisosPendientes) {
+          <aside class="aviso" role="status"><p>{{ ticket.estado === 'pagada' ? 'Tu pago está registrado.' : 'Tu solicitud está registrada.' }} Quedan avisos por enviar al personal.</p><ion-button fill="clear" [disabled]="procesando" (click)="reintentarAvisos()">Reintentar avisos</ion-button></aside>
+        }
+      }
+    }
+  </main>
+</ion-content>

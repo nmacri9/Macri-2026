@@ -47,9 +47,10 @@ export class ChatPushService {
       const persona = await this.auth.obtenerPerfil();
       if (!persona || persona.id !== session.user.id) return;
       const habilitado = persona.rol === 'CLIENTE_REGISTRADO' ? persona.estado === 'APROBADO'
-        : ['MOZO', 'CLIENTE_ANONIMO'].includes(persona.rol) && persona.estado === 'ACTIVO';
+        : ['MOZO', 'CLIENTE_ANONIMO', 'DUENO', 'SUPERVISOR'].includes(persona.rol) && persona.estado === 'ACTIVO';
       if (!habilitado) return;
-      deseados = [persona.rol === 'MOZO' ? 'mozos' : `chat_cliente_${persona.id}`];
+      const topicsPersonal: Record<string, string> = { MOZO: 'mozos', DUENO: 'duenos', SUPERVISOR: 'supervisores' };
+      deseados = [topicsPersonal[persona.rol] ?? `chat_cliente_${persona.id}`];
     }
     for (const topic of deseados) {
       // También al reiniciar: FCM puede haber renovado el token del dispositivo.

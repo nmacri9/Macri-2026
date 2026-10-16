@@ -64,7 +64,9 @@
       <div class="mp-folder-tabs">
         @if (esCliente) {
           <button class="folder-tab active" type="button">MI MESA</button>
-          <button class="folder-tab" type="button" routerLink="/pedido">PEDIDO</button>
+          @if (puedeEditarPedidoCliente) {
+            <button class="folder-tab" type="button" routerLink="/pedido">PEDIDO</button>
+          }
           <button class="folder-tab" type="button" routerLink="/graficos-encuestas">ENCUESTAS</button>
         } @else {
           <button class="folder-tab active" type="button">PEDIDOS</button>
@@ -214,19 +216,25 @@
           }
 
           <!-- 6. CLIENTE (REGISTRADO Y ANÓNIMO) -->
-          @if (esCliente) {
+          @if (esCliente && estadoAsignacionConocido && !cargandoMesa) {
+            @if (!clienteConMesaAsignada) {
             <a class="action-pill" (click)="escanearQRIngreso()" style="cursor: pointer">
               <ion-icon name="qr-code-outline"></ion-icon>
               <span>Ingreso<br>al local</span>
             </a>
+            }
+            @if (clienteConMesaAsignada && !clienteVinculadoAMesa) {
             <a class="action-pill" (click)="verificarAccesoMesa()" style="cursor: pointer">
               <ion-icon name="grid-outline"></ion-icon>
               <span>Escanear<br>mesa</span>
             </a>
+            }
+            @if (puedeEditarPedidoCliente) {
             <a class="action-pill" routerLink="/pedido">
               <ion-icon name="cart-outline"></ion-icon>
-              <span>Hacer<br>pedido</span>
+              <span>{{ pedidoIdCliente ? 'Corregir' : 'Hacer' }}<br>pedido</span>
             </a>
+            }
             @if (puedeUsarChat) {
               <a class="action-pill" routerLink="/chat-cliente">
                 <ion-icon name="chatbubbles-outline"></ion-icon>
@@ -340,7 +348,7 @@
             </a>
           } @else {
             <!-- Tarjeta Principal del Cliente -->
-            <a class="ahora-card" [routerLink]="clienteVinculadoAMesa && !clienteRecibioPedido ? '/pedido' : null" (click)="!clienteVinculadoAMesa && accionBotonQR()">
+            <a class="ahora-card" [routerLink]="puedeEditarPedidoCliente ? '/pedido' : null" (click)="!clienteVinculadoAMesa && accionBotonQR()">
               <div class="ahora-top">
                 <span class="ahora-pill-tag">MI PEDIDO</span>
                 @if (tiempoEstimadoCliente > 0) {
@@ -349,10 +357,14 @@
               </div>
               <div>
                 <h4>{{ estadoPedidoCliente }}</h4>
-                @if (!clienteRecibioPedido) {
-                  <p>{{ clienteVinculadoAMesa ? 'Tocá para ver o editar tu pedido' : 'Escaneá el QR para habilitar tu mesa' }}</p>
-                } @else {
+                @if (clienteRecibioPedido) {
                   <p>¡Buen provecho!</p>
+                } @else if (puedeEditarPedidoCliente) {
+                  <p>{{ pedidoIdCliente ? 'Tocá para corregir tu pedido' : 'Tocá para hacer tu pedido' }}</p>
+                } @else if (pedidoIdCliente) {
+                  <p>Tu pedido ya fue enviado</p>
+                } @else {
+                  <p>Escaneá el QR para habilitar tu mesa</p>
                 }
               </div>
             </a>
@@ -369,20 +381,16 @@
               </ion-button>
             }
 
-            <!-- ACCESO A JUEGOS (Bloqueado hasta recibir pedido) -->
+            <!-- ACCESO A JUEGOS: disponible desde la asignación de mesa -->
             @if (esClienteRegistrado && clienteConMesaAsignada) {
-            <a class="ahora-card" [routerLink]="clienteRecibioPedido ? '/juegos' : null" [style.opacity]="clienteRecibioPedido ? '1' : '0.5'">
+            <a class="ahora-card" routerLink="/juegos">
               <div class="ahora-top">
                 <ion-icon name="game-controller-outline" class="juegos-icon" aria-hidden="true"></ion-icon>
                 <span class="timer-badge">3 JUEGOS</span>
               </div>
               <div>
                 <h4>Jugá con Cepa</h4>
-                @if (clienteRecibioPedido) {
-                  <p>Ganá y obtené descuentos</p>
-                } @else {
-                  <p style="color: #ff9800; font-size: 11px;">🔒 Se habilita al recibir la comida</p>
-                }
+                <p>Ganá y obtené descuentos</p>
               </div>
             </a>
             } @else {
@@ -456,24 +464,16 @@
     </main>
 
     <!-- ================= 6. BARRA INFERIOR ================= -->
-    <nav class="mp-bottom-dock" aria-label="Navegación inferior" style="display: flex; justify-content: space-between; align-items: center;">
+    <nav class="mp-bottom-dock" aria-label="Navegación inferior">
       
       <!-- Lado Izquierdo -->
-      <a class="dock-item active" routerLink="/home" style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+      <a class="dock-item active" routerLink="/home">
         <ion-icon name="home-outline"></ion-icon>
         <span>INICIO</span>
       </a>
 
-      <!-- Solo Cliente -->
-      @if (esCliente) {
-        <a class="dock-item" routerLink="/menu-productos" style="flex: 1; display: flex; flex-direction: column; align-items: center;">
-          <ion-icon name="book-outline"></ion-icon>
-          <span>CARTA</span>
-        </a>
-      }
-
       <!-- Centro: Burbuja decorativa (sin QR para empleados) -->
-      <div class="qr-center-slot" style="flex: 0 0 auto;">
+      <div class="qr-center-slot">
         <button class="qr-fab-btn" type="button" 
                 (click)="esCliente ? accionBotonQR() : null" 
                 [style.cursor]="esCliente ? 'pointer' : 'default'">
@@ -487,7 +487,6 @@
       <button
         class="dock-item"
         type="button"
-        style="flex: 1; display: flex; flex-direction: column; align-items: center; background: none; border: none;"
         [disabled]="cerrandoSesion"
         (click)="cerrarSesion(profileMenu)"
       >

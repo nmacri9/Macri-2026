@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { initializeApp, getApps, cert } from "npm:firebase-admin/app"
 import { getMessaging } from "npm:firebase-admin/messaging"
 import { notificacionChat } from './chat.ts'
+import { notificarCuenta } from './cuenta.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -22,6 +23,16 @@ serve(async (req) => {
 
   try {
     const payload = await req.json();
+    if (payload.cuenta_id) {
+      const resultado = await notificarCuenta(req, payload.cuenta_id, mensaje => getMessaging().send({
+        ...mensaje,
+        android: { priority: 'high', notification: { sound: 'default', channelId: 'default' } },
+        apns: { payload: { aps: { sound: 'default', contentAvailable: true } } },
+      }));
+      return new Response(JSON.stringify(resultado), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200,
+      });
+    }
     const chat = payload.mensaje_id ? await notificacionChat(req, payload.mensaje_id) : undefined;
     if (chat === null) {
       return new Response(JSON.stringify({ success: true, omitida: true }), {

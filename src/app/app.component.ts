@@ -56,6 +56,9 @@ export class AppComponent {
 
       await PushNotifications.addListener('pushNotificationActionPerformed', ({ notification }) => {
         if (notification.data?.ruta === '/chat-cliente') void this.router.navigate(['/chat-cliente']);
+        if (['/cuenta', '/confirmar-pedido', '/home'].includes(notification.data?.ruta)) {
+          void this.router.navigate([notification.data.ruta]);
+        }
       });
       if (this.platform.is('android')) {
         await PushNotifications.createChannel({ id: 'default', name: 'Avisos de Cepa', importance: 5, sound: 'default' });

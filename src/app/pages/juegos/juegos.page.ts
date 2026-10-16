@@ -5,8 +5,10 @@ import { addIcons } from 'ionicons';
 import { arrowBackOutline, trophyOutline, refreshOutline } from 'ionicons/icons';
 import { SupabaseService } from '../../services/supabase.service';
 import { MesasService } from '../../services/mesas.service';
+import bancoPreguntas from './preguntas.json';
 
 type Juego = 'ahorcado' | 'memoria' | 'verdadero-falso';
+type Pregunta = { texto: string; respuesta: boolean };
 
 @Component({
   selector: 'app-juegos',
@@ -54,13 +56,7 @@ export class JuegosPage implements OnDestroy {
   movimientos = 0;
   private timerMemoria: ReturnType<typeof setTimeout> | null = null;
 
-  readonly preguntas = [
-    { texto: 'Una docena tiene 12 unidades.', respuesta: true },
-    { texto: 'El café es una bebida fría por definición.', respuesta: false },
-    { texto: 'Una limonada se prepara con limón.', respuesta: true },
-    { texto: 'El chocolate se obtiene del cacao.', respuesta: true },
-    { texto: 'Una empanada siempre se come con cubiertos.', respuesta: false }
-  ];
+  preguntas: Pregunta[] = [];
   preguntaActual = 0;
   aciertos = 0;
   respuestaAnterior: string | null = null;
@@ -126,9 +122,19 @@ export class JuegosPage implements OnDestroy {
     if (juego === 'ahorcado') this.iniciarAhorcado();
     if (juego === 'memoria') this.iniciarMemoria();
     if (juego === 'verdadero-falso') {
+      this.preguntas = this.elegirPreguntas();
       this.preguntaActual = 0;
       this.aciertos = 0;
     }
+  }
+
+  private elegirPreguntas(): Pregunta[] {
+    const mezcladas = [...bancoPreguntas];
+    for (let i = mezcladas.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [mezcladas[i], mezcladas[j]] = [mezcladas[j], mezcladas[i]];
+    }
+    return mezcladas.slice(0, 5);
   }
 
   private registrarIntento() {

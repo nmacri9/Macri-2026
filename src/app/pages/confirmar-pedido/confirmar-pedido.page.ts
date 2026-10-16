@@ -7,6 +7,7 @@ import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { FCM } from '@capacitor-community/fcm';
 import { SupabaseService } from '../../services/supabase.service';
 import { PedidosService } from '../../services/pedidos.service';
+import { Cuenta, CuentaService } from '../../services/cuenta.service';
 import { AuthService } from '../../services/auth.service';
 import { ProductoCarrito } from '../../interfaces/carrito.model';
 import { CepaHeaderComponent } from '../../shared/components/cepa-header/cepa-header.component';
@@ -36,6 +37,10 @@ interface PedidoPendiente {
 export class ConfirmarPedidoPage implements OnInit, OnDestroy {
 
   pedidos: PedidoPendiente[] = [];
+  cuentas: Cuenta[] = [];
+  confirmandoCuenta: string | null = null;
+  errorCuentas = '';
+  avisoCuentaPendiente: string | null = null;
   cargando = true;
   confirmandoId: string | null = null;
   errorMsg: string | undefined;
@@ -45,6 +50,7 @@ export class ConfirmarPedidoPage implements OnInit, OnDestroy {
   constructor(
     private supabase: SupabaseService,
     private pedidosService: PedidosService,
+    private cuentasService: CuentaService,
     private authService: AuthService,
     private modalCtrl: ModalController,
     private toastCtrl: ToastController,
@@ -61,6 +67,47 @@ export class ConfirmarPedidoPage implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.canal?.unsubscribe();
+  }
+
+  ionViewWillEnter() { void this.cargarCuentas(); }
+
+  async cargarCuentas() {
+    this.errorCuentas = '';
+    try { this.cuentas = await this.cuentasService.listarPendientes(); }
+    catch { this.errorCuentas = 'No se pudieron cargar las cuentas. Volvé a intentar.'; }
+    finally { this.cdr.markForCheck(); }
+  }
+
+  async confirmarPago(cuenta: Cuenta) {
+    if (this.confirmandoCuenta || cuenta.estado !== 'pagada') return;
+    this.confirmandoCuenta = cuenta.id;
+    try {
+      const modal = await this.modalCtrl.create({
+        component: ConfirmModalComponent,
+        componentProps: { mensaje: `¿Confirmar el pago simulado de la Mesa ${cuenta.mesa_id} por $${cuenta.total} y liberar la mesa?` },
+        cssClass: 'modal-alerta',
+      });
+      await modal.present();
+      const { data: confirmado } = await modal.onDidDismiss();
+      if (!confirmado) return;
+      await this.cuentasService.confirmarPago(cuenta.id);
+      this.avisoCuentaPendiente = cuenta.id;
+      await this.reintentarAvisoCuenta();
+      await this.cargarCuentas();
+    } catch (error) {
+      this.errorCuentas = error instanceof Error ? error.message : 'No se pudo confirmar el pago.';
+    } finally {
+      this.confirmandoCuenta = null;
+      this.cdr.markForCheck();
+    }
+  }
+
+  async reintentarAvisoCuenta() {
+    if (!this.avisoCuentaPendiente) return;
+    try {
+      if (await this.cuentasService.notificar(this.avisoCuentaPendiente)) this.avisoCuentaPendiente = null;
+    } catch { /* La confirmación está guardada; el aviso queda disponible para reintentar. */ }
+    this.cdr.markForCheck();
   }
 
   private async suscribirCanalMozo() {
@@ -102,6 +149,7 @@ export class ConfirmarPedidoPage implements OnInit, OnDestroy {
         { event: '*', schema: 'public', table: 'pedidos' },
         () => this.cargarPedidosPendientes()
       )
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'cuentas' }, () => this.cargarCuentas())
       .subscribe();
   }
 

@@ -75,3 +75,5 @@ src/environments/environment.ts
 
 #Supabase
 supabase/.env.local
+
+*.migrations

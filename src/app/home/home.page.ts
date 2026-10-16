@@ -119,6 +119,7 @@ export class HomePage {
   clienteRecibioPedido = false;
   pedidoEntregadoPorMozo = false;
   pedidoIdCliente: string | null = null;
+  puedeEditarPedidoCliente = false;
 
   constructor(
     private cdr: ChangeDetectorRef,
@@ -212,27 +213,12 @@ export class HomePage {
     this.cargandoPerfil = true;
     this.cargandoMesa = false;
     this.errorPerfil = '';
-    this.clienteHabilitado = false;
-    this.usuarioActual = null;
-    this.nombreUsuario = 'Usuario';
-    this.fotoUsuario = null;
-    this.puedeGestionarClientes = false;
-    this.puedeCargarPlatos = false;
-    this.puedeCargarBebidas = false;
-    this.esMetre = false;
-    this.esMetrePuro = false;
-    this.esCliente = false;
-    this.esClienteRegistrado = false;
-    this.esMozo = false;
-    this.puedeUsarChat = false;
-    this.clienteConMesaAsignada = false;
-
-    this.clienteVinculadoAMesa = false; // <--- REINICIAR LA VARIABLE
     this.cdr.markForCheck();
 
     try {
       const usuario = await this.authService.obtenerUsuarioActual();
       if (revision !== this.revisionPerfil) return;
+      if (usuario?.id !== this.usuarioActual?.id || !usuario) this.limpiarEstadoUsuario();
       if (!usuario) throw new Error('No se pudo obtener el usuario actual.');
 
       this.usuarioActual = usuario;
@@ -329,12 +315,13 @@ export class HomePage {
       this.esClienteRegistrado = rol === 'CLIENTE_REGISTRADO' && perfil.estado === 'APROBADO';
       this.clienteHabilitado = this.esCliente
         && (rol === 'CLIENTE_ANONIMO' ? perfil.estado === 'ACTIVO' : perfil.estado === 'APROBADO');
-      this.puedeUsarChat = this.esMozo;
+      if (!this.esCliente) this.puedeUsarChat = this.esMozo;
 
       if (this.esCliente) {
         await this.cargarEstadoMesa();
       }
 
+      if (revision !== this.revisionPerfil) return;
       await this.cargarMetricasDashboard(rol);
     } catch (error) {
       if (revision !== this.revisionPerfil) return;
@@ -348,6 +335,35 @@ export class HomePage {
     }
   }
 
+  private limpiarEstadoUsuario() {
+    this.usuarioActual = null;
+    this.nombreUsuario = 'Usuario';
+    this.fotoUsuario = null;
+    this.clienteHabilitado = false;
+    this.puedeGestionarClientes = false;
+    this.puedeCargarPlatos = false;
+    this.puedeCargarBebidas = false;
+    this.esMetre = false;
+    this.esMetrePuro = false;
+    this.esCliente = false;
+    this.esClienteRegistrado = false;
+    this.esMozo = false;
+    this.puedeUsarChat = false;
+    this.clienteConMesaAsignada = false;
+    this.clienteVinculadoAMesa = false;
+    this.estadoAsignacionConocido = false;
+    this.clienteRecibioPedido = false;
+    this.pedidoEntregadoPorMozo = false;
+    this.pedidoConfirmadoCliente = false;
+    this.puedeEditarPedidoCliente = false;
+    this.pedidoIdCliente = null;
+    this.totalPedidoCliente = 0;
+    this.tiempoEstimadoCliente = 0;
+    this.estadoPedidoCliente = 'Sin pedido activo';
+    this.errorMesa = '';
+    this.actividadesRecientes = [];
+  }
+
   // =========================================================================
   // CONEXIÓN REAL A SUPABASE PARA EL DASHBOARD POR ROL
   // =========================================================================
@@ -359,7 +375,7 @@ export class HomePage {
       if (!this.esCliente) {
         const [mesasRes, ocupadasRes, esperaRes] = await Promise.allSettled([
           db.from('mesas').select('*', { count: 'exact', head: true }),
-          db.from('asignaciones').select('*', { count: 'exact', head: true }).eq('estado', 'asignado'),
+          db.from('asignaciones').select('*', { count: 'exact', head: true }).eq('estado', 'asignado').is('fecha_finalizacion', null),
           db.from('asignaciones').select('*', { count: 'exact', head: true }).eq('estado', 'esperando')
         ]);
 
@@ -475,35 +491,6 @@ export class HomePage {
 
       // 6. Datos específicos para CLIENTE
       if (this.esCliente && this.usuarioActual) {
-        const { data: pedidoActivo } = await db
-          .from('pedidos')
-          .select('id, estado, total, tiempo_estimado')
-          .eq('cliente_id', this.usuarioActual.id)
-          .order('created_at', { ascending: false })
-          .limit(1)
-          .maybeSingle();
-
-        if (pedidoActivo) {
-          this.pedidoIdCliente = pedidoActivo.id;
-          this.totalPedidoCliente = pedidoActivo.total || 0;
-          this.tiempoEstimadoCliente = pedidoActivo.tiempo_estimado || 0;
-          this.pedidoConfirmadoCliente = ['confirmado', 'en_preparacion', 'listo', 'entregado'].includes(pedidoActivo.estado);
-
-          this.pedidoEntregadoPorMozo = pedidoActivo.estado === 'entregado';
-          this.clienteRecibioPedido = pedidoActivo.estado === 'recibido';
-
-          const mapaEstados: Record<string, string> = {
-            'pendiente_confirmacion': 'Esperando al mozo',
-            'rechazado_mozo': 'Revisar pedido',
-            'confirmado': 'En preparación',
-            'en_preparacion': 'En preparación',
-            'listo': '¡Listo para servir!'
-          };
-          this.estadoPedidoCliente = mapaEstados[pedidoActivo.estado] || pedidoActivo.estado;
-        } else {
-          this.estadoPedidoCliente = this.clienteVinculadoAMesa ? 'Mesa habilitada' : 'En recepción';
-        }
-
         this.actividadesRecientes = [
           { icono: 'book-outline', texto: 'Ver Carta Digital completa', ruta: '/menu-productos' },
           { icono: 'pie-chart-outline', texto: 'Resultados de Encuestas', ruta: '/graficos-encuestas' },
@@ -524,6 +511,7 @@ export class HomePage {
   // =========================================================================
   accionBotonQR() {
     if (this.esCliente) {
+      if (this.cargandoPerfil || this.cargandoMesa || !this.estadoAsignacionConocido) return;
       if (this.clienteConMesaAsignada) {
         this.verificarAccesoMesa();
       } else {
@@ -558,23 +546,48 @@ export class HomePage {
     const revision = ++this.revisionMesa;
     const clienteId = this.usuarioActual.id;
     this.cargandoMesa = true;
-    this.clienteConMesaAsignada = false;
-    this.estadoAsignacionConocido = false;
-    this.clienteVinculadoAMesa = false;
-    this.puedeUsarChat = false;
+    this.errorMesa = '';
     this.cdr.markForCheck();
 
     try {
       const asignacion = await this.mesasService.obtenerAsignacionActiva(clienteId);
       if (revision !== this.revisionMesa) return;
+      let pedido: { id: string; estado: string; total: number; tiempo_estimado: number } | null = null;
+      if (asignacion) {
+        const { data, error } = await this.supabase.getClient().from('pedidos')
+          .select('id, estado, total, tiempo_estimado')
+          .eq('cliente_id', clienteId).eq('mesa_id', asignacion.mesaId)
+          .gte('created_at', asignacion.fechaAsignacion)
+          .order('created_at', { ascending: false }).limit(1).maybeSingle();
+        if (error) throw error;
+        pedido = data;
+      }
+      if (revision !== this.revisionMesa || this.usuarioActual?.id !== clienteId) return;
+      // Mesa y pedido se reemplazan juntos, solo después de una lectura exitosa.
       this.clienteConMesaAsignada = !!asignacion;
       this.clienteVinculadoAMesa = !!asignacion?.vinculada;
+      this.estadoAsignacionConocido = true;
       this.puedeUsarChat = this.clienteVinculadoAMesa;
+      this.pedidoIdCliente = pedido?.id ?? null;
+      this.totalPedidoCliente = pedido?.total ?? 0;
+      this.tiempoEstimadoCliente = pedido?.tiempo_estimado ?? 0;
+      this.clienteRecibioPedido = pedido?.estado === 'recibido';
+      this.pedidoEntregadoPorMozo = pedido?.estado === 'entregado';
+      this.pedidoConfirmadoCliente = !!pedido && ['confirmado', 'en_preparacion', 'listo', 'listo_para_entregar', 'entregado', 'recibido'].includes(pedido.estado);
+      this.puedeEditarPedidoCliente = this.clienteVinculadoAMesa && (!pedido || pedido.estado === 'rechazado_mozo');
+      const etiquetas: Record<string, string> = {
+        pendiente_confirmacion: 'Esperando al mozo', rechazado_mozo: 'Revisar pedido',
+        confirmado: 'En preparación', en_preparacion: 'En preparación',
+        listo: '¡Listo para servir!', listo_para_entregar: '¡Tu pedido está listo!',
+        entregado: 'Confirmá que recibiste tu pedido', recibido: 'Disfrutá tu comida',
+      };
+      this.estadoPedidoCliente = pedido ? etiquetas[pedido.estado] ?? pedido.estado
+        : this.clienteVinculadoAMesa ? 'Mesa habilitada' : 'En recepción';
     } catch (error) {
       if (revision !== this.revisionMesa) return;
       console.error('No se pudo consultar la mesa del cliente:', error);
-      // Mantenemos tu mensaje de error para que el Home muestre el aviso
-      this.errorMesa = 'No pudimos consultar tu estado de asignación. Podés seguir usando las opciones de ingreso.';} finally {
+      this.errorMesa = 'No pudimos actualizar tu visita. Conservamos el último estado disponible. Volvé a intentar.';
+    } finally {
       if (revision === this.revisionMesa) {
         this.cargandoMesa = false;
         this.cdr.markForCheck();

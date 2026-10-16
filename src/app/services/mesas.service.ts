@@ -27,13 +27,13 @@ export class MesasService {
     const clienteId = await this.obtenerClienteId(authId);
     if (clienteId === null) return null;
     const { data, error } = await this.db.from('asignaciones')
-      .select('id, mesa_id, mesas(disponibilidad)').eq('cliente_id', clienteId)
+      .select('id, mesa_id, fecha_asignacion, mesas(disponibilidad)').eq('cliente_id', clienteId)
       .eq('estado', 'asignado').is('fecha_finalizacion', null).not('mesa_id', 'is', null)
       .order('fecha_asignacion', { ascending: false }).limit(1).maybeSingle();
     if (error) throw error;
     if (!data) return null;
     const mesa = Array.isArray(data.mesas) ? data.mesas[0] : data.mesas;
-    return { mesaId: data.mesa_id, vinculada: mesa?.disponibilidad === 'OCUPADA' };
+    return { mesaId: data.mesa_id, fechaAsignacion: data.fecha_asignacion, vinculada: mesa?.disponibilidad === 'OCUPADA' };
   }
 
   async obtenerMesasDisponibles(): Promise<Mesa[]> {

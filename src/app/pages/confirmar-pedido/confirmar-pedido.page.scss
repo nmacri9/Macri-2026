@@ -2,6 +2,16 @@ ion-content {
   --background: #132A20; // verde muy oscuro - fondo principal
 }
 
+.cuentas-panel {
+  color: #dbcbb9;
+  margin-bottom: 24px;
+  h2, h3 { color: #dbcbb9; }
+  .pedido-card { --color: #dbcbb9; }
+  p { line-height: 1.5; font-size: 14px; }
+  ion-button[fill='clear'] { --color: #dbcbb9; }
+  .btn-confirmar { min-height: 48px; white-space: normal; }
+}
+
 /* ============================================
   Estado vacío
    ============================================ */

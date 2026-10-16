@@ -4,6 +4,12 @@ import { mesaGuard } from './mesa.guard';
 
 export const routes: Routes = [
   {
+    path: 'cuenta',
+    loadComponent: () => import('./pages/cuenta/cuenta.page').then((m) => m.CuentaPage),
+    canActivate: [roleGuard],
+    data: { roles: ['CLIENTE_ANONIMO', 'CLIENTE_REGISTRADO'] },
+  },
+  {
     path: 'menu-productos',
     loadComponent: () =>
       import('./pages/menu-productos/menu-productos.page').then(
@@ -144,7 +150,7 @@ export const routes: Routes = [
     path: 'pedido',
     loadComponent: () =>
       import('./pages/pedido/pedido.page').then((m) => m.PedidoPage),
-    canActivate: [roleGuard],
+    canActivate: [roleGuard, mesaGuard],
     data: { roles: ['CLIENTE_REGISTRADO', 'CLIENTE_ANONIMO'] },
   },
   {

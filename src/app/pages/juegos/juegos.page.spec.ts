@@ -3,6 +3,7 @@ import { ChangeDetectorRef } from '@angular/core';
 import { SupabaseService } from '../../services/supabase.service';
 import { MesasService } from '../../services/mesas.service';
 import { JuegosPage } from './juegos.page';
+import bancoPreguntas from './preguntas.json';
 
 function crearPagina(rpc = vi.fn().mockResolvedValue({ data: 10, error: null })) {
   let descuentoGuardado = 0;
@@ -32,6 +33,16 @@ function crearPagina(rpc = vi.fn().mockResolvedValue({ data: 10, error: null }))
 
 describe('Jugá con Cepa', () => {
   beforeEach(() => localStorage.clear());
+
+  it('elige cinco preguntas distintas del banco de 55 en cada partida', async () => {
+    expect(bancoPreguntas).toHaveLength(55);
+    const { page } = crearPagina();
+    await page.cargarPremio();
+    page.elegirJuego('verdadero-falso');
+    expect(page.preguntas).toHaveLength(5);
+    expect(new Set(page.preguntas.map(pregunta => pregunta.texto)).size).toBe(5);
+    expect(page.preguntas.every(pregunta => bancoPreguntas.some(item => item.texto === pregunta.texto))).toBe(true);
+  });
 
   it('guarda el porcentaje del primer juego y deja repetir sin otro premio', async () => {
     const { page, rpc } = crearPagina();

@@ -290,7 +290,7 @@ Para habilitar los juegos en una base de Supabase existente, aplicá la migraci�
 El premio se registra para la visita, pero aún no modifica el total del pedido ni el cobro. Como la app resuelve la partida, antes de usar este dato para cobrar hace falta validar las victorias en el servidor.
 ---
 
-## 📸 Índice de Imágenes del Proyecto
+## Índice de Imágenes del Proyecto
 
 > _A continuación se detallan todas las capturas correspondientes a íconos, pantallas de presentación, formularios y listados del proyecto._
 
@@ -314,3 +314,7 @@ El premio se registra para la visita, pero aún no modifica el total del pedido 
 | **16** | Ingreso al local (Cliente): Vista  | [Ver imagen](./capturas/.jpeg)                  |
 | **17** | Confirmar pedido (Mozo): Vista     | [Ver imagen](./capturas/.jpeg)                  |
 | **18** | Gestion Comandas (Cocinero): Vista | [Ver imagen](./capturas/.jpeg)                  |
+
+
+
+

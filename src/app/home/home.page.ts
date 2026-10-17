@@ -218,17 +218,21 @@ export class HomePage {
     try {
       const usuario = await this.authService.obtenerUsuarioActual();
       if (revision !== this.revisionPerfil) return;
-      if (usuario?.id !== this.usuarioActual?.id || !usuario) this.limpiarEstadoUsuario();
+
+      if (usuario?.id !== this.usuarioActual?.id || !usuario) {
+        this.limpiarEstadoUsuario();
+      }
+
       if (!usuario) throw new Error('No se pudo obtener el usuario actual.');
 
       this.usuarioActual = usuario;
       this.nombreUsuario = usuario.email || 'Usuario';
       this.fotoUsuario = usuario.user_metadata?.['foto_url'] || null;
-      this.cdr.detectChanges();
 
       const perfil = await this.authService.obtenerPerfil();
       if (revision !== this.revisionPerfil) return;
       if (!perfil) throw new Error('No se pudo obtener el perfil actual.');
+
       void this.chatPush.actualizar();
 
       const nombreCompleto = [perfil.nombres, perfil.apellidos].filter(Boolean).join(' ');
@@ -250,47 +254,7 @@ export class HomePage {
       };
       this.rolEtiqueta = etiquetasRol[rol] || rol;
 
-      // =========================================================================
-      // GESTIÓN DINÁMICA DE CANALES PUSH
-      // =========================================================================
-      if (this.platform.is('capacitor')) {
-      try {
-      await FCM.unsubscribeFrom({ topic: 'aprobacion_pendientes' });
-      await FCM.unsubscribeFrom({ topic: 'metre_lista_espera' });
-      await FCM.unsubscribeFrom({ topic: 'cocina' }); 
-      await FCM.unsubscribeFrom({ topic: 'bar' });    
-      await FCM.unsubscribeFrom({ topic: 'mozos' });
-
-      if (['DUENO', 'SUPERVISOR'].includes(rol)) {
-        await FCM.subscribeTo({ topic: 'aprobacion_pendientes' });
-      }
-      if (['METRE'].includes(rol)) {
-        await FCM.subscribeTo({ topic: 'metre_lista_espera' });
-      }
-      if (['MOZO', 'mozo'].includes(rol)) {
-        await FCM.subscribeTo({ topic: 'mozos' });
-      }
-      // NUEVO: Suscripciones para Cocina y Bar
-      if (['COCINERO'].includes(rol)) {
-        await FCM.subscribeTo({ topic: 'cocina' });
-      }
-      if (['CANTINERO'].includes(rol)) {
-        await FCM.subscribeTo({ topic: 'bar' });
-      }
-      if (['CLIENTE_REGISTRADO', 'CLIENTE_ANONIMO'].includes(rol)) {
-        const { data: authData } = await this.supabase.getClient().auth.getUser();
-        if (authData?.user?.id) {
-          await FCM.subscribeTo({ topic: `cliente_${authData.user.id}` });
-        }
-      }
-    } catch (err) {
-      console.error('Error configurando topics de FCM:', err);
-    }
-  }
-      // =========================================================================
-
       // Fallback de fotos locales para el acceso rápido
-      if (revision !== this.revisionPerfil) return;
       if (!this.fotoUsuario) {
         const fotosPorDefecto: Record<string, string> = {
           'DUENO': 'assets/perfiles/Dueño.png',
@@ -305,6 +269,9 @@ export class HomePage {
         this.fotoUsuario = fotosPorDefecto[rol] || null;
       }
 
+      // =========================================================================
+      // 1. ASIGNACIÓN INMEDIATA DE ROLES (ANTES DE CUALQUIER OTRA COSA)
+      // =========================================================================
       this.puedeGestionarClientes = perfil.estado === 'ACTIVO' && ['DUENO', 'SUPERVISOR'].includes(rol);
       this.puedeCargarPlatos = perfil.estado === 'ACTIVO' && rol === 'COCINERO';
       this.puedeCargarBebidas = perfil.estado === 'ACTIVO' && rol === 'CANTINERO';
@@ -315,14 +282,63 @@ export class HomePage {
       this.esClienteRegistrado = rol === 'CLIENTE_REGISTRADO' && perfil.estado === 'APROBADO';
       this.clienteHabilitado = this.esCliente
         && (rol === 'CLIENTE_ANONIMO' ? perfil.estado === 'ACTIVO' : perfil.estado === 'APROBADO');
-      if (!this.esCliente) this.puedeUsarChat = this.esMozo;
 
+      if (!this.esCliente) {
+        this.puedeUsarChat = this.esMozo;
+      }
+
+      // FORZAMOS A ANGULAR A PINTAR LA PANTALLA YA MISMO
+      this.cdr.detectChanges();
+
+      // =========================================================================
+      // 2. FCM EN SEGUNDO PLANO (NO BLOQUEANTE)
+      // =========================================================================
+      if (this.platform.is('capacitor')) {
+        (async () => {
+          try {
+            await FCM.unsubscribeFrom({ topic: 'aprobacion_pendientes' });
+            await FCM.unsubscribeFrom({ topic: 'metre_lista_espera' });
+            await FCM.unsubscribeFrom({ topic: 'cocina' });
+            await FCM.unsubscribeFrom({ topic: 'bar' });
+            await FCM.unsubscribeFrom({ topic: 'mozos' });
+
+            if (['DUENO', 'SUPERVISOR'].includes(rol)) {
+              await FCM.subscribeTo({ topic: 'aprobacion_pendientes' });
+            }
+            if (['METRE'].includes(rol)) {
+              await FCM.subscribeTo({ topic: 'metre_lista_espera' });
+            }
+            if (['MOZO', 'mozo'].includes(rol)) {
+              await FCM.subscribeTo({ topic: 'mozos' });
+            }
+            if (['COCINERO'].includes(rol)) {
+              await FCM.subscribeTo({ topic: 'cocina' });
+            }
+            if (['CANTINERO'].includes(rol)) {
+              await FCM.subscribeTo({ topic: 'bar' });
+            }
+            if (['CLIENTE_REGISTRADO', 'CLIENTE_ANONIMO'].includes(rol)) {
+              const { data: authData } = await this.supabase.getClient().auth.getUser();
+              if (authData?.user?.id) {
+                await FCM.subscribeTo({ topic: `cliente_${authData.user.id}` });
+              }
+            }
+          } catch (err) {
+            console.warn('Error configurando topics de FCM (no bloqueante):', err);
+          }
+        })();
+      }
+
+      // =========================================================================
+      // 3. CONSULTAS SECUNDARIAS
+      // =========================================================================
       if (this.esCliente) {
         await this.cargarEstadoMesa();
       }
 
       if (revision !== this.revisionPerfil) return;
       await this.cargarMetricasDashboard(rol);
+
     } catch (error) {
       if (revision !== this.revisionPerfil) return;
       console.error('No se pudo cargar el perfil del usuario:', error);
@@ -330,7 +346,7 @@ export class HomePage {
     } finally {
       if (revision === this.revisionPerfil) {
         this.cargandoPerfil = false;
-        this.cdr.markForCheck();
+        this.cdr.detectChanges();
       }
     }
   }

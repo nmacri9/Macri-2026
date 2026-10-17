@@ -103,58 +103,81 @@ export class PedidosService {
   async marcarSectorListo(pedidoId: string, sector: 'cocina' | 'bar'): Promise<void> {
     const campoSector = sector === 'cocina' ? 'estado_cocina' : 'estado_bar';
 
-    // 1. Actualizamos el sector y le pedimos a Supabase que nos devuelva la fila actualizada en el mismo tiro
-    const { data: pedidosActualizados, error: errorUpdate } = await this.supabase
+    console.log(`[SectorListo] Actualizando ${sector} a 'listo' para pedido ${pedidoId}...`);
+
+    // 1. Update del sector actual
+    const { error: errorUpdate } = await this.supabase
       .from('pedidos')
       .update({ [campoSector]: 'listo' })
-      .eq('id', pedidoId)
-      .select('id, mesa_id, cliente_id, estado_cocina, estado_bar');
+      .eq('id', pedidoId);
 
-    if (errorUpdate) throw errorUpdate;
-
-    const pedido = pedidosActualizados?.[0];
-    if (!pedido) {
-      console.warn(`No se pudo obtener el pedido ${pedidoId} tras la actualización.`);
-      return;
+    if (errorUpdate) {
+      console.error('[SectorListo] Error al actualizar sector:', errorUpdate);
+      throw errorUpdate;
     }
 
-    console.log(`Sector ${sector} marcado como listo. Estados actuales:`, {
-      cocina: pedido.estado_cocina,
-      bar: pedido.estado_bar
-    });
+    // 2. Leemos el pedido fresco directamente de la base
+    const { data: pedido, error: errorSelect } = await this.supabase
+      .from('pedidos')
+      .select('id, mesa_id, cliente_id, estado_cocina, estado_bar')
+      .eq('id', pedidoId)
+      .single();
 
-    // 2. Evaluamos si ambos sectores ya terminaron o no aplican
-    const cocinaOk = !pedido.estado_cocina || pedido.estado_cocina === 'listo' || pedido.estado_cocina === 'no_aplica';
-    const barOk = !pedido.estado_bar || pedido.estado_bar === 'listo' || pedido.estado_bar === 'no_aplica';
+    if (errorSelect || !pedido) {
+      console.error('[SectorListo] Error leyendo pedido actualizado:', errorSelect);
+      throw errorSelect;
+    }
+
+    console.log(`[SectorListo] Estados leídos de BD -> Cocina: "${pedido.estado_cocina}", Bar: "${pedido.estado_bar}"`);
+
+    // 3. Normalizamos y evaluamos
+    const coc = String(pedido.estado_cocina || '').toLowerCase().trim();
+    const bar = String(pedido.estado_bar || '').toLowerCase().trim();
+
+    const cocinaOk = coc === 'listo' || coc === 'no_aplica' || coc === '';
+    const barOk = bar === 'listo' || bar === 'no_aplica' || bar === '';
+
+    console.log(`[SectorListo] ¿Cocina terminada?: ${cocinaOk} | ¿Bar terminado?: ${barOk}`);
 
     if (cocinaOk && barOk) {
-      console.log(`¡Ambos sectores listos para la Mesa ${pedido.mesa_id}! Pasando a listo_para_entregar y notificando al mozo...`);
+      console.log(`[SectorListo] ¡AMBOS LISTOS! Actualizando pedido a 'listo_para_entregar'...`);
 
-      // 3. Pasamos el pedido a 'listo_para_entregar'
       const { error: errorFinal } = await this.supabase
         .from('pedidos')
         .update({ estado: 'listo_para_entregar' })
         .eq('id', pedidoId);
 
-      if (errorFinal) throw errorFinal;
+      if (errorFinal) {
+        console.error('[SectorListo] Error pasando a listo_para_entregar:', errorFinal);
+      }
 
-      // 4. Disparo directo mediante invocarEdgeFunction al Mozo (Punto 18)
-      await this.enviarNotificacion(
-        'mozos',
-        '¡Pedido Completo para Servir!',
-        `La mesa ${pedido.mesa_id} está lista para entregar.`
-      );
+      // 4. DISPARO INMEDIATO AL MOZO
+      console.log('[SectorListo] Enviando push al topic "mozos"...');
+      try {
+        await this.supabaseService.invocarEdgeFunction('enviar-notificacion', {
+          topic: 'mozos',
+          titulo: '¡Pedido Completo para Servir!',
+          cuerpo: `El pedido de la Mesa ${pedido.mesa_id} está listo en barra y cocina.`
+        });
+        console.log('[SectorListo] Push a "mozos" enviada con éxito.');
+      } catch (errPushMozo) {
+        console.error('[SectorListo] Falló la push a mozos:', errPushMozo);
+      }
 
-      // 5. Notificación al cliente
+      // 5. DISPARO AL CLIENTE
       if (pedido.cliente_id) {
-        await this.enviarNotificacion(
-          `cliente_${pedido.cliente_id}`,
-          '¡Tu pedido está listo!',
-          'El mozo lo está llevando a tu mesa.'
-        );
+        try {
+          await this.supabaseService.invocarEdgeFunction('enviar-notificacion', {
+            topic: `cliente_${pedido.cliente_id}`,
+            titulo: '¡Tu comida está lista!',
+            cuerpo: 'El mozo ya tiene tu pedido listo para llevártelo a la mesa.'
+          });
+        } catch (errPushCliente) {
+          console.warn('[SectorListo] Falló la push al cliente:', errPushCliente);
+        }
       }
     } else {
-      console.log(`Mesa ${pedido.mesa_id}: un sector terminó, pero el otro aún sigue en preparación.`);
+      console.log(`[SectorListo] Pedido ${pedidoId} aún en espera del otro sector.`);
     }
   }
 

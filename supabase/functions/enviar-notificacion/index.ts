@@ -43,34 +43,31 @@ serve(async (req) => {
     const cuerpo = payload.cuerpo || 'Tienes un nuevo aviso';
     const topic = payload.topic || 'aprobacion_pendientes';
 
-    const mensaje: any = {
+   const mensaje: any = {
       notification: { 
         title: titulo, 
         body: cuerpo 
       },
-      // SOLUCIÓN: Forzar prioridad alta en Android para que suene en segundo plano
+      data: {
+        title: titulo,
+        body: cuerpo,
+        topic: topic,
+        ...(payload.data || {})
+      },
       android: {
         priority: 'high',
         notification: {
           sound: 'default',
-          channelId: 'default' // Esencial para Android 8.0 en adelante
+          priority: 'max',
+          visibility: 'public'
+          // Quitamos channelId fijo para que Android no lo descarte si el canal no fue registrado
         }
       },
-      // SOLUCIÓN: Forzar prioridad alta en iOS
-      apns: {
-        payload: {
-          aps: {
-            sound: 'default',
-            contentAvailable: true
-          }
-        }
-      },
-      topic: topic,
-      ...(chat ?? {})
+      topic: topic
     };
 
     const respuestaFirebase = await getMessaging().send(mensaje);
-    
+    console.log(`Notificación enviada con éxito a topic [${topic}]:`, respuestaFirebase);
     return new Response(JSON.stringify({ success: true, respuestaFirebase }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,

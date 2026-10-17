@@ -1,6 +1,6 @@
 # 🍷 Cepa - Gastronomía & Reserva
 
-**Punto 21 — Propina QR, cuenta y cierre:** [integración, migración, QR imprimibles y pruebas](docs/punto-21.md).
+**Punto 21 — Propina QR, cuenta y cierre:**
 
 Trabajo Final Integrador (TFI) — Aplicación móvil desarrollada con Angular, Ionic y Capacitor.
 

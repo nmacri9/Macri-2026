@@ -69,7 +69,11 @@ export class ConfirmarPedidoPage implements OnInit, OnDestroy {
     this.canal?.unsubscribe();
   }
 
-  ionViewWillEnter() { void this.cargarCuentas(); }
+  ionViewWillEnter() {
+    void this.suscribirCanalMozo(); // <-- Asegura la suscripción activa en Android
+    void this.cargarCuentas();
+    void this.cargarPedidosPendientes();
+  }
 
   async cargarCuentas() {
     this.errorCuentas = '';
@@ -176,15 +180,13 @@ export class ConfirmarPedidoPage implements OnInit, OnDestroy {
       await this.pedidosService.confirmarPedidoYRutear(pedido.id, mozoId);
 
       try {
-        // 1. Notificación al Cliente
         await this.supabase.invocarEdgeFunction('enviar-notificacion', {
           titulo: '¡Pedido Confirmado!',
-          cuerpo: `El mozo confirmó tu pedido y ya está en preparación.`,
+          cuerpo: 'El mozo confirmó tu pedido y ya está en preparación.',
           topic: `cliente_${pedido.cliente_id}`
         });
-
       } catch (pushError) {
-        console.warn('El pedido se confirmó pero fallaron las notificaciones push:', pushError);
+        console.warn('El pedido se confirmó pero falló la push al cliente:', pushError);
       }
 
       this.pedidos = this.pedidos.filter(p => p.id !== pedido.id);
@@ -297,4 +299,7 @@ export class ConfirmarPedidoPage implements OnInit, OnDestroy {
       this.cdr.detectChanges();
     }
   }
+
+
+
 }

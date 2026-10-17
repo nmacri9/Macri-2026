@@ -87,7 +87,7 @@ Disponible para clientes registrados aprobados con una mesa asignada. La primera
 
 ---
 
-## 📸 Índice de Imágenes del Proyecto
+## Índice de Imágenes del Proyecto
 
 > _A continuación se detallan todas las capturas correspondientes a íconos, pantallas de presentación, formularios y listados del proyecto._
 

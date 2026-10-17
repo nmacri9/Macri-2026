@@ -8,7 +8,7 @@ Trabajo Final Integrador (TFI) — Aplicación móvil desarrollada con Angular, 
 
 ## 👥 Equipo y Ramas de Trabajo
 
-| Apellido y Nombre     | Rama Principal (Branch)     |
+| Apellido y Nombre      | Rama Principal (Branch)     |
 | :-------------------- | :-------------------------- |
 | **Garcia, Mateo**     | Backend y Base de Datos     |
 | **Macri, Nicolas**    | UI/UX y Vistas Frontend     |
@@ -19,27 +19,24 @@ Trabajo Final Integrador (TFI) — Aplicación móvil desarrollada con Angular, 
 
 ## 📋 Seguimiento de Módulos y Objetivos
 
-### 👨‍💻 Macri, Nicolas — Módulos UI/UX, Registro, Control de Accesos y Flujo de Pedidos
+### 👨‍💻 Macri, Nicolas — Módulos UI/UX, Registro, Control de Accesos, Flujo de Pedidos y Consolidación
 
 - **Branch:** `nico-alta-platos` / `feature/arreglos`
-- **Período general de tareas:** 27/08/2026 — 25/09/2026
+- **Período general de tareas:** 27/08/2026 — 15/10/2026
 
 #### 🔹 1. UI/UX Global, Assets y Rediseño de Paleta Institucional
-
 - **Período:** 27/08/2026 — 01/09/2026
 - **Detalle:**
   - Diseño de ícono corporativo, definición de la paleta de colores global (`variables.scss`) adaptada a la identidad visual verde institucional (`#132A20`, `#1B3B2D`, `#dbcbb9`, `#C8B29E`).
   - Generación de assets nativos con Capacitor y configuración de tipografías (`EB Garamond` e `Inter`).
 
 #### 🔹 2. Splash Screen Dinámico y Animaciones de Entrada
-
 - **Período:** 02/09/2026 — 05/09/2026
 - **Detalle:**
   - Integración de animación de entrada propia (`logoEntrance`) con efecto fade-in, separada del pulso continuo.
   - Implementación de barra de progreso indeterminada y sincronización del timing de navegación hacia el login.
 
 #### 🔹 3. Registro de Cliente (Punto 5) y Cámara Forzada
-
 - **Período:** 06/09/2026 — 12/09/2026
 - **Detalle:**
   - Desarrollo del formulario adaptado para el perfil cliente, extrayendo la lógica de lectura de DNI/QR a un servicio reutilizable (`DniScannerService`).
@@ -47,44 +44,69 @@ Trabajo Final Integrador (TFI) — Aplicación móvil desarrollada con Angular, 
   - Alta contra Supabase (`auth.signUp`) configurando estado inicial `PENDIENTE`.
 
 #### 🔹 4. Validaciones de Formularios y Sincronización de Roles (Home / Routes)
-
 - **Período:** 13/09/2026 — 18/09/2026
 - **Detalle:**
   - Incorporación de expresiones regulares (`Validators.pattern`) en los campos de nombre y descripción de platos y bebidas para admitir exclusivamente letras, acentos y espacios.
   - Sincronización estricta entre el sistema de ruteo (`app.routes.ts`) y la lógica de perfiles en `HomePage`, ocultando y mostrando dinámicamente botones según el rol activo (Dueño, Supervisor, Cocinero, Cantinero, Mozo, Metre y Clientes).
 
 #### 🔹 5. Circuito de Pedidos, Revisión del Mozo (Punto 13) y Notificaciones Push
-
 - **Período:** 19/09/2026 — 25/09/2026
 - **Detalle:**
   - Rediseño UI/UX de `PedidoPage` en formato de **pantalla única sin scroll**, incorporando la vista conmutable **"Ver Pedido"** con controles tipo píldora (`+` / `-`) y cierre rápido.
   - Implementación del flujo de rechazo por parte del mozo (`rechazado_mozo`): recuperación automática de los ítems rechazados hacia el carrito para edición de cantidades/productos y reenvío en tiempo real.
   - Gestión dinámica de canales Push con `@capacitor-community/fcm` (`mozos` y `cliente_${id}`) e invocación de la Edge Function `enviar-notificacion`.
 
----
-
-### 👨‍💻 Garcia, Mateo — Backend, Servicios Core y Ruteo de Pedidos
-
-- **Período de tarea:** 27/08/2026 — 25/09/2026
-- **Observaciones / Reasignaciones:** Tareas completadas en tiempo y forma. _(No hubo necesidad de reasignar plazos ni módulos)._
-- **Módulos asignados:**
-  - [x] **Módulo de Alta de Bebidas (Perfil "Cantinero"):** Implementación integral de la carga de bebidas para la carta con validaciones estrictas y respuesta háptica.
-  - [x] **Diseño e Infraestructura DB:** Creación de tablas (`usuarios`, `productos`, `mesas`, `pedidos`), restricciones `CHECK` y políticas de seguridad RLS en Supabase.
-  - [x] **Lógica de Base de Datos y Triggers:** Refactorización del guardado enviando información como metadatos en `signUp()`. Creación de Triggers PL/pgSQL para asignar roles y estados automáticamente.
-  - [x] **Storage y Cámara:** Integración con `@capacitor/camera` para 3 fotos obligatorias, optimización a Base64/Blob y subida al Bucket de Storage.
-  - [x] **Sistema de Notificaciones por Correo Automático (EmailJS):** Integración del `EmailService` centralizado, automatización del flujo de registro/aprobación y plantilla HTML única con paleta diferenciada por estado.
-  - [x] **Modal de Confirmación Interactivo (`ConfirmModalComponent`):** Reemplazo de los diálogos nativos por modales Ionic personalizados en los flujos de alta y de gestión de clientes.
-  - [x] **Motor de Pedidos y Ruteo por Sectores (`PedidosService` y `CarritoService`):** Gestión de estado reactivo del carrito en memoria, confirmación del mozo y derivación automática de comandas hacia Cocina (`PLATO`/`POSTRE`) y Bar (`BEBIDA`) con disparo de notificaciones Push por sector.
+#### 🔹 6. Consolidación de Sectores y Panel de Confirmación del Mozo (Punto 18)
+- **Período:** 26/09/2026 — 15/10/2026
+- **Detalle:**
+  - Desarrollo de la vista y lógica en `ConfirmarPedidoPage` para el monitoreo independiente de los estados de **Cocina** y **Barra** (`estado_cocina` y `estado_bar`) mediante tarjetas interactivas con diseño de cajitas y relieve.
+  - Implementación de la lógica de consolidación automática de sectores: en cuanto ambos sectores completan su preparación (independientemente del orden temporal), el sistema actualiza el estado general de la comanda a **`listo_para_entregar`**.
+  - Sincronización en tiempo real con Supabase Realtime y despliegue del banner visual indicando que el pedido está listo para servir a la mesa.
+  - Automatización del envío de Notificaciones Push bidireccionales mediante la Edge Function de Supabase al cumplirse la consolidación (alerta general al topic de **mozos** y notificación directa al **cliente**).
+  - Adaptación de la vista principal del cliente (`home.page.html`) para traducir dinámicamente el estado técnico `listo_para_entregar` a un mensaje amigable (`🚀 ¡Tu pedido está listo!`).
 
 ---
 
-### 👨‍💻 Goncalves, Matias — Ingreso Anónimo, Administración y Panel de Cocina
+### 👨‍💻 Garcia, Mateo — Backend, Servicios Core, Ruteo y Entrega de Pedidos (Punto 19)
+
+- **Período de tarea:** 27/08/2026 — 15/10/2026
+- **Observaciones / Reasignaciones:** Tareas completadas en tiempo y forma.
+
+#### 🔹 Módulos Generales Desarrollados
+- [x] **Módulo de Alta de Bebidas (Perfil "Cantinero"):** Implementación integral de la carga de bebidas para la carta con validaciones estrictas y respuesta háptica.
+- [x] **Diseño e Infraestructura DB:** Creación de tablas (`usuarios`, `productos`, `mesas`, `pedidos`), restricciones `CHECK` y políticas de seguridad RLS en Supabase.
+- [x] **Lógica de Base de Datos y Triggers:** Refactorización del guardado enviando información como metadatos en `signUp()`. Creación de Triggers PL/pgSQL para asignar roles y estados automáticamente.
+- [x] **Storage y Cámara:** Integración con `@capacitor/camera` para 3 fotos obligatorias, optimización a Base64/Blob y subida al Bucket de Storage.
+- [x] **Sistema de Notificaciones por Correo Automático (EmailJS):** Integración del `EmailService` centralizado, automatización del flujo de registro/aprobación y plantilla HTML única con paleta diferenciada por estado.
+- [x] **Modal de Confirmación Interactivo (`ConfirmModalComponent`):** Reemplazo de los diálogos nativos por modales Ionic personalizados en los flujos de alta y de gestión de clientes.
+- [x] **Motor de Pedidos y Ruteo por Sectores (`PedidosService` y `CarritoService`):** Gestión de estado reactivo del carrito en memoria, confirmación del mozo y derivación automática de comandas hacia Cocina (`PLATO`/`POSTRE`) y Bar (`BEBIDA`) con disparo de notificaciones Push por sector.
+
+#### 🔹 Flujo Principal Desarrollado: Punto 19 (Integrante 2)
+Se completó el circuito de entrega del pedido consolidado y la liberación de los módulos finales para el cliente:
+
+- **El Mozo entrega:** Cuando cocina y barra terminan, al mozo le aparece el botón **"Entregar Pedido"**. Al tocarlo, el estado pasa a `'entregado'` y le llega una Push al cliente.
+- **El Cliente recibe:** En el Home del cliente aparece un botón verde gigante para confirmar la recepción.
+- **Desbloqueo de Acciones:** Al confirmar, el estado pasa a `'recibido'` y automáticamente desaparecen los candados de **"Juegos"**, **"Encuesta"** y **"Pedir la Cuenta"**.
+
+#### 📂 Archivos Modificados en este Sprint
+- **`src/app/cocina/cocina.page.ts`**: Modificación de la función `procesarYFiltrar` para parsear correctamente el `jsonb` y normalizar a mayúsculas, evitando que los pedidos lleguen vacíos por errores de tipeo en la BD.
+- **`src/app/alta-bebida/alta-bebida.page.ts`, `.html` y `.scss`**: Reescala completa del componente para igualar estética, controles y la validación de 3 fotos exactas requeridas.
+- **`src/app/services/pedidos.service.ts`**: Adición de las funciones `entregarPedido()` (con disparo de Push Notification) y `confirmarRecepcionCliente()`.
+- **`src/app/confirmar-pedido/confirmar-pedido.page.ts` y `.html`**: Inyección del botón de "Entregar Pedido" condicionado al estado `'listo_para_entregar'` y enlace de lógica. Adición de Push Notification que avisa al cliente cuando el mozo aprueba (confirma) la comanda inicial.
+- **`src/app/home/home.page.ts` y `.html`**:
+  - Incorporación de suscripciones FCM para cocina y bar.
+  - Modificación de la consulta a Supabase (`cargarMetricasDashboard`) para traer el ID del pedido.
+  - Programación de la lógica de estados locales (`pedidoEntregadoPorMozo` y `clienteRecibioPedido`).
+  - Migración del HTML de la zona inferior del cliente a la nueva sintaxis `@if` / `@else` de Angular, implementando las reglas estrictas de opacidad e íconos de candado (🔒) hasta que la comida esté confirmada como recibida.
+
+---
+
+### 👨‍💻 Goncalves, Matias — Ingreso Anónimo, Administración, Panel de Cocina y Encuestas (Punto 20)
 
 - **Branch:** `rama-matias-goncalves`
-- **Período general de tareas:** 10/09/2026 — 25/09/2026
+- **Período general de tareas:** 10/09/2026 — 15/10/2026
 
 #### 🔹 1. Pantalla de Registro Anónimo y Validaciones (Punto 9)
-
 - **Período:** 10/09/2026 — 12/09/2026
 - **Detalle:**
   - Formulario simplificado que solicita el nombre del usuario y una fotografía personal capturada en caliente desde el dispositivo, con soporte híbrido de compatibilidad para pruebas en PC mediante `FileReader`.
@@ -92,14 +114,12 @@ Trabajo Final Integrador (TFI) — Aplicación móvil desarrollada con Angular, 
   - Sincronización de perfiles con rol `CLIENTE_ANONIMO` en Supabase utilizando la estrategia `.upsert()` para prevenir conflictos ante triggers automáticos.
 
 #### 🔹 2. Escaneo de Código QR de Ingreso
-
 - **Período:** 13/09/2026 — 15/09/2026
 - **Detalle:**
   - Integración del plugin `@capacitor-mlkit/barcode-scanning` para lectura nativa y optimizada del QR de entrada al establecimiento.
   - Implementación de un puente de desarrollo web para simular la lectura de códigos desde entornos de escritorio sin hardware de cámara físico.
 
 #### 🔹 3. Gestión de Lista de Espera y Restricciones de Acceso
-
 - **Período:** 16/09/2026 — 18/09/2026
 - **Detalle:**
   - Inserción automatizada del cliente en la tabla `lista_espera` de Supabase al validar con éxito el QR de entrada.
@@ -107,18 +127,23 @@ Trabajo Final Integrador (TFI) — Aplicación móvil desarrollada con Angular, 
   - Configuración de guardas lógicas de seguridad para bloquear el acceso de clientes anónimos al escaneo de mesas o sectores operativos si no completaron el circuito de ingreso y asignación por parte del Metre.
 
 #### 🔹 4. Panel de Cocina — Gestión de Comandas (Punto 16)
-
 - **Período:** 19/09/2026 — 25/09/2026
 - **Detalle:**
   - Lectura en tiempo real de pedidos filtrados por `en_preparacion`, aislando exclusivamente los ítems correspondientes al sector cocina (`PLATO` y `POSTRE`).
   - Diseño de tarjetas agrupadas por mesa con hora exacta y despacho seguro mediante modal de confirmación personalizado.
+
+#### 🔹 5. Encuestas de Satisfacción y Gráficos Estadísticos (Punto 20)
+- **Formulario con Variedad de Controles:** Implementación de la vista `/encuesta` utilizando más de 5 tipos de controles distintos (`ion-range`, `ion-radio-group`, `ion-select`, `ion-checkbox`, `ion-toggle` y `ion-textarea`), cumpliendo con la validación total de campos y respuesta háptica ante errores.
+- **Restricción de una vez por estadía:** Control en cliente y base de datos vinculando la encuesta de forma única al identificador del pedido (`UNIQUE(pedido_id)`), impidiendo envíos duplicados por visita.
+- **Visualización de Resultados (Chart.js):** Creación de la pantalla `/graficos-encuestas` integrando gráficos de Torta, Barras y Lineal que reflejan los datos recolectados, presentados estrictamente de a uno por pantalla mediante navegación secuencial.
+- **Experiencia de Usuario y Estética:** Adaptación visual completa a la identidad Cepa (paleta verde y beige, sin alertas nativas, modal de confirmación flotante y spinner corporativo de carga).
 
 ---
 
 ### 👨‍💻 Breyaui, Jaled
 
 - **Período de tarea:** 27/08/2026 — 04/09/2026
-- **Observaciones / Reasignaciones:** Tareas completadas en tiempo y forma. _(No hubo necesidad de reasignar plazos ni módulos)._
+- **Observaciones / Reasignaciones:** Tareas completadas en tiempo y forma.
 - **Módulos asignados:**
   - [x] Arquitectura general y sistema de ruteo (`app-routing`).
   - [x] Implementación de Guards para el alta de platos, bebidas, mesas y empleados.
@@ -130,8 +155,8 @@ Trabajo Final Integrador (TFI) — Aplicación móvil desarrollada con Angular, 
   - [x] **Chat entre mozos y clientes**.
   - [x] **Configuración RealTime Channel en Supabase**.
   - [x] **Listado de productos con imágenes y demás información solicitada por las consignas**.
-  - [x] **Vinculación de cliente anonimo a registrado a una mesa a través del perfil metre**
-  - [x] **Desarrollo de 3 mini-juegos a los cuales un cliente registado y con mesa asignada puede acceder en busca de descuentos. Ahorcado, memotest y verdadero o falso**
+  - [x] **Vinculación de cliente anónimo a registrado a una mesa a través del perfil metre**.
+  - [x] **Desarrollo de 3 mini-juegos a los cuales un cliente registrado y con mesa asignada puede acceder en busca de descuentos. Ahorcado, memotest y verdadero o falso**.
 
 ---
 
@@ -142,14 +167,12 @@ Trabajo Final Integrador (TFI) — Aplicación móvil desarrollada con Angular, 
 Se implementó de manera integral el módulo de carga de bebidas para la carta, la arquitectura de servicios centrales en Angular y el esquema relacional de la base de datos en Supabase.
 
 **1. Desarrollo de Servicios Globales en Angular:**
-
 - **`ProductosService`:**
   - Integración con `@supabase/supabase-js` para la gestión de productos.
   - Métodos asíncronos (`async/await`) para la inserción de registros en la tabla `productos` y la subida secuencial/paralela de imágenes.
   - Manejo de excepciones, respuesta a fallos de red y generación de URLs públicas.
 
 **2. Formulario, Captura y UI/UX:**
-
 - Formulario reactivo (`@angular/forms`) capturando Nombre, Descripción, Tiempo de elaboración y Precio.
 - Integración de respuesta háptica (`@capacitor/haptics`) ante errores de validación.
 - Grid de 3 contenedores para vista previa de fotografías.
@@ -163,24 +186,19 @@ Se implementó de manera integral el módulo de carga de bebidas para la carta, 
 **Responsable Principal:** Mateo Garcia
 
 **1. Integración del Servicio Centralizado (`EmailService`):**
-
 - Se configuró el cliente `@emailjs/browser` inyectado a nivel root para gestionar de forma asíncrona la comunicación transaccional con el cliente.
 - Se resolvió el flujo integral de autenticación solucionando errores de ámbito de Gmail API (`412 Precondition Failed`) mediante la inclusión obligatoria de la Public Key (`PUBLIC_KEY`) en el constructor e invocación de peticiones.
 
 **2. Automatización del Flujo de Registro y Aprobación:**
-
-- **Registro Pendiente (`RegistroClientePage`):** Al completar el formulario e ingresar la solicitud en Supabase, se gatilla automáticamente el correo de confirmación en recepción. _(Pendiente: inyectar el `EmailService`, que hoy no está conectado a la lógica.)_
+- **Registro Pendiente (`RegistroClientePage`):** Al completar el formulario e ingresar la solicitud en Supabase, se gatilla automáticamente el correo de confirmación en recepción.
 
 **3. Optimización de Assets en Envíos Nativos:**
-
 - Se parametrizó el hosting de imágenes públicas (vía CDN/ImgBB) para garantizar la correcta visualización del isologotipo de CEPA en los clientes de correo (Gmail/Outlook), evitando bloqueos de recursos locales (`localhost` / `assets`).
 
 **4. Rediseño y Paleta de Colores Exclusiva por Estado:**
-
 - Se diseñó un esquema cromático e idéntico criterio tipográfico dentro de la plantilla HTML única (`template_78axyn3`) enviada por EmailJS, diferenciando visualmente el estado de cada solicitud.
 
 **5. Modal de Confirmación Interactivo (`ConfirmModalComponent`):**
-
 - Se reemplazaron los diálogos nativos del sistema por modales personalizados de Ionic (`ModalController`) con clase estilizada `.modal-alerta`.
 - **En el Registro:** intercepta la acción en `confirmarAlta()`, exigiendo la confirmación del usuario antes de persistir los datos.
 - **En la Gestión de Clientes:** intercepta las acciones `aceptarCliente()` y `rechazarCliente()`, confirmando la resolución antes de actualizar Supabase y enviar el mail.
@@ -188,123 +206,88 @@ Se implementó de manera integral el módulo de carga de bebidas para la carta, 
 
 ---
 
-## 🛎️ Detalles Técnicos: Motor de Pedidos, Carrito Reactivo y Ruteo por Sectores
+## 🛎️ Detalles Técnicos: Motor de Pedidos, Carrito Reactivo, Ruteo y Entrega
 
 **Responsable Principal:** Mateo Garcia
 
 **1. `PedidosService` (`src/app/services/pedidos.service.ts`):**
-
 Servicio centralizado para la interacción con Supabase y la lógica de negocio de los pedidos:
-
 - **Confirmación y Ruteo Automático (`confirmarPedidoYRutear`):**
   - Cambia el estado general del pedido (Mozo) a `'confirmado'`.
   - **Motor de Desglose/Ruteo:** Analiza el array de ítems (`items`) según la categoría del producto (`tipo` / `categoria`) y actualiza en la base de datos:
     - `estado_cocina`: `'en_preparacion'` (si el pedido contiene `PLATO` o `POSTRE`) o `'no_aplica'`.
     - `estado_bar`: `'en_preparacion'` (si el pedido contiene `BEBIDA`) o `'no_aplica'`.
   - Registra el ID del mozo que confirmó (`confirmado_por`) y la marca temporal (`fecha_confirmacion`).
-- **Disparo de Notificaciones Push (`notificarSectores`):** Invoca Edge Functions de Supabase para enviar alertas push dirigidas a los canales/topics de `'cocina'` y `'bar'` según corresponda.
+- **Circuito de Entrega y Recepción (`entregarPedido` & `confirmarRecepcionCliente`):**
+  - Transición de `'listo_para_entregar'` a `'entregado'` por parte del mozo y disparo de Push al cliente.
+  - Transición a `'recibido'` tras la confirmación en el Home del cliente, desbloqueando el acceso a módulos contextuales.
+- **Disparo de Notificaciones Push (`notificarSectores`):** Invoca Edge Functions de Supabase para enviar alertas push dirigidas a los canales/topics correspondientes.
 
 **2. `CarritoService` (`src/app/services/carrito.service.ts`):**
-
 Servicio desacoplado enfocado exclusivamente en la gestión del estado en memoria de la UI (_Single Responsibility Principle_):
-
 - Control de ítems agregados/eliminados, cálculo dinámico del total en ARS y estimación del tiempo de elaboración en tiempo real mediante RxJS (`BehaviorSubject`).
 
 **3. Panel del Mozo (`ConfirmarPedidoPage`):**
-
 - Integración del método `confirmarPedidoYRutear()` mediante modales de confirmación.
 - Transición de pedidos de `'pendiente_confirmacion'` a `'confirmado'`, liberando la comanda a los sectores de preparación.
-- Opción de envío a revisión (`'rechazado_mozo'`) notificando al cliente para la edición del pedido.
+- Botón interactivo para ejecutar la entrega (`entregarPedido`) tras la consolidación de cocina y bar.
 
 **4. App Cliente (`PedidoPage` & `HomePage`):**
-
 - **Garantía de Ruteo:** Inclusión de la propiedad `tipo` (`PLATO`, `BEBIDA`, `POSTRE`) en la estructura del payload enviado a la base de datos.
-- **Actualización en Tiempo Real:** Suscripción al canal de Supabase Realtime (`postgres_changes`) para detectar cuando el estado del pedido cambia a `'confirmado'` o `'en_preparacion'`.
-- **Desbloqueo de Secciones:** Habilitación condicional en la UI de los accesos a **"Ver Estado del Pedido"** y la sección de **"Juegos / Descuentos"** tras la confirmación por parte del mozo.
+- **Actualización en Tiempo Real:** Suscripción al canal de Supabase Realtime (`postgres_changes`) para detectar cambios de estado.
+- **Desbloqueo Contextual:** Liberación progresiva de "Ver Estado del Pedido", "Juegos", "Encuesta" y "Pedir la Cuenta" según la confirmación y recepción del pedido.
 
 ---
 
-## 🧑‍💼 Detalles Técnicos: Frontend de Administración (Punto 6) & Panel de Cocina (Punto 16)
+## 🧑‍💼 Detalles Técnicos: Frontend de Administración, Panel de Cocina & Encuestas
 
 **Responsable Principal:** Matias Goncalves
 
 ### A. Gestión de Clientes Pendientes y Accesos (Punto 6)
-
-**1. Gestión de Clientes Pendientes:**
-
-- Maquetado del listado de clientes en espera de aprobación, diseñado específicamente para la vista del Dueño / Supervisor (Dispositivo 1).
-
-**2. UI/UX - Regla Estricta de Pantalla:**
-
-- Implementación de cálculo dinámico del alto de los contenedores para garantizar que ningún elemento del listado quede cortado por la mitad en el dispositivo.
-
-**3. Controles de Acción:**
-
-- Diseño de la interfaz y conexión de las acciones para "Aceptar" o "Rechazar" a cada cliente entrante.
-
-**4. Tiempo Real:**
-
-- Configuración de la recepción de Push Notifications para que el listado de clientes se actualice automáticamente sin necesidad de recargar la vista.
-
-**5. Mejoras y Correcciones Adicionales:**
-
-- **Componente de Alerta Global Reutilizable:** modal de confirmación dinámico (ej: "¿Desea dar de alta a este [usuario / plato / mesa]?"), importable para evitar repetición de código en las distintas pantallas de alta, estilizado con botones de acción en colores neón (Confirmar en verde brillante, Cancelar en rojo brillante).
-- **Refactorización de la Pantalla de Login:** se optimizó la lógica del inicio de sesión, reemplazando los múltiples botones de roles por un único botón de "Acceso Rápido". Este redirige a una vista dedicada donde se renderizan los componentes de cada perfil con su respectiva foto (Dueño, Supervisor, Metre, Mozo, Cocinero, Cantinero, Cliente registrado, Anónimo), reduciendo la vista inicial a una sola línea de código clave.
-- **Fix de UI en Accesos Rápidos:** resolución de un bug de renderizado responsivo donde los accesos rápidos mostraban un fondo negro en la versión web y blanco en mobile.
-
-**6. Dependencias e Integración:**
-
-- **Fase de Desarrollo:** el maquetado y la lógica visual se trabajaron inicialmente de forma aislada utilizando un JSON con clientes simulados.
-- **Fase de Integración:** trabajo en conjunto con el Integrante 4 para el consumo de la base de datos real y la emisión de las acciones definitivas de aceptar/rechazar.
+- **Gestión de Clientes Pendientes:** Maquetado del listado de clientes en espera de aprobación para el Dueño / Supervisor.
+- **UI/UX - Regla Estricta de Pantalla:** Cálculo dinámico del alto de contenedores para evitar cortes de elementos.
+- **Controles de Acción:** Interfaz y conexión para aceptar o rechazar clientes.
+- **Tiempo Real:** Recepción de Push Notifications para actualización del listado sin recarga.
+- **Componente de Alerta Global Reutilizable:** Modal de confirmación dinámico estilizado con botones neón.
+- **Refactorización de Login:** Reemplazo de botones múltiples por un acceso rápido optimizado.
 
 ### B. Panel de Cocina — Gestión de Comandas (Punto 16)
+- **Lectura en Tiempo Real:** Filtrado de comandas en estado `en_preparacion` exclusivas de cocina (`PLATO` y `POSTRE`).
+- **Diseño de Tarjetas:** Agrupación por número de mesa, hora exacta y detalle de productos.
+- **Despacho Seguro:** Modal personalizado para marcar pedidos como `listo`.
 
-- **Lectura en Tiempo Real:** Visualización automática de los pedidos entrantes filtrados por el estado `en_preparacion`, separando la lógica de la cocina del bar (solo muestra `PLATO` y `POSTRE`).
-- **Diseño de Tarjetas:** Cumplimiento de los requisitos de UI agrupando las comandas por número de mesa, detallando la hora exacta del pedido y los ítems a elaborar con sus respectivas cantidades.
-- **Despacho Seguro:** Implementación de un modal de confirmación personalizado para marcar los pedidos como `listo` y actualizar la base de datos en Supabase, respetando la regla estricta de no utilizar alertas nativas (`alert()`).
-- **Consistencia Visual:** Integración de los componentes globales del proyecto (`<app-cepa-header>` y `<app-cepa-spinner>`) para mantener el diseño oscuro de la marca y proveer feedback visual de carga.
+### C. Encuestas de Satisfacción y Gráficos Estadísticos (Punto 20)
+- **Variedad de Controles:** Implementación de `/encuesta` con 6 tipos de controles nativos de Ionic y validaciones reactivas.
+- **Restricción Unívoca:** Bloqueo de envíos múltiples por estadía vinculando el registro al `pedido_id`.
+- **Reportes con Chart.js:** Dashboard secuencial en `/graficos-encuestas` renderizando gráficos interactivos.
 
 ---
 
-## 🌿 Detalles Técnicos: Registro de Cliente, Rediseño Visual & Flujo de Revisión de Pedidos
+## 🌿 Detalles Técnicos: Registro de Cliente, Rediseño Visual & Consolidación de Sectores
 
 **Responsable Principal:** Nicolas Macri
 
 **1. Registro de Cliente (Punto 5):**
-
-- Se partió de `registro-empleado.page.ts` (desarrollado por Integrante 1) como base, adaptándolo a los campos y reglas del cliente: sin campo `CUIL`, perfil limitado a `CLIENTE` / `METRE`.
-- Extracción de la lógica de escaneo de QR de DNI a un service reutilizable (`DniScannerService`), inyectado por constructor en la página.
-- Captura de foto forzada a `CameraSource.Camera` para bloquear el acceso a la galería, cumpliendo el requerimiento de la cátedra.
-- Alta contra Supabase (`auth.signUp`) con estado inicial `PENDIENTE` en `options.data`, a la espera de que Integrante 4 lo persista en una tabla propia.
+- Adaptación de la base de registro a perfiles de cliente con escaneo QR de DNI reutilizable (`DniScannerService`).
+- Uso forzado de `CameraSource.Camera` para bloqueo de galería nativa.
 
 **2. Rediseño de Paleta Institucional:**
+- Aplicación de la identidad verde institucional (`#132A20`, `#1B3B2D`, `#dbcbb9`, `#C8B29E`) en todas las pantallas principales.
 
-- Migración completa de Login, Splash, Registro de Cliente, Alta de Plato y el `CepaHeaderComponent` compartido, desde la paleta bordó/crema original a la nueva paleta verde institucional (`#132A20`, `#1B3B2D`, `#dbcbb9`, `#C8B29E`, `#091610`).
-- Definición de una convención de uso por rol de color (fondo principal, fondo de tarjetas, texto principal, acentos, texto de botones) aplicada de forma consistente en las pantallas.
-- Ajustes de jerarquía visual: mayor peso tipográfico en los títulos, radios de borde más generosos (de `12px` a `16-18px`) acordes a la tipografía serif _EB Garamond_, e iconografía de acento diferenciada para la acción principal de cada pantalla (cámara/foto).
-
-**3. Splash Screen (mejoras adicionales):**
-
-- Animación de entrada propia del logo (`logoEntrance`), separada del pulso continuo.
-- Barra de progreso indeterminada entre el logo y el listado del equipo.
-- Ajuste del timing de la secuencia de animaciones (incluyendo el delay de navegación al login) para que el último nombre del equipo termine de aparecer antes de la transición.
-
-**4. Interfaz de Pedidos en Pantalla Única y Circuito de Revisión (Puntos 12, 13 y 14):**
-
-- **Diseño en Pantalla Única (_Zero-Scroll Layout_):** Reestructuración de `PedidoPage` separando la vista del menú principal y el detalle del carrito mediante un panel conmutable (**"Ver Pedido"**) dentro de la misma página, evitando superposiciones y desplazamientos innecesarios.
-- **Edición y Reenvío tras Rechazo del Mozo (Punto 13):** Al recibir el estado `'rechazado_mozo'`, la vista hidrata automáticamente el `CarritoService` con los productos originales, despliega un banner de alerta contextual y permite modificar cantidades, quitar o sumar platos antes de actualizar la comanda en Supabase.
-- **Canales Dinámicos de Push Notifications (FCM):** Configuración en `HomePage`, `PedidoPage` y `ConfirmarPedidoPage` de suscripciones dinámicas con `@capacitor-community/fcm` (`mozos` y `cliente_${id}`), asegurando las alertas bidireccionales entre el mozo y el cliente.
+**3. Interfaz de Pedidos en Pantalla Única y Consolidación (Puntos 12, 13, 14 y 18):**
+- **Zero-Scroll Layout:** Panel conmutable "Ver Pedido" en `PedidoPage`.
+- **Circuito de Revisión:** Recuperación de ítems al carrito ante rechazos del mozo (`rechazado_mozo`).
+- **Consolidación de Sectores (Punto 18):** Control independiente de cocina y barra en `ConfirmarPedidoPage`, actualización automática a `listo_para_entregar` y disparo de alertas Push bidireccionales en tiempo real.
 
 ---
 
-## Jugá con Cepa
+## 🎮 Jugá con Cepa
 
 El acceso del home aparece para clientes registrados aprobados con una mesa asignada. La primera partida de cada juego puede dar descuento: Ahorcado 20%, Memoria 15% o Verdadero o falso 10%. Si pierde uno, puede intentar otro por su premio. Solo se aplica el primer descuento que gana; desde entonces todos los juegos quedan disponibles para jugar por diversión. La app recuerda qué juegos ya intentó en el dispositivo; la base solo guarda `asignaciones.descuento_obtenido`.
 
 Para habilitar los juegos en una base de Supabase existente, aplicá la migración [`supabase/migrations/20260930160000_juegos_descuentos.sql`](./supabase/migrations/20260930160000_juegos_descuentos.sql) con una cuenta administradora. El código de la app no crea la columna ni la función automáticamente. La base solo guarda el porcentaje obtenido; no conoce los juegos ni sus intentos.
 
 El premio se registra para la visita, pero aún no modifica el total del pedido ni el cobro. Como la app resuelve la partida, antes de usar este dato para cobrar hace falta validar las victorias en el servidor.
-
 ---
 
 ## 📸 Índice de Imágenes del Proyecto

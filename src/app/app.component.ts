@@ -32,10 +32,11 @@ export class AppComponent {
     try {
       // 1. Pedir permisos al usuario
       let permStatus = await PushNotifications.checkPermissions();
-      if (permStatus.receive === 'prompt') {
+      if (permStatus.receive === 'prompt' || permStatus.receive === 'prompt-with-rationale') {
         permStatus = await PushNotifications.requestPermissions();
       }
       
+      console.info('[Push] Permiso:', permStatus.receive);
       // Si el usuario no dio permiso, cortamos acá
       if (permStatus.receive !== 'granted') {
         console.warn('El usuario denegó el permiso para notificaciones.');
@@ -43,6 +44,7 @@ export class AppComponent {
       }
 
       await PushNotifications.addListener('registration', () => {
+        console.info('[Push] Registro Firebase confirmado');
         this.chatPush.activar();
       });
 
@@ -64,6 +66,7 @@ export class AppComponent {
         await PushNotifications.createChannel({ id: 'default', name: 'Avisos de Cepa', importance: 5, sound: 'default' });
       }
       // Registrar después de instalar listeners para no perder el token inicial.
+      console.info('[Push] Solicitando registro del dispositivo');
       await PushNotifications.register();
 
     } catch (error) {

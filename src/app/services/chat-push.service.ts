@@ -5,10 +5,15 @@ import { SupabaseService } from './supabase.service';
 import { AuthService } from './auth.service';
 
 const STORAGE_KEY = 'cepa.chat.push.topics';
+const TOPICS_PERSONAL: Record<string, string[]> = {
+  MOZO: ['mozos'], METRE: ['metre_lista_espera'], COCINERO: ['cocina'], CANTINERO: ['bar'],
+  DUENO: ['aprobacion_pendientes', 'duenos'], SUPERVISOR: ['aprobacion_pendientes', 'supervisores'],
+};
 
 @Injectable({ providedIn: 'root' })
 export class ChatPushService {
   private registrado = false;
+  private limpiarLegacy = true;
   private cola: Promise<void> = Promise.resolve();
 
   constructor(private supabase: SupabaseService, private auth: AuthService) {}
@@ -27,35 +32,43 @@ export class ChatPushService {
   actualizar(): Promise<void> {
     if (!this.registrado) return Promise.resolve();
     this.cola = this.cola.then(() => this.sincronizar()).catch(error => {
-      console.error('No se pudieron actualizar las notificaciones del chat:', error);
+      console.error('[Push] Fallo sincronizando suscripciones; se reintentará al actualizar el perfil:', error);
     });
     return this.cola;
   }
 
   private async sincronizar() {
     const client = this.supabase.getClient();
-    const anteriores: string[] = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-    // Primero limpiar la cuenta anterior, incluso si el nuevo perfil no usa chat.
-    for (const topic of [...anteriores]) {
-      await FCM.unsubscribeFrom({ topic });
-      anteriores.splice(anteriores.indexOf(topic), 1);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(anteriores));
-    }
-    const { data: { session } } = await client.auth.getSession();
+    const { data: { session }, error } = await client.auth.getSession();
+    if (error) throw error;
     let deseados: string[] = [];
     if (session) {
       const persona = await this.auth.obtenerPerfil();
-      if (!persona || persona.id !== session.user.id) return;
-      const habilitado = persona.rol === 'CLIENTE_REGISTRADO' ? persona.estado === 'APROBADO'
-        : ['MOZO', 'CLIENTE_ANONIMO', 'DUENO', 'SUPERVISOR'].includes(persona.rol) && persona.estado === 'ACTIVO';
-      if (!habilitado) return;
-      const topicsPersonal: Record<string, string> = { MOZO: 'mozos', DUENO: 'duenos', SUPERVISOR: 'supervisores' };
-      deseados = [topicsPersonal[persona.rol] ?? `chat_cliente_${persona.id}`];
+      if (!persona || persona.id !== session.user.id) throw new Error('Perfil pendiente de cargar');
+      const rol = persona.rol.trim().toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      const habilitado = rol === 'CLIENTE_REGISTRADO' ? persona.estado === 'APROBADO'
+        : (rol in TOPICS_PERSONAL || rol === 'CLIENTE_ANONIMO') && persona.estado === 'ACTIVO';
+      if (habilitado) deseados = TOPICS_PERSONAL[rol] ?? [`cliente_${persona.id}`, `chat_cliente_${persona.id}`];
     }
+    const anteriores: string[] = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    // Recuperar también las suscripciones de personal creadas por las pantallas antiguas.
+    const conocidos = new Set([...anteriores, ...(this.limpiarLegacy ? Object.values(TOPICS_PERSONAL).flat() : [])]);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify([...conocidos]));
+    for (const topic of conocidos) {
+      if (deseados.includes(topic)) continue;
+      await FCM.unsubscribeFrom({ topic });
+      conocidos.delete(topic);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([...conocidos]));
+      console.info('[Push] Suscripción eliminada:', topic);
+    }
+    this.limpiarLegacy = false;
     for (const topic of deseados) {
-      // También al reiniciar: FCM puede haber renovado el token del dispositivo.
+      // Reafirmar la suscripción después de reinicios o renovación del token.
       await FCM.subscribeTo({ topic });
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(deseados));
+      conocidos.add(topic);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([...conocidos]));
+      console.info('[Push] Suscripción confirmada:', topic);
     }
+    console.info('[Push] Sincronización completa:', deseados);
   }
 }

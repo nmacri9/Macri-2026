@@ -4,7 +4,6 @@ import { IonContent, IonItem, IonIcon, IonButton, ModalController, ToastControll
 import { addIcons } from 'ionicons';
 import { restaurantOutline, checkmarkCircleOutline, timeOutline, closeCircleOutline } from 'ionicons/icons';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
-import { FCM } from '@capacitor-community/fcm';
 import { SupabaseService } from '../../services/supabase.service';
 import { PedidosService } from '../../services/pedidos.service';
 import { Cuenta, CuentaService } from '../../services/cuenta.service';
@@ -60,7 +59,6 @@ export class ConfirmarPedidoPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.suscribirCanalMozo();
     this.cargarPedidosPendientes();
     this.escucharNuevosPedidos();
   }
@@ -70,7 +68,6 @@ export class ConfirmarPedidoPage implements OnInit, OnDestroy {
   }
 
   ionViewWillEnter() {
-    void this.suscribirCanalMozo(); // <-- Asegura la suscripción activa en Android
     void this.cargarCuentas();
     void this.cargarPedidosPendientes();
   }
@@ -112,14 +109,6 @@ export class ConfirmarPedidoPage implements OnInit, OnDestroy {
       if (await this.cuentasService.notificar(this.avisoCuentaPendiente)) this.avisoCuentaPendiente = null;
     } catch { /* La confirmación está guardada; el aviso queda disponible para reintentar. */ }
     this.cdr.markForCheck();
-  }
-
-  private async suscribirCanalMozo() {
-    try {
-      await FCM.subscribeTo({ topic: 'mozos' });
-    } catch (err) {
-      console.warn('FCM no disponible en navegador web:', err);
-    }
   }
 
   private async cargarPedidosPendientes() {
@@ -299,7 +288,6 @@ export class ConfirmarPedidoPage implements OnInit, OnDestroy {
       this.cdr.detectChanges();
     }
   }
-
 
 
 }

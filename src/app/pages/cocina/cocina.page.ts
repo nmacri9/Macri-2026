@@ -6,7 +6,7 @@ import {
   ModalController 
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { checkmarkCircleOutline } from 'ionicons/icons';
+import { checkmarkCircleOutline, restaurantOutline, timeOutline } from 'ionicons/icons';
 import { FCM } from '@capacitor-community/fcm'; // <-- AGREGADO
 import { SupabaseService } from '../../services/supabase.service';
 
@@ -39,11 +39,10 @@ export class CocinaPage implements OnInit, OnDestroy {
     private modalCtrl: ModalController,
     private pedidosService: PedidosService
   ) {
-    addIcons({ checkmarkCircleOutline });
+    addIcons({restaurantOutline,timeOutline,checkmarkCircleOutline});
   }
 
   ngOnInit() {
-    this.suscribirCanalCocina(); // <-- AGREGADO
     this.cargarPedidos();
     this.escucharNuevosPedidos();
   }
@@ -55,14 +54,6 @@ export class CocinaPage implements OnInit, OnDestroy {
   }
 
   // <-- FUNCIÓN AGREGADA -->
-  private async suscribirCanalCocina() {
-    try {
-      await FCM.subscribeTo({ topic: 'cocina' });
-      console.log('Suscrito al topic de cocina');
-    } catch (err) {
-      console.warn('FCM no disponible en navegador web:', err);
-    }
-  }
 
   async cargarPedidos() {
     this.cargando = true; 

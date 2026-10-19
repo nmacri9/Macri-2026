@@ -16,7 +16,6 @@ import {
 } from '@ionic/angular';
 import { SupabaseService } from '../services/supabase.service';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
-import { FCM } from '@capacitor-community/fcm';
 import { BarcodeScanner, BarcodeFormat } from '@capacitor-mlkit/barcode-scanning';
 import { addIcons } from 'ionicons';
 import {
@@ -185,13 +184,8 @@ export class HomePage {
     if (this.cerrandoSesion) return;
     this.cerrandoSesion = true;
     try {
-      try {
-        await FCM.deleteInstance();
-      } catch (fcmError) {
-        console.warn('FCM no disponible para borrar instancia:', fcmError);
-      }
-
       await this.authService.logout();
+      await this.chatPush.actualizar();
       await menu.dismiss();
       await this.navController.navigateRoot('/login', { replaceUrl: true });
     } catch (error) {
@@ -290,45 +284,6 @@ export class HomePage {
 
       // FORZAMOS A ANGULAR A PINTAR LA PANTALLA YA MISMO
       this.cdr.detectChanges();
-
-      // =========================================================================
-      // 2. FCM EN SEGUNDO PLANO (NO BLOQUEANTE)
-      // =========================================================================
-      if (this.platform.is('capacitor')) {
-        (async () => {
-          try {
-            await FCM.unsubscribeFrom({ topic: 'aprobacion_pendientes' });
-            await FCM.unsubscribeFrom({ topic: 'metre_lista_espera' });
-            await FCM.unsubscribeFrom({ topic: 'cocina' });
-            await FCM.unsubscribeFrom({ topic: 'bar' });
-            await FCM.unsubscribeFrom({ topic: 'mozos' });
-
-            if (['DUENO', 'SUPERVISOR'].includes(rol)) {
-              await FCM.subscribeTo({ topic: 'aprobacion_pendientes' });
-            }
-            if (['METRE'].includes(rol)) {
-              await FCM.subscribeTo({ topic: 'metre_lista_espera' });
-            }
-            if (['MOZO', 'mozo'].includes(rol)) {
-              await FCM.subscribeTo({ topic: 'mozos' });
-            }
-            if (['COCINERO'].includes(rol)) {
-              await FCM.subscribeTo({ topic: 'cocina' });
-            }
-            if (['CANTINERO'].includes(rol)) {
-              await FCM.subscribeTo({ topic: 'bar' });
-            }
-            if (['CLIENTE_REGISTRADO', 'CLIENTE_ANONIMO'].includes(rol)) {
-              const { data: authData } = await this.supabase.getClient().auth.getUser();
-              if (authData?.user?.id) {
-                await FCM.subscribeTo({ topic: `cliente_${authData.user.id}` });
-              }
-            }
-          } catch (err) {
-            console.warn('Error configurando topics de FCM (no bloqueante):', err);
-          }
-        })();
-      }
 
       // =========================================================================
       // 3. CONSULTAS SECUNDARIAS

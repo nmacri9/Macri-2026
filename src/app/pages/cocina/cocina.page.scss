@@ -1,12 +1,17 @@
+.cocina-content {
+  --background: #132A20;
+}
+
 .comanda-card {
   margin-bottom: 24px; 
   border-radius: 12px;
   background-color: #1B3B2D;
   border: 1px solid #C8B29E;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
 
   ion-card-title {
     color: #E6D5C3;
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     font-weight: 700;
   }
 
@@ -14,37 +19,155 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    border-bottom: 1px dashed rgba(200, 178, 158, 0.3);
+    padding-bottom: 10px;
 
     ion-badge {
-      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 1.05rem;
       padding: 8px 12px;
+      letter-spacing: 0.5px;
+
+      ion-icon {
+        font-size: 1.15rem;
+      }
+    }
+  }
+
+  /* ==============================================
+    SCROLL CONTROLADO 
+  ============================================== */
+  .scroll-controlado {
+    max-height: 40vh; /* Limita la altura de la lista al 40% de la pantalla */
+    overflow-y: auto;
+    margin: 10px 0;
+    padding-right: 4px;
+
+    /* Estilo de la barra de scroll para que no se vea nativa/fea */
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    &::-webkit-scrollbar-track {
+      background: rgba(200, 178, 158, 0.05);
+      border-radius: 4px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: #418756;
+      border-radius: 4px;
     }
   }
 
   .lista-items {
     background: transparent;
+    padding: 0;
     
     ion-item {
       --background: transparent;
       --color: #C8B29E;
+      --border-color: rgba(200, 178, 158, 0.2);
       
       h3 {
-        font-size: 1.2rem;
+        font-size: 1.1rem;
         font-weight: 600;
+        white-space: normal; /* Permite que nombres largos bajen de línea */
       }
     }
   }
 
+  .badge-cantidad {
+    font-size: 1rem;
+    padding: 6px 10px;
+    background: #E6D5C3;
+    color: #132A20;
+  }
+
   .btn-listo {
-    margin-top: 16px;
+    margin-top: 10px;
     height: 50px;
     font-weight: bold;
     font-size: 1.1rem;
+    --background: #418756;
+    --border-radius: 10px;
   }
 }
 
 .sin-pedidos {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 60vh;
   text-align: center;
   color: #C8B29E;
-  margin-top: 50px;
+
+  ion-icon {
+    font-size: 64px;
+    opacity: 0.5;
+    margin-bottom: 16px;
+  }
+  
+  h2 {
+    color: #E6D5C3;
+    font-family: 'EB Garamond', serif;
+    font-weight: 700;
+    font-size: 1.8rem;
+    margin: 0 0 8px 0;
+  }
+}
+
+/* =======================================
+   MEDIA QUERIES GRUPO
+======================================= */
+
+/* 1. M12, A32 y J4+ (Pantallas Altas > 740px) */
+@media (min-height: 740px) {
+  .comanda-card {
+    margin-bottom: 28px;
+    /* Damos más altura al scroll en pantallas altas */
+    .scroll-controlado {
+      max-height: 48vh; 
+    }
+  }
+}
+
+/* 2. J7 Prime (Pantallas bajas < 660px) */
+@media (max-height: 660px) {
+  .comanda-card {
+    margin-bottom: 16px;
+    padding: 8px 4px;
+
+    ion-card-title { font-size: 1.35rem; }
+    
+    .header-comanda ion-badge { 
+      font-size: 0.9rem; 
+      padding: 6px 10px; 
+    }
+    
+    /* Achicamos el contenedor para que entre todo sin tapar el botón */
+    .scroll-controlado {
+      max-height: 32vh; 
+    }
+
+    .lista-items ion-item h3 {
+      font-size: 1rem;
+    }
+
+    .btn-listo {
+      height: 44px;
+      font-size: 1rem;
+      margin-top: 6px;
+    }
+  }
+}
+
+/* 3. Ajuste para pantallas muy angostas */
+@media (max-width: 370px) {
+  .comanda-card ion-card-title {
+    font-size: 1.4rem;
+  }
+  .header-comanda ion-badge {
+    font-size: 0.85rem;
+  }
 }

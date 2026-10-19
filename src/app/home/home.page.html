@@ -463,16 +463,15 @@
 
     </main>
 
-    <!-- ================= 6. BARRA INFERIOR ================= -->
+    <!-- ================= 6. BARRA INFERIOR FLOTANTE ================= -->
     <nav class="mp-bottom-dock" aria-label="Navegación inferior">
-      
       <!-- Lado Izquierdo -->
       <a class="dock-item active" routerLink="/home">
         <ion-icon name="home-outline"></ion-icon>
         <span>INICIO</span>
       </a>
 
-      <!-- Centro: Burbuja decorativa (sin QR para empleados) -->
+      <!-- Centro: Burbuja decorativa -->
       <div class="qr-center-slot">
         <button class="qr-fab-btn" type="button" 
                 (click)="esCliente ? accionBotonQR() : null" 
@@ -493,7 +492,6 @@
         <ion-icon name="log-out-outline"></ion-icon>
         <span>SALIR</span>
       </button>
-
     </nav>
 
   </div>

@@ -59,16 +59,16 @@
 }
 
 /* ============================================
-   LAYOUT GENERAL
+   LAYOUT GENERAL (TAMAÑOS Y PROPORCIONES ORIGINALES)
    ============================================ */
 .mp-layout {
   display: flex;
   flex-direction: column;
-  min-height: 100%;
+  height: 100%;
   max-width: 480px;
   margin: 0 auto;
   background: #132A20;
-  padding-bottom: 84px;
+  padding-bottom: 80px; 
 }
 
 /* ============================================
@@ -76,7 +76,7 @@
    ============================================ */
 .top-sand-zone {
   background: #C8B29E;
-  padding: calc(12px + env(safe-area-inset-top, 0px)) 18px 68px;
+  padding: calc(12px + env(safe-area-inset-top, 0px)) 18px 62px;
   border-radius: 0 0 24px 24px;
 }
 
@@ -84,7 +84,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 
 .user-info {
@@ -204,8 +204,8 @@
 .bottom-green-zone {
   flex: 1;
   background: transparent;
-  padding: 0 18px 16px;
-  margin-top: -68px; 
+  padding: 0 18px 12px;
+  margin-top: -62px; 
   position: relative;
   z-index: 2;
 }
@@ -246,7 +246,7 @@
   padding: 16px;
   position: relative;
   z-index: 2;
-  box-shadow: 0 14px 24px rgba(9, 22, 16, 0.45);
+  box-shadow: 0 12px 22px rgba(9, 22, 16, 0.42);
 }
 
 .card-status-header {
@@ -280,10 +280,9 @@
   font-family: 'EB Garamond', serif;
   font-size: 15px;
   font-weight: 600;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 
-/* Grilla dinámica que se adapta si el rol tiene 2, 3 o 4 botones */
 .action-pills-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(68px, 1fr));
@@ -320,18 +319,18 @@
    3. SECCIÓN "AHORA" (#1B3B2D)
    ============================================ */
 .ahora-section {
-  margin-top: 18px;
+  margin-top: 14px;
 }
 
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 
   h3 {
     font-family: 'EB Garamond', serif;
-    font-size: 22px;
+    font-size: 21px;
     color: #dbcbb9;
     margin: 0;
     font-weight: 600;
@@ -363,7 +362,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-height: 106px;
+  min-height: 102px;
   text-decoration: none;
 
   h4 {
@@ -371,7 +370,7 @@
     font-size: 16px;
     font-weight: 600;
     color: #dbcbb9;
-    margin: 8px 0 2px;
+    margin: 6px 0 2px;
   }
 
   p {
@@ -391,7 +390,7 @@
 
 .juegos-icon {
   color: #dbcbb9;
-  font-size: 27px;
+  font-size: 26px;
 }
 
 .ahora-pill-tag {
@@ -427,7 +426,7 @@
    4. ACTIVIDADES RECIENTES
    ============================================ */
 .activity-section {
-  margin-top: 16px;
+  margin-top: 14px;
 }
 
 .section-header-simple {
@@ -435,7 +434,7 @@
 
   h3 {
     font-family: 'EB Garamond', serif;
-    font-size: 21px;
+    font-size: 20px;
     color: #dbcbb9;
     margin: 0;
     font-weight: 600;
@@ -459,21 +458,21 @@
 }
 
 .activity-icon {
-  width: 36px;
-  height: 36px;
+  width: 35px;
+  height: 35px;
   border-radius: 50%;
   border: 1px solid #C8B29E;
   background: #1B3B2D;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 17px;
+  font-size: 16px;
   color: #dbcbb9;
   flex-shrink: 0;
 }
 
 /* ============================================
-   5. BARRA INFERIOR: INICIO, QR Y SALIR
+   5. BARRA INFERIOR FLOTANTE
    ============================================ */
 .mp-bottom-dock {
   position: fixed;
@@ -517,17 +516,17 @@
 }
 
 .qr-fab-btn {
-  width: 56px;
-  height: 56px;
+  width: 54px;
+  height: 54px;
   border-radius: 50%;
   background: #1B3B2D;
   color: #dbcbb9;
   border: 3px solid #dbcbb9;
-  margin-top: -34px;
+  margin-top: -32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 26px;
-  box-shadow: 0 6px 16px rgba(9, 22, 16, 0.55);
+  font-size: 25px;
+  box-shadow: 0 5px 15px rgba(9, 22, 16, 0.5);
   cursor: pointer;
 }

@@ -108,7 +108,7 @@ ion-checkbox {
   gap: 14px;
   flex: 1; 
   /* Estira las tarjetas para que no queden huecos */
-  justify-content: stretch; 
+  justify-content: space-between;
 }
 
 .control-card {
@@ -256,12 +256,16 @@ ion-range { --bar-background: rgba(200, 178, 158, 0.25); --bar-background-active
 
 /* 1. M12 y A32 (Pantallas largas ~800px de alto): */
 @media (min-height: 750px) {
+  .paso-container {
+    gap: 22px; 
+  }
+
   .control-card {
-    padding: 18px 16px;
+    padding: 24px 16px;
   }
   .acciones-footer {
-    margin-top: auto; /* Empuja el botón al final */
-    padding-top: 14px;
+    margin-top: 18px; /* Empuja un poquito el botón hacia abajo */
+    padding-bottom: 8px;
   }
 }
 

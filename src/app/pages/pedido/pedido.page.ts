@@ -4,7 +4,6 @@ import { IonContent, IonItem, IonIcon, IonButton, IonSpinner, IonFooter, IonTool
 import { addIcons } from 'ionicons';
 import { addOutline, removeOutline, cartOutline, timeOutline, alertCircleOutline, closeOutline } from 'ionicons/icons';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
-import { FCM } from '@capacitor-community/fcm';
 import { Subscription } from 'rxjs';
 import { CarritoService } from '../../services/carrito.service';
 import { ProductoCarrito } from '../../interfaces/carrito.model';
@@ -60,7 +59,7 @@ export class PedidoPage implements OnInit, OnDestroy {
   ngOnInit() {
     void this.cargarRolCliente();
     this.cargarMenuReal();
-    this.verificarPedidoActivoYSuscribirPush();
+    this.verificarPedidoActivo();
 
     this.subs.push(
       this.carritoService.items$.subscribe(items => {
@@ -103,17 +102,10 @@ export class PedidoPage implements OnInit, OnDestroy {
     }
   }
 
-  async verificarPedidoActivoYSuscribirPush() {
+  async verificarPedidoActivo() {
     try {
       const { data: userData } = await this.supabase.getClient().auth.getUser();
       if (!userData?.user) return;
-
-      // Suscribimos el celular al canal personal del cliente para recibir el rechazo del mozo
-      try {
-        await FCM.subscribeTo({ topic: `cliente_${userData.user.id}` });
-      } catch (fcmErr) {
-        console.warn('FCM no disponible en navegador web:', fcmErr);
-      }
 
       const { data: ultimoPedido } = await this.supabase.getClient()
         .from('pedidos')
@@ -208,10 +200,6 @@ export class PedidoPage implements OnInit, OnDestroy {
     try {
       const { data: userData, error: userError } = await this.supabase.getClient().auth.getUser();
       if (userError || !userData.user) throw new Error('No se pudo identificar al usuario.');
-
-      try {
-        await FCM.subscribeTo({ topic: `cliente_${userData.user.id}` });
-      } catch {}
 
       const asignacion = await this.mesasService.obtenerAsignacionActiva(userData.user.id);
       if (!asignacion?.vinculada) throw new Error('Escaneá tu mesa asignada antes de realizar un pedido.');

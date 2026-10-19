@@ -7,7 +7,6 @@ import {
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { checkmarkCircleOutline } from 'ionicons/icons';
-import { FCM } from '@capacitor-community/fcm';
 import { SupabaseService } from '../../services/supabase.service';
 import { PedidosService } from '../../services/pedidos.service'; 
 
@@ -43,7 +42,6 @@ export class BarraPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.suscribirCanalBarra();
     this.cargarPedidos();
     this.escucharNuevosPedidos();
   }
@@ -51,15 +49,6 @@ export class BarraPage implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.canalBarra) {
       this.canalBarra.unsubscribe();
-    }
-  }
-
-  private async suscribirCanalBarra() {
-    try {
-      await FCM.subscribeTo({ topic: 'bar' });
-      console.log('Suscrito al topic de bar');
-    } catch (err) {
-      console.warn('FCM no disponible en navegador web:', err);
     }
   }
 

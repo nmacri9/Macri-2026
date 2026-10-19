@@ -5,7 +5,6 @@
   --text-gold: #C8B29E;
   --accent-green: #418756;
 
-  /* Reemplaza el bordó global por el beige de la página en todos los controles */
   --ion-color-primary: #E6D5C3;
   --ion-color-primary-rgb: 230, 213, 195;
   --ion-color-primary-contrast: #132A20;
@@ -13,42 +12,17 @@
   --ion-color-primary-tint: #E6D5C3;
 }
 
-/* Radio buttons en color beige */
-ion-radio {
-  --color: #C8B29E;
-  --color-checked: #E6D5C3;
-}
-
-/* Checkboxes en color beige con tilde verde oscuro */
+/* Base Form Controls */
+ion-radio { --color: #C8B29E; --color-checked: #E6D5C3; }
 ion-checkbox {
-  --border-color: #C8B29E;
-  --border-color-checked: #E6D5C3;
-  --checkbox-background: transparent;
-  --checkbox-background-checked: #E6D5C3;
+  --border-color: #C8B29E; --border-color-checked: #E6D5C3;
+  --checkbox-background: transparent; --checkbox-background-checked: #E6D5C3;
   --checkmark-color: #132A20;
 }
-
-/* Toggle en beige y verde sin bordó */
 .toggle-row ion-toggle {
   --track-background: rgba(200, 178, 158, 0.25);
   --track-background-checked: #418756;
-  --handle-background: #C8B29E;
-  --handle-background-checked: #E6D5C3;
-}
-
-/* Quitamos la línea verde flúor inferior del select */
-.cepa-select {
-  background: rgba(19, 42, 32, 0.7);
-  border: 1px solid rgba(200, 178, 158, 0.35);
-  border-radius: 10px;
-  padding: 6px 14px;
-  color: var(--text-cream);
-  font-weight: 600;
-  --highlight-color-focused: transparent;
-  --highlight-color-valid: transparent;
-  --highlight-color-invalid: transparent;
-  --placeholder-color: #C8B29E;
-  --placeholder-opacity: 1;
+  --handle-background: #C8B29E; --handle-background-checked: #E6D5C3;
 }
 
 .encuesta-content {
@@ -59,17 +33,82 @@ ion-checkbox {
   min-height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   padding: 16px;
   box-sizing: border-box;
 }
 
+/* =======================================
+   INDICADOR DE PASOS (Estilo Google Forms)
+======================================= */
+.stepper-header {
+  text-align: center;
+  margin-bottom: 16px;
+
+  .step-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 6px;
+
+    .step {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--card-bg);
+      border: 2px solid var(--text-gold);
+      color: var(--text-gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.3s ease;
+
+      &.active {
+        background: var(--accent-green);
+        color: var(--text-cream);
+        border-color: var(--text-cream);
+      }
+    }
+
+    .step-line {
+      width: 60px;
+      height: 3px;
+      background: rgba(200, 178, 158, 0.3);
+      border-radius: 2px;
+      transition: all 0.3s ease;
+
+      &.active {
+        background: var(--accent-green);
+      }
+    }
+  }
+
+  .step-text {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-gold);
+    font-weight: 600;
+  }
+}
+
+/* =======================================
+   CONTENEDOR DE FORMULARIO FLEXIBLE
+======================================= */
 .formulario-grid {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  flex: 1; /* Ocupa todo el espacio restante */
+}
+
+.paso-container {
+  display: flex;
+  flex-direction: column;
   gap: 14px;
-  flex: 1;
+  flex: 1; 
+  /* Estira las tarjetas para que no queden huecos */
+  justify-content: space-between;
 }
 
 .control-card {
@@ -78,6 +117,12 @@ ion-checkbox {
   border-radius: 14px;
   padding: 14px 16px;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  
+  &.flex-grow {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centra el contenido si la tarjeta se estira */
+  }
 
   .card-header {
     display: flex;
@@ -85,139 +130,71 @@ ion-checkbox {
     gap: 10px;
     margin-bottom: 10px;
 
-    ion-icon {
-      font-size: 22px;
-      color: var(--text-gold);
-    }
+    ion-icon { font-size: 22px; color: var(--text-gold); }
 
     h3 {
-      margin: 0;
-      flex: 1;
+      margin: 0; flex: 1;
       font-family: 'EB Garamond', serif;
-      font-size: 1.25rem;
-      font-weight: 700;
+      font-size: 1.25rem; font-weight: 700;
       color: var(--text-cream);
     }
 
     .valor-destacado {
-      background: var(--text-gold);
-      color: var(--bg-dark);
-      font-weight: 800;
-      padding: 4px 10px;
-      border-radius: 8px;
-      font-size: 0.95rem;
+      background: var(--text-gold); color: var(--bg-dark);
+      font-weight: 800; padding: 4px 10px;
+      border-radius: 8px; font-size: 0.95rem;
     }
   }
 }
 
-ion-range {
-  --bar-background: rgba(200, 178, 158, 0.25);
-  --bar-background-active: #418756;
-  --knob-background: #E6D5C3;
-  padding: 4px 0;
-}
+/* Grillas Internas */
+ion-range { --bar-background: rgba(200, 178, 158, 0.25); --bar-background-active: #418756; --knob-background: #E6D5C3; padding: 4px 0; }
+.range-labels { display: flex; justify-content: space-between; color: var(--text-gold); font-size: 0.8rem; }
+.radio-grid, .checkbox-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
 
-.range-labels {
-  display: flex;
-  justify-content: space-between;
-  color: var(--text-gold);
-  font-size: 0.8rem;
-}
+.radio-opcion, .check-opcion {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 10px;
+  background: rgba(19, 42, 32, 0.65); border: 1px solid rgba(200, 178, 158, 0.2);
+  color: var(--text-cream); font-weight: 600; font-size: 0.95rem; cursor: pointer;
 
-.radio-grid,
-.checkbox-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-}
-
-.radio-opcion,
-.check-opcion {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  border-radius: 10px;
-  background: rgba(19, 42, 32, 0.65);
-  border: 1px solid rgba(200, 178, 158, 0.2);
-  color: var(--text-cream);
-  font-weight: 600;
-  font-size: 0.95rem;
-  cursor: pointer;
-
-  &.activa {
-    border-color: var(--text-cream);
-    background: rgba(65, 135, 86, 0.35);
-  }
+  &.activa { border-color: var(--text-cream); background: rgba(65, 135, 86, 0.35); }
 }
 
 .cepa-select {
-  background: rgba(19, 42, 32, 0.7);
-  border: 1px solid rgba(200, 178, 158, 0.35);
-  border-radius: 10px;
-  padding: 10px 12px;
-  color: var(--text-cream);
-  font-weight: 600;
+  background: rgba(19, 42, 32, 0.7); border: 1px solid rgba(200, 178, 158, 0.35);
+  border-radius: 10px; padding: 10px 12px; color: var(--text-cream); font-weight: 600;
+  --highlight-color-focused: transparent; --highlight-color-valid: transparent;
+  --placeholder-color: #C8B29E; --placeholder-opacity: 1;
 }
 
 .toggle-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-
-  h3 {
-    margin: 0;
-    font-family: 'EB Garamond', serif;
-    font-size: 1.25rem;
-    color: var(--text-cream);
-  }
-
-  small {
-    color: var(--text-gold);
-    font-size: 0.85rem;
-  }
-
-  ion-toggle {
-    --track-background: rgba(200, 178, 158, 0.3);
-    --track-background-checked: #418756;
-    --handle-background: #E6D5C3;
-  }
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
+  h3 { margin: 0; font-family: 'EB Garamond', serif; font-size: 1.25rem; color: var(--text-cream); }
+  small { color: var(--text-gold); font-size: 0.85rem; }
 }
 
 .cepa-textarea {
-  --background: rgba(19, 42, 32, 0.75);
-  --color: #E6D5C3;
-  --placeholder-color: #C8B29E;
-  --padding-start: 12px;
-  --padding-end: 12px;
-  border: 1px solid rgba(200, 178, 158, 0.35);
-  border-radius: 10px;
+  --background: rgba(19, 42, 32, 0.75); --color: #E6D5C3; --placeholder-color: #C8B29E;
+  --padding-start: 12px; --padding-end: 12px;
+  border: 1px solid rgba(200, 178, 158, 0.35); border-radius: 10px; flex: 1;
 }
 
+/* Botones */
 .acciones-footer {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 6px;
+  margin-top: 10px;
+  &.nav-doble {
+    display: flex; gap: 12px;
+    ion-button { flex: 1; margin: 0; }
+  }
 }
+.btn-principal { --background: #418756; --color: #E6D5C3; --border-radius: 12px; font-weight: 700; height: 50px; }
+.btn-secundario { --border-color: #C8B29E; --color: #E6D5C3; --border-radius: 12px; font-weight: 700; height: 50px; }
 
-.btn-principal {
-  --background: #418756;
-  --color: #E6D5C3;
-  --border-radius: 12px;
-  font-weight: 700;
-  height: 50px;
-}
 
-.btn-secundario {
-  --border-color: #C8B29E;
-  --color: #E6D5C3;
-  --border-radius: 12px;
-  font-weight: 700;
-  height: 48px;
-}
-
+/* =======================================
+   ESTADOS DE BLOQUEO Y ÉXITO
+======================================= */
 .estado-card {
   flex: 1;
   display: flex;
@@ -245,7 +222,7 @@ ion-range {
     }
 
     &.exito ion-icon {
-      color: #418756;
+      color: var(--accent-green);
     }
   }
 
@@ -265,5 +242,72 @@ ion-range {
 
   ion-button {
     width: 100%;
+    margin: 0;
+  }
+}
+
+
+
+
+
+/* =======================================
+   MEDIA QUERIES PARA LOS EQUIPOS DEL GRUPO
+======================================= */
+
+/* 1. M12 y A32 (Pantallas largas ~800px de alto): */
+@media (min-height: 750px) {
+  .paso-container {
+    gap: 22px; 
+  }
+
+  .control-card {
+    padding: 24px 16px;
+  }
+  .acciones-footer {
+    margin-top: 18px; /* Empuja un poquito el botón hacia abajo */
+    padding-bottom: 8px;
+  }
+}
+
+/* 2. J7 Prime (Pantallas cortas ~640px de alto):
+      Achicamos paddings y fonts para que entren las 3 tarjetas del Paso 1 sin cortar */
+@media (max-height: 660px) {
+  .encuesta-wrapper {
+    padding: 10px 14px;
+  }
+  .stepper-header {
+    margin-bottom: 8px;
+    .step-indicator .step { width: 28px; height: 28px; font-size: 0.85rem; }
+  }
+  .paso-container {
+    gap: 8px; /* Menos espacio entre tarjetas */
+  }
+  .control-card {
+    padding: 10px 12px;
+    .card-header {
+      margin-bottom: 6px;
+      h3 { font-size: 1.1rem; }
+    }
+  }
+  .radio-opcion, .check-opcion, .cepa-select {
+    padding: 8px 10px;
+    font-size: 0.85rem;
+  }
+  .btn-principal, .btn-secundario {
+    height: 44px;
+  }
+}
+
+/* 3. Ajustes de ancho para J4+ y M12 (Anchos angostos ~360px):
+      Evita que se rompan textos largos en las grillas */
+@media (max-width: 370px) {
+  .radio-grid, .checkbox-grid {
+    gap: 6px;
+  }
+  .radio-opcion span, .check-opcion span {
+    font-size: 0.82rem;
+  }
+  .cepa-select {
+    font-size: 0.85rem;
   }
 }

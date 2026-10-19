@@ -6,7 +6,8 @@ import {
   ModalController 
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { checkmarkCircleOutline } from 'ionicons/icons';
+import { checkmarkCircleOutline, restaurantOutline, timeOutline } from 'ionicons/icons';
+import { FCM } from '@capacitor-community/fcm'; // <-- AGREGADO
 import { SupabaseService } from '../../services/supabase.service';
 
 import { CepaHeaderComponent } from '../../shared/components/cepa-header/cepa-header.component';
@@ -38,7 +39,7 @@ export class CocinaPage implements OnInit, OnDestroy {
     private modalCtrl: ModalController,
     private pedidosService: PedidosService
   ) {
-    addIcons({ checkmarkCircleOutline });
+    addIcons({restaurantOutline,timeOutline,checkmarkCircleOutline});
   }
 
   ngOnInit() {

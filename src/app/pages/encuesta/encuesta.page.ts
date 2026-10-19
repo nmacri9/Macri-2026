@@ -11,7 +11,8 @@ import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { addIcons } from 'ionicons';
 import {
   starOutline, happyOutline, timeOutline, sparklesOutline,
-  chatboxEllipsesOutline, checkmarkCircleOutline, barChartOutline, lockClosedOutline
+  chatboxEllipsesOutline, checkmarkCircleOutline, barChartOutline, 
+  lockClosedOutline, arrowForwardOutline, arrowBackOutline // <-- Nuevos iconos
 } from 'ionicons/icons';
 
 import { SupabaseService } from '../../services/supabase.service';
@@ -41,14 +42,17 @@ export class EncuestaPage implements OnInit {
   yaRespondio = false;
   sinPedidoRecibido = false;
 
-  // cinco Controles distintos
+  // Control tipo Google Forms
+  pasoActual: number = 1;
+
   // 1. Range (1 a 10)
   calidadComida: number = 8;
   // 2. Radio Group
   atencionMozo: string = '';
   // 3. Select
   tiempoEspera: string = '';
-  // 4. Checkboxes multiples
+  
+  // 4. Checkboxes múltiples
   aspectos = [
     { nombre: 'Sabor', seleccionado: false },
     { nombre: 'Limpieza', seleccionado: false },
@@ -58,6 +62,10 @@ export class EncuestaPage implements OnInit {
   // 5. Toggle + Textarea
   recomendaria: boolean = true;
   comentario: string = '';
+
+  selectOptions = {
+    cssClass: 'cepa-select-overlay'
+  };
 
   constructor(
     private supabase: SupabaseService,
@@ -69,7 +77,8 @@ export class EncuestaPage implements OnInit {
   ) {
     addIcons({
       starOutline, happyOutline, timeOutline, sparklesOutline,
-      chatboxEllipsesOutline, checkmarkCircleOutline, barChartOutline, lockClosedOutline
+      chatboxEllipsesOutline, checkmarkCircleOutline, barChartOutline, 
+      lockClosedOutline, arrowForwardOutline, arrowBackOutline
     });
   }
 
@@ -86,7 +95,6 @@ export class EncuestaPage implements OnInit {
       if (!user) throw new Error('Sesión no encontrada');
       this.usuarioId = user.id;
 
-      //  busco el ultimo pedido de la estadia actual del cliente
       const { data: pedido, error: errPedido } = await this.supabase.getClient()
         .from('pedidos')
         .select('id, estado')
@@ -105,7 +113,6 @@ export class EncuestaPage implements OnInit {
 
       this.pedidoActivoId = pedido.id;
 
-      // verifico si ya completo la encuesta en esta estadía (1 por pedido_id)
       const { data: encuestaExistente, error: errEncuesta } = await this.supabase.getClient()
         .from('encuestas')
         .select('id')
@@ -124,15 +131,37 @@ export class EncuestaPage implements OnInit {
     }
   }
 
-  async validarYConfirmar() {
-    const aspectosElegidos = this.aspectos.filter(a => a.seleccionado).map(a => a.nombre);
+  toggleAtencion(valor: string) {
+    if (this.atencionMozo === valor) {
+      this.atencionMozo = ''; 
+    } else {
+      this.atencionMozo = valor;
+    }
+  }
 
+  async siguientePaso() {
+    // Validamos solo la primera página
     if (!this.atencionMozo) {
       return this.mostrarError('Seleccioná cómo fue la atención del mozo.');
     }
     if (!this.tiempoEspera) {
       return this.mostrarError('Seleccioná qué te pareció el tiempo de espera.');
     }
+    
+    // Todo OK, pasamos a la página 2 simulando cambio de vista
+    this.pasoActual = 2;
+    this.cdr.detectChanges();
+  }
+
+  pasoAnterior() {
+    this.pasoActual = 1;
+    this.cdr.detectChanges();
+  }
+
+  async validarYConfirmar() {
+    const aspectosElegidos = this.aspectos.filter(a => a.seleccionado).map(a => a.nombre);
+
+    // Validamos solo la segunda página
     if (aspectosElegidos.length === 0) {
       return this.mostrarError('Marcá al menos un aspecto destacado del local.');
     }
@@ -215,18 +244,4 @@ export class EncuestaPage implements OnInit {
     });
     await toast.present();
   }
-
-selectOptions = {
-    cssClass: 'cepa-select-overlay'
-  };
-
-toggleAtencion(valor: string) {
-    if (this.atencionMozo === valor) {
-      this.atencionMozo = ''; // Si toca la misma opcion, se deselecciona
-    } else {
-      this.atencionMozo = valor;
-    }
-  }
-
-
 }

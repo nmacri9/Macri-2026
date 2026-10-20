@@ -93,26 +93,50 @@ Disponible para clientes registrados aprobados con una mesa asignada. La primera
 
 > _A continuación se detallan todas las capturas correspondientes a íconos, pantallas de presentación, formularios y listados del proyecto._
 
-|   #    | Componente / Pantalla              | Enlace de visualización                         |
-| :----: | :--------------------------------- | :---------------------------------------------- |
-| **1**  | Ícono de la aplicación             | [Ver imagen](./resources/icon.png)              |
-| **2**  | Splash Dinámico                    | [Ver imagen](./capturas/Splash-screen.jpeg)     |
-| **3**  | Spinner                            | [Ver imagen](./capturas/spinner.jpeg)           |
-| **4**  | Login: Pantalla principal          | [Ver imagen](./capturas/login.jpeg)             |
-| **5**  | Pantalla principal                 | [Ver imagen](./capturas/home.jpeg)              |
-| **6**  | Alta de Mesa: Vista                | [Ver imagen](./capturas/alta-mesa.jpeg)         |
-| **7**  | Alta de Plato: Vista               | [Ver imagen](./capturas/alta-plato.jpeg)        |
-| **8**  | Alta de Bebida: Vista              | [Ver imagen](./capturas/alta-bebida.jpeg)       |
-| **9**  | Alta de Empleado: Vista            | [Ver imagen](./capturas/alta-empleado.jpeg)     |
-| **10** | Registro de Empleado: Vista        | [Ver imagen](./capturas/Registro-empleado.jpeg) |
-| **11** | Clientes pendientes: Vista         | [Ver imagen](./capturas/cliente-pendiente.jpeg) |
-| **12** | Asignación de mesa (Metre): Vista  | [Ver imagen](./capturas/Asignar-mesa.jpeg)      |
-| **13** | Realizar pedido (Cliente): Vista   | [Ver imagen](./capturas/.jpeg)                  |
-| **14** | Menú de pedidos (Cliente): Vista   | [Ver imagen](./capturas/menu.jpeg)              |
-| **15** | Escanear mesa (Cliente): Vista     | [Ver imagen](./capturas/escanear-mesa.jpeg)     |
-| **16** | Ingreso al local (Cliente): Vista  | [Ver imagen](./capturas/.jpeg)                  |
-| **17** | Confirmar pedido (Mozo): Vista     | [Ver imagen](./capturas/.jpeg)                  |
-| **18** | Gestion Comandas (Cocinero): Vista | [Ver imagen](./capturas/.jpeg)                  |
-| **19** | Vista de Encuestas (Punto 19)      | [Ver imagen](./capturas/.jpeg)                  |
-| **20** | Visualización de Datos (3 Gráficos) (Punto 20) | [Ver imagen](./capturas/.jpeg)       |
-| **21** | Pedir Propina / Cierre de Cuenta (Punto 21) | [Ver imagen](./capturas/.jpeg)           |
+Componente / Pantalla              | Enlace de visualización                         |
+ :--------------------------------- | :---------------------------------------------- |
+ Ícono de la aplicación             | [Ver imagen](./resources/icon.png)              |
+ Splash Dinámico                    | [Ver imagen](./capturas/Splash-screen.jpeg)     |
+ Spinner                            | [Ver imagen](./capturas/spinner.jpeg)           |
+ Login: Pantalla principal          | [Ver imagen](./capturas/login.jpeg)             |
+ Pantalla principal                 | [Ver imagen](./capturas/home.jpeg)              |
+ Alta de Mesa: Vista                | [Ver imagen](./capturas/alta-mesa.jpeg)         |
+ Alta de Plato: Vista               | [Ver imagen](./capturas/carga-plato.jpeg)       |
+ Alta de Bebida: Vista              | [Ver imagen](./capturas/carga-barra.jpeg)       |
+ Alta de Empleado: Vista            | [Ver imagen](./capturas/alta-empleado.jpeg)     |
+ Registro de Empleado: Vista        | [Ver imagen](./capturas/Registro-empleado.jpeg) |
+ Clientes pendientes: Vista         | [Ver imagen](./capturas/cliente-pendiente.jpeg) |
+ Asignación de mesa (Metre): Vista  | [Ver imagen](./capturas/Asignar-mesa.jpeg)      |
+ Realizar pedido (Cliente): Vista   | [Ver imagen](./capturas/.jpeg)                  |
+ Menú de pedidos (Cliente): Vista   | [Ver imagen](./capturas/menu.jpeg)              |
+ Escanear mesa (Cliente): Vista     | [Ver imagen](./capturas/escanear-mesa.jpeg)     |
+ Ingreso al local (Cliente): Vista  | [Ver imagen](./capturas/.jpeg)                  |
+ Confirmar pedido (Mozo): Vista     | [Ver imagen](./capturas/confirmar-pedido.jpeg)  | 
+ Comandas (Cocinero/Cantinero): Vista | [Ver imagen](./capturas/comandas-cocina.jpeg) |
+ Vista de Encuestas                 | [Ver imagen](./capturas/encuestas.jpeg)         |
+ Vista de Encuestas 2               | [Ver imagen](./capturas/encuestas-2.jpeg)       | 
+ Gráfico torta                      | [Ver imagen](./capturas/grafico-torta.jpeg)     |
+ Gráfico barra                      | [Ver imagen](./capturas/grafico-barra.jpeg)     |
+ Gráfico lineal                     | [Ver imagen](./capturas/grafico-lineal.jpeg)    |
+ Juegos                             | [Ver imagen](./capturas/juegos.jpeg)            |
+ Pedir Propina / Cierre de Cuenta (Punto 21) | [Ver imagen](./capturas/.jpeg)         |
+
+## Índice de Imágenes QRs
+Componente / Pantalla              | Enlace de visualización                         |
+ :--------------------------------- | :---------------------------------------------- |
+ QR MESA             | [Ver imagen](./resources/mesa-dos.png) |
+ QR MESA             | [Ver imagen](./capturas/mesa-tres.jpeg) |
+ QR MESA             | [Ver imagen](./capturas/mesa-cuatro.jpeg) |
+ QR MESA             | [Ver imagen](./capturas/mesa-seis.jpeg) |
+ QR MESA             | [Ver imagen](./capturas/mesa-trece.jpeg) |
+ QR MESA             | [Ver imagen](./capturas/mesa-once.jpeg) |
+ QR MESA             | [Ver imagen](./capturas/mesa-catorce.jpeg) |
+ QR MESA             | [Ver imagen](./capturas/mesa-doce.jpeg) |
+
+ Propina 0%          | [Ver imagen](./capturas/propi-cero.jpeg) |
+ Propina 5%          | [Ver imagen](./capturas/propi-cinco.jpeg) |
+ Propina 10%         | [Ver imagen](./capturas/propi-diez.jpeg) |
+ Propina 15%         | [Ver imagen](./capturas/propi-quince.jpeg) |
+ Propina 20%         | [Ver imagen](./capturas/propi-veinte.jpeg) |
+
+ 

@@ -59,8 +59,9 @@ serve(async (req) => {
         notification: {
           sound: 'default',
           priority: 'max',
-          visibility: 'public'
-          // Quitamos channelId fijo para que Android no lo descarte si el canal no fue registrado
+          visibility: 'public',
+          // Debe coincidir con el canal creado por la app y con AndroidManifest.xml.
+          channelId: 'default'
         }
       },
       topic: topic

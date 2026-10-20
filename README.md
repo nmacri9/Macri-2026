@@ -118,7 +118,7 @@ Componente / Pantalla              | Enlace de visualización                   
  Gráfico torta                      | [Ver imagen](./capturas/grafico-torta.jpg)     |
  Gráfico barra                      | [Ver imagen](./capturas/grafico-barra.jpg)     |
  Gráfico lineal                     | [Ver imagen](./capturas/grafico-lineal.jpg)    |
- Juegos                             | [Ver imagen](./capturas/juegos.jpeg)            |
+ Juegos                             | [Ver imagen](./capturas/juegos.jpg)            |
  Pedir Propina / Cierre de Cuenta (Punto 21) | [Ver imagen](./capturas/.jpeg)         |
 
 ## Índice de Imágenes QRs

@@ -123,16 +123,15 @@ Componente / Pantalla              | Enlace de visualización                   
 
 ## Índice de Imágenes QRs
 Componente / Pantalla              | Enlace de visualización                         |
- :--------------------------------- | :---------------------------------------------- |
- QR MESA             | [Ver imagen](./resources/mesa-dos.png) |
- QR MESA             | [Ver imagen](./capturas/mesa-tres.jpeg) |
- QR MESA             | [Ver imagen](./capturas/mesa-cuatro.jpeg) |
- QR MESA             | [Ver imagen](./capturas/mesa-seis.jpeg) |
- QR MESA             | [Ver imagen](./capturas/mesa-trece.jpeg) |
- QR MESA             | [Ver imagen](./capturas/mesa-once.jpeg) |
- QR MESA             | [Ver imagen](./capturas/mesa-catorce.jpeg) |
- QR MESA             | [Ver imagen](./capturas/mesa-doce.jpeg) |
-
+ :--------------------------------- | :----------------------------------------------|
+ QR MESA 2           | [Ver imagen](./resources/mesa-dos.png) |
+ QR MESA 3           | [Ver imagen](./capturas/mesa-tres.jpeg) |
+ QR MESA 4            | [Ver imagen](./capturas/mesa-cuatro.jpeg) |
+ QR MESA 6            | [Ver imagen](./capturas/mesa-seis.jpeg) |
+ QR MESA 13            | [Ver imagen](./capturas/mesa-trece.jpeg) |
+ QR MESA 11            | [Ver imagen](./capturas/mesa-once.jpeg) |
+ QR MESA 14            | [Ver imagen](./capturas/mesa-catorce.jpeg) |
+ QR MESA 12            | [Ver imagen](./capturas/mesa-doce.jpeg) |
  Propina 0%          | [Ver imagen](./capturas/propi-cero.jpeg) |
  Propina 5%          | [Ver imagen](./capturas/propi-cinco.jpeg) |
  Propina 10%         | [Ver imagen](./capturas/propi-diez.jpeg) |

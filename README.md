@@ -124,7 +124,7 @@ Componente / Pantalla              | Enlace de visualización                   
 ## Índice de Imágenes QRs
 Componente / Pantalla              | Enlace de visualización                         |
  :--------------------------------- | :----------------------------------------------|
- QR MESA 2           | [Ver imagen](./resources/mesa-dos.png) |
+ QR MESA 2           | [Ver imagen](./capturas/mesa-dos.png) |
  QR MESA 3           | [Ver imagen](./capturas/mesa-tres.jpeg) |
  QR MESA 4            | [Ver imagen](./capturas/mesa-cuatro.jpeg) |
  QR MESA 6            | [Ver imagen](./capturas/mesa-seis.jpeg) |

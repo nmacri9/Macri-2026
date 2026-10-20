@@ -1,7 +1,14 @@
 <app-cepa-header titulo="Asignar Mesas" defaultHref="/home"></app-cepa-header>
 
 <ion-content class="ion-padding content-bg">
-  <ion-button fill="outline" (click)="actualizar()" [disabled]="cargandoMesas || cargandoLista || asignando">Actualizar mesas y clientes</ion-button>
+  <ion-button 
+  expand="block"
+  fill="outline" 
+  class="btn-actualizar"
+  (click)="actualizar()" 
+  [disabled]="cargandoMesas || cargandoLista || asignando">
+  Actualizar mesas y clientes
+</ion-button>
 
   <div class="estado-carga" *ngIf="cargandoMesas || cargandoLista" role="status">
     Cargando mesas y clientes…

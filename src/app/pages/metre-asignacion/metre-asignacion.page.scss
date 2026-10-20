@@ -5,6 +5,49 @@
     --color-accent: #C8B29E;
     --color-border: rgba(200, 178, 158, 0.15);
     display: block;
+
+
+    --ion-color-primary: #E6D5C3;
+    --ion-color-primary-rgb: 230, 213, 195;
+    --ion-color-primary-contrast: #132A20;
+    --ion-color-primary-shade: #C8B29E;
+    --ion-color-primary-tint: #E6D5C3;
+
+}
+
+.content-bg {
+    --background: var(--color-bg);
+}
+
+
+
+.btn-actualizar {
+    --border-color: #C8B29E;
+    --color: #E6D5C3;
+    --border-radius: 12px;
+    --border-width: 1px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    height: 46px;
+    margin: 0 0 16px 0;
+    text-transform: none;
+    letter-spacing: 0.3px;
+
+    &[disabled] {
+        opacity: 0.4;
+    }
+}
+
+/* Para que los botones de 'Reintentar' cuando hay error tampoco salgan bordó */
+.estado-carga ion-button[fill="outline"] {
+    --border-color: #C8B29E;
+    --color: #E6D5C3;
+    --border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    text-transform: none;
+    margin-top: 8px;
 }
 
 .content-bg {

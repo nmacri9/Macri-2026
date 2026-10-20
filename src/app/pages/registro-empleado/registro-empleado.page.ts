@@ -2,7 +2,7 @@
 import { Component, OnInit, ChangeDetectorRef,ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
-import { IonContent, IonItem, IonInput, IonButton, IonIcon, IonSelect, IonSelectOption, IonHeader, IonToolbar, IonButtons, IonModal, Platform } from '@ionic/angular';
+import { IonContent, IonItem, IonInput, IonButton, IonIcon, IonSelect, IonSelectOption, IonHeader, IonToolbar, IonButtons, IonModal, Platform, IonFooter } from '@ionic/angular';
 import { cameraOutline, camera, qrCodeOutline, personOutline, cardOutline, documentTextOutline, mailOutline, lockClosedOutline, briefcaseOutline, exitOutline, closeOutline } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
@@ -28,6 +28,7 @@ import { CepaHeaderComponent } from '../../shared/components/cepa-header/cepa-he
     IonItem, 
     IonInput, 
     IonButton, 
+    IonFooter,
     IonIcon, 
     IonSelect, 
     IonSelectOption,

@@ -11,7 +11,8 @@ import {
   ActionSheetController,
   IonRefresher,
   IonRefresherContent,
-  IonButton
+  IonButton,
+  IonFooter,
 } from '@ionic/angular';
 import { SupabaseService } from '../services/supabase.service';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
@@ -464,10 +465,7 @@ export class HomePage {
       if (this.esCliente && this.usuarioActual) {
         this.actividadesRecientes = [
           { icono: 'book-outline', texto: 'Ver Carta Digital completa', ruta: '/menu-productos' },
-          { icono: 'pie-chart-outline', texto: 'Resultados de Encuestas', ruta: '/graficos-encuestas' },
-          ...(this.puedeUsarChat
-            ? [{ icono: 'chatbubbles-outline', texto: 'Consultar al Mozo por Chat', ruta: '/chat-cliente' }]
-            : [])
+
         ];
       }
     } catch (err) {

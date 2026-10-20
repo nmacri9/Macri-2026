@@ -14,11 +14,15 @@
     <ion-card-header>
       <div class="header-comanda">
         <ion-card-title>Mesa {{ pedido.mesa_id }}</ion-card-title>
-        <ion-badge color="warning">{{ pedido.created_at | date:'HH:mm' }}</ion-badge>
+        <ion-badge color="warning">
+          <ion-icon name="time-outline"></ion-icon>
+          {{ pedido.created_at | date: 'dd/MM - HH:mm' }}
+        </ion-badge>
       </div>
     </ion-card-header>
 
     <ion-card-content>
+      <div class="scroll-controlado">
       <ion-list lines="full" class="lista-items">
         <!-- Mostramos solo los items de bebiaa -->
         <ion-item *ngFor="let item of pedido.items">
@@ -28,6 +32,7 @@
           <ion-badge slot="end" color="light">x{{ item.cantidad }}</ion-badge>
         </ion-item>
       </ion-list>
+      </div>
 
       <ion-button expand="block" color="success" class="btn-listo" (click)="abrirModalConfirmacion(pedido.id)">
         <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>

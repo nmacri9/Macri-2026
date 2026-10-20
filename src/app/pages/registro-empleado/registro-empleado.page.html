@@ -1,6 +1,6 @@
 <app-cepa-header [titulo]="'Registro de Empleados'"></app-cepa-header>
 
-<ion-content>
+<ion-content class="registro-content">
   <app-cepa-spinner *ngIf="cargando"></app-cepa-spinner>
 
   <form [formGroup]="registroForm" (ngSubmit)="confirmarAlta()" [hidden]="cargando">
@@ -31,7 +31,6 @@
       <small class="avatar-error" *ngIf="(registroForm.get('foto')?.dirty || formEnviado) && registroForm.get('foto')?.invalid">
         La foto es obligatoria.
       </small>
-
     </div>
 
     <!-- Campos autocompletables por DNI -->
@@ -40,7 +39,7 @@
 
       <ion-item class="field" lines="none">
         <ion-icon name="person-outline" slot="start"></ion-icon>
-        <ion-input formControlName="nombres" label="Nombres" labelPlacement="floating" type="text" ></ion-input>
+        <ion-input formControlName="nombres" label="Nombres" labelPlacement="floating" type="text"></ion-input>
       </ion-item>
 
       <ion-item class="field" lines="none">
@@ -73,7 +72,6 @@
         <ion-input formControlName="clave" label="Contraseña temporal" labelPlacement="floating" type="password"></ion-input>
       </ion-item>
 
-      <!-- Nuevo Campo: Confirmar Contraseña -->
       <ion-item class="field" lines="none">
         <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
         <ion-input formControlName="confirmarClave" label="Confirmar Contraseña" labelPlacement="floating" type="password"></ion-input>
@@ -82,10 +80,10 @@
       <ion-item class="field" lines="none">
         <ion-icon name="briefcase-outline" slot="start"></ion-icon>
         <ion-select formControlName="perfil" label="Perfil" labelPlacement="floating" cancelText="Cancelar" okText="OK" [interfaceOptions]="{ cssClass: 'cepa-select-alert' }">
-        <ion-select-option value="COCINERO">Cocinero</ion-select-option>
-        <ion-select-option value="MOZO">Mozo</ion-select-option>
-        <ion-select-option value="CANTINERO">Cantinero</ion-select-option>
-        <ion-select-option value="METRE">Metre</ion-select-option>
+          <ion-select-option value="COCINERO">Cocinero</ion-select-option>
+          <ion-select-option value="MOZO">Mozo</ion-select-option>
+          <ion-select-option value="CANTINERO">Cantinero</ion-select-option>
+          <ion-select-option value="METRE">Metre</ion-select-option>
         </ion-select>
       </ion-item>
     </section>
@@ -101,15 +99,8 @@
     <div class="form-error" *ngIf="errorSupabase">
       <small>{{ errorSupabase }}</small>
     </div>
-
-    <div class="submit-spacer"></div>
   </form>
 
-  <div class="submit-bar">
-    <ion-button class="btn-submit" type="button" expand="block" (click)="confirmarAlta()" [disabled]="cargando">
-      {{ cargando ? 'Guardando...' : 'Guardar Empleado' }}
-    </ion-button>
-  </div>
   <!-- POPUP PARA VER LA IMAGEN GRANDE -->
   <ion-modal [isOpen]="modalAbierta" (didDismiss)="cerrarModal()">
     <ng-template>
@@ -137,5 +128,13 @@
       </ion-content>
     </ng-template>
   </ion-modal>
-
 </ion-content>
+
+<!-- BOTÓN FIJO EN EL FOOTER (SCROLL CONTROLADO) -->
+<ion-footer class="submit-footer ion-no-border">
+  <div class="submit-bar">
+    <ion-button class="btn-submit" type="button" expand="block" (click)="confirmarAlta()" [disabled]="cargando">
+      {{ cargando ? 'Guardando...' : 'Guardar Empleado' }}
+    </ion-button>
+  </div>
+</ion-footer>

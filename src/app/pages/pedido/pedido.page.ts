@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonContent, IonItem, IonIcon, IonButton, IonSpinner, IonFooter, IonToolbar, IonTitle, IonHeader, IonButtons } from '@ionic/angular';
+import { IonContent, IonItem, IonIcon, IonButton,IonList, IonSpinner, IonFooter, IonToolbar, IonTitle, IonHeader, IonButtons } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { addOutline, removeOutline, cartOutline, timeOutline, alertCircleOutline, closeOutline } from 'ionicons/icons';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
@@ -12,7 +12,7 @@ import { MesasService } from '../../services/mesas.service';
 import { AuthService } from '../../services/auth.service';
 import { CepaHeaderComponent } from '../../shared/components/cepa-header/cepa-header.component';
 import { CepaSpinnerComponent } from '../../shared/components/cepa-spinner/cepa-spinner.component';
-import { IonModal } from '@ionic/angular/common';
+import { IonModal, } from '@ionic/angular/common';
 import { ViewChild } from '@angular/core';
 import { ModalController} from '@ionic/angular';
 import { ConfirmModalComponent } from '../../shared/confirm-modal/confirm-modal.component';
@@ -24,7 +24,7 @@ type EstadoPedido = 'carrito' | 'pendiente_confirmacion' | 'rechazado_mozo' | 'c
   templateUrl: './pedido.page.html',
   styleUrls: ['./pedido.page.scss'],
   standalone: true,
-  imports: [IonContent, IonItem,IonFooter, IonToolbar, IonTitle,IonHeader, IonButtons, IonModal , IonIcon, IonButton, IonSpinner, CommonModule, CepaHeaderComponent, CepaSpinnerComponent]
+  imports: [IonContent, IonItem,IonList, IonFooter, IonToolbar, IonTitle,IonHeader, IonButtons, IonModal , IonIcon, IonButton, IonSpinner, CommonModule, CepaHeaderComponent, CepaSpinnerComponent]
 })
 export class PedidoPage implements OnInit, OnDestroy {
   @ViewChild('modalCarrito') modalCarrito!: IonModal;

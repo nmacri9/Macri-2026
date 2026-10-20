@@ -128,15 +128,15 @@
 <!-- =======================================================
      4. MODAL SOBREPANTALLA (SIN ngIf, COMPLETO Y CON CRUZ)
      ======================================================= -->
-<ion-modal #modalCarrito class="modal-cepa">
-    
+<ion-modal #modalCarrito class="modal-cepa modal-auto-altura">
     <!-- Encabezado del Modal con la Cruz -->
     <ion-header class="ion-no-border">
       <ion-toolbar style="--background: #18392B;">
         <ion-title style="color: #dbcbb9; font-family: 'EB Garamond', serif; font-size: 22px;">Resumen del Pedido</ion-title>
         <ion-buttons slot="end">
           <ion-button (click)="modalCarrito.dismiss()">
-            <ion-icon name="close-outline" style="font-size: 32px; color: #C8B29E;"></ion-icon>          </ion-button>
+            <ion-icon name="close-outline" style="font-size: 32px; color: #C8B29E;"></ion-icon>
+          </ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
@@ -148,22 +148,25 @@
         <p>No hay productos en tu pedido.</p>
       </div>
 
-      <ion-item class="carrito-item item-agregado" lines="none" *ngFor="let item of items">
-        <div class="carrito-item-info">
-          <span class="carrito-item-nombre">{{ item.nombre }}</span>
-          <span class="carrito-item-precio">${{ item.precio }} c/u</span>
-        </div>
+      <!-- Envoltorio ion-list agregado para que la grilla y dimensiones se calculen bien -->
+      <ion-list lines="none" style="background: transparent; margin: 0; padding: 0;">
+        <ion-item class="carrito-item item-agregado" *ngFor="let item of items">
+          <div class="carrito-item-info">
+            <span class="carrito-item-nombre">{{ item.nombre }}</span>
+            <span class="carrito-item-precio">${{ item.precio }} c/u</span>
+          </div>
 
-        <div class="carrito-item-controles">
-          <ion-button fill="clear" class="control-btn" (click)="restar(item)">
-            <ion-icon name="remove-outline"></ion-icon>
-          </ion-button>
-          <span class="carrito-item-cantidad">{{ item.cantidad }}</span>
-          <ion-button fill="clear" class="control-btn" (click)="sumar(item)">
-            <ion-icon name="add-outline"></ion-icon>
-          </ion-button>
-        </div>
-      </ion-item>
+          <div class="carrito-item-controles">
+            <ion-button fill="clear" class="control-btn" (click)="restar(item)">
+              <ion-icon name="remove-outline"></ion-icon>
+            </ion-button>
+            <span class="carrito-item-cantidad">{{ item.cantidad }}</span>
+            <ion-button fill="clear" class="control-btn" (click)="sumar(item)">
+              <ion-icon name="add-outline"></ion-icon>
+            </ion-button>
+          </div>
+        </ion-item>
+      </ion-list>
 
       <div class="form-error" *ngIf="errorPedido">
         <small>{{ errorPedido }}</small>

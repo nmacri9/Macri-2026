@@ -435,8 +435,6 @@ export class HomePage {
         this.notificacionesBadge = this.pedidosPorConfirmarCount;
         this.actividadesRecientes = [
           { icono: 'checkmark-circle-outline', texto: `Pedidos por confirmar: ${this.pedidosPorConfirmarCount}`, ruta: '/confirmar-pedido' },
-          { icono: 'chatbubbles-outline', texto: 'Abrir canal de consultas de mesas', ruta: '/chat-cliente' },
-          { icono: 'book-outline', texto: 'Ver carta de productos', ruta: '/menu-productos' }
         ];
       }
 

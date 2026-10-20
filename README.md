@@ -66,6 +66,10 @@ Trabajo Final Integrador (TFI) — App móvil para la gestión de un salón gast
 | **Entrega y recepción (Punto 19)** | El mozo entrega (`entregado`) y el cliente confirma la recepción (`recibido`), lo que desbloquea Juegos, Encuesta y Pedir la cuenta. | Garcia |
 | **Encuestas y gráficos (Punto 20)** | Encuesta con 6 tipos de control, una por pedido (`UNIQUE(pedido_id)`), y gráficos Chart.js (torta, barras y línea) mostrados de a uno por pantalla. | Goncalves |
 | **Juegos con descuento** | Ahorcado, memotest y verdadero o falso para clientes con mesa; el primer premio da entre 10 % y 20 % de descuento (detalle más abajo). | Breyaui |
+| **Cuenta y propina QR (Punto 21)** | Solicitud de cuenta con push al mozo y lectura obligatoria de uno de los cinco QR de satisfacción: Malo 0 %, Regular 5 %, Bueno 10 %, Muy Bueno 15 % y Excelente 20 %. Ticket con precios unitarios, importes, descuento de juegos, propina y total destacado. | Breyaui |
+| **Pago simulado (Punto 21)** | El cliente simula el pago y espera la confirmación del mozo; se avisa por push al mozo, dueño y supervisor. | Breyaui |
+| **Confirmación y liberación de mesa (Punto 22)** | El mozo confirma el pago, cierra la asignación y libera la mesa. Se notifica por push al cliente, dueño y supervisor; un nuevo escaneo de la mesa requiere una nueva asignación. | Breyaui |
+| **Resultados desde el QR de ingreso (Punto 22)** | El QR de ingreso y lista de espera permite consultar los resultados de encuestas en gráficos de torta, barras y línea, uno por pantalla; también se reconoce desde el lector de mesa. | Breyaui |
 
 **Estados de un pedido:**
 
@@ -81,7 +85,7 @@ pendiente_confirmacion → confirmado → listo_para_entregar → entregado → 
 Disponible para clientes registrados aprobados con una mesa asignada. La primera victoria da descuento (Ahorcado 20 %, Memoria 15 %, Verdadero o falso 10 %); solo se aplica el primero y después los juegos quedan por diversión. La base guarda únicamente `asignaciones.descuento_obtenido`.
 
 - **Para habilitarlo:** aplicar la migración [`supabase/migrations/20260930160000_juegos_descuentos.sql`](./supabase/migrations/20260930160000_juegos_descuentos.sql) con una cuenta administradora; la app no crea la columna.
-- **Limitación:** el premio todavía no modifica el total ni el cobro; antes de usarlo para cobrar hay que validar las victorias en el servidor.
+- **Aplicación en la cuenta:** el descuento guardado en la asignación se descuenta del consumo antes de calcular la propina. La validación de las victorias en el servidor sigue pendiente.
 
 ---
 

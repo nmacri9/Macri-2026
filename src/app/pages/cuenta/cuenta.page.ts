@@ -8,6 +8,7 @@ import { BarcodeFormat, BarcodeScanner } from '@capacitor-mlkit/barcode-scanning
 import { addIcons } from 'ionicons';
 import { qrCodeOutline, checkmarkCircle, receiptOutline, arrowBackOutline } from 'ionicons/icons';
 import { Cuenta, CuentaService, SATISFACCION } from '../../services/cuenta.service';
+import { CepaHeaderComponent } from '../../shared/components/cepa-header/cepa-header.component';
 
 registerLocaleData(localeEsAr);
 
@@ -15,7 +16,7 @@ registerLocaleData(localeEsAr);
   selector: 'app-cuenta',
   standalone: true,
   providers: [{ provide: LOCALE_ID, useValue: 'es-AR' }],
-  imports: [CommonModule, RouterLink, IonContent, IonButton, IonIcon, IonSpinner],
+  imports: [CommonModule, RouterLink, IonContent, IonButton, IonIcon, IonSpinner, CepaHeaderComponent],
   templateUrl: './cuenta.page.html',
   styleUrls: ['./cuenta.page.scss'],
 })

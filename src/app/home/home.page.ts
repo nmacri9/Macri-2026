@@ -626,7 +626,7 @@ export class HomePage {
           }
         },
         {
-          text: 'Ver Encuestas',
+          text: 'Ver resultados de encuestas',
           icon: 'pie-chart-outline',
           handler: () => {
             this.router.navigate(['/graficos-encuestas']);

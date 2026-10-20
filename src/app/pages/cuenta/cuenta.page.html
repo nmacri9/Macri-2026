@@ -1,10 +1,7 @@
+<app-cepa-header titulo="Tu cuenta" defaultHref="/home"></app-cepa-header>
+
 <ion-content class="cuenta-content">
   <main>
-    <nav aria-label="Navegación de la cuenta">
-      <a routerLink="/home"><ion-icon name="arrow-back-outline" aria-hidden="true" /> Volver</a>
-      <span>CEPA <span class="marca-detalle">/ Tu cuenta</span></span>
-    </nav>
-
     @if (cargando) {
       <section class="mensaje" role="status"><ion-spinner /><p>Consultando tu cuenta…</p></section>
     } @else {

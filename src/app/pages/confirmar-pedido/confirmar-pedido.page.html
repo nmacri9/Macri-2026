@@ -1,14 +1,12 @@
 <app-cepa-header [titulo]="'Confirmar Pedidos'"></app-cepa-header>
 <ion-content class="ion-padding">
-  <app-cepa-spinner *ngIf="cargando"></app-cepa-spinner>
-
-  <div [hidden]="cargando">
     <section class="cuentas-panel" aria-label="Cuentas y pagos">
       <h2>Cuentas y pagos</h2>
       <p *ngIf="errorCuentas" role="alert">{{ errorCuentas }}</p>
-      <ion-button fill="clear" (click)="cargarCuentas()">Actualizar cuentas</ion-button>
+      <ion-button fill="clear" [disabled]="cargandoCuentas" (click)="cargarCuentas()">{{ cargandoCuentas ? 'Actualizando cuentas…' : 'Actualizar cuentas' }}</ion-button>
+      <p *ngIf="!cargandoCuentas && !errorCuentas && cuentas.length === 0" role="status">No hay cuentas pendientes visibles para este usuario.</p>
       <aside *ngIf="avisoCuentaPendiente" role="status">
-        <p>Pago confirmado y mesa liberada. Queda pendiente el aviso al cliente.</p>
+        <p>Pago confirmado y mesa liberada. Quedan avisos pendientes para el cliente o el personal.</p>
         <ion-button fill="clear" (click)="reintentarAvisoCuenta()">Reintentar aviso</ion-button>
       </aside>
       <ion-item class="pedido-card" lines="none" *ngFor="let cuenta of cuentas">
@@ -21,6 +19,8 @@
       </ion-item>
     </section>
 
+  <app-cepa-spinner *ngIf="cargando"></app-cepa-spinner>
+  <div [hidden]="cargando">
     <div class="lista-empty" *ngIf="pedidos.length === 0">
       <ion-icon name="restaurant-outline"></ion-icon>
       <p>No hay pedidos pendientes ni en curso por ahora.</p>

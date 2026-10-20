@@ -37,6 +37,7 @@ export class ConfirmarPedidoPage implements OnInit, OnDestroy {
 
   pedidos: PedidoPendiente[] = [];
   cuentas: Cuenta[] = [];
+  cargandoCuentas = false;
   confirmandoCuenta: string | null = null;
   errorCuentas = '';
   avisoCuentaPendiente: string | null = null;
@@ -45,6 +46,7 @@ export class ConfirmarPedidoPage implements OnInit, OnDestroy {
   errorMsg: string | undefined;
 
   private canal: any;
+  private actualizacionCuentas?: ReturnType<typeof setInterval>;
 
   constructor(
     private supabase: SupabaseService,
@@ -59,24 +61,40 @@ export class ConfirmarPedidoPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    void this.cargarCuentas();
     this.cargarPedidosPendientes();
     this.escucharNuevosPedidos();
   }
 
   ngOnDestroy() {
+    this.ionViewDidLeave();
     this.canal?.unsubscribe();
   }
 
   ionViewWillEnter() {
     void this.cargarCuentas();
     void this.cargarPedidosPendientes();
+    this.ionViewDidLeave();
+    // La lista debe actualizarse también en web o si Realtime se desconecta.
+    this.actualizacionCuentas = setInterval(() => void this.cargarCuentas(), 10000);
+  }
+
+  ionViewDidLeave() {
+    if (this.actualizacionCuentas) clearInterval(this.actualizacionCuentas);
+    this.actualizacionCuentas = undefined;
   }
 
   async cargarCuentas() {
+    if (this.cargandoCuentas) return;
+    this.cargandoCuentas = true;
     this.errorCuentas = '';
     try { this.cuentas = await this.cuentasService.listarPendientes(); }
-    catch { this.errorCuentas = 'No se pudieron cargar las cuentas. Volvé a intentar.'; }
-    finally { this.cdr.markForCheck(); }
+    catch (error) {
+      this.errorCuentas = error instanceof Error
+        ? `No se pudieron cargar las cuentas: ${error.message}`
+        : 'No se pudieron cargar las cuentas. Volvé a intentar.';
+    }
+    finally { this.cargandoCuentas = false; this.cdr.markForCheck(); }
   }
 
   async confirmarPago(cuenta: Cuenta) {
@@ -143,7 +161,9 @@ export class ConfirmarPedidoPage implements OnInit, OnDestroy {
         () => this.cargarPedidosPendientes()
       )
       .on('postgres_changes', { event: '*', schema: 'public', table: 'cuentas' }, () => this.cargarCuentas())
-      .subscribe();
+      .subscribe((estado: string) => {
+        if (estado === 'SUBSCRIBED') void this.cargarCuentas();
+      });
   }
 
   async confirmarPedido(pedido: PedidoPendiente) {

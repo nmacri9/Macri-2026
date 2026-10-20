@@ -60,6 +60,7 @@ do $$ begin
   assert (select count(*) from cuentas) = 1;
   assert (select count(*) from cuenta_avisos where evento='solicitud') = 1;
   assert (select count(*) from cuenta_avisos where evento='pago') = 3;
+  assert (select count(*) from cuenta_avisos where evento='confirmacion') = 0;
   assert (select array_agg(topic order by topic) from cuenta_avisos where evento='pago') = array['duenos','mozos','supervisores'];
   assert (select disponibilidad from mesas where id=4) = 'OCUPADA';
   assert (select fecha_finalizacion from asignaciones where id=1) is null;
@@ -83,13 +84,15 @@ do $$ begin
   assert (select estado from cuentas) = 'confirmada';
   assert (select disponibilidad from mesas where id=4) = 'VACIA';
   assert (select fecha_finalizacion from asignaciones where id=1) is not null;
-  assert (select count(*) from cuenta_avisos where evento='confirmacion') = 1;
+  assert (select count(*) from cuenta_avisos where evento='confirmacion') = 3;
+  assert (select array_agg(topic order by topic) from cuenta_avisos where evento='confirmacion')
+    = array['cliente_00000000-0000-0000-0000-000000000001', 'duenos', 'supervisores'];
 end $$;
 set local role service_role;
 do $$ declare c uuid; n integer; begin
   select id into c from cuentas;
   select count(*) into n from reclamar_avisos_cuenta(c);
-  assert n = 5;
+  assert n = 7;
   select count(*) into n from reclamar_avisos_cuenta(c);
   assert n = 0, 'No reclamar dos veces un aviso en curso';
 end $$;

@@ -8,6 +8,8 @@
             <h2>Vincular Mesa</h2>
             <p>Escaneá el código QR que se encuentra sobre la mesa que te asignó el Metre.</p>
             
+            <p>También podés escanear el QR de ingreso al local para ver los resultados de las encuestas en gráficos de torta, barras y líneas.</p>
+
             <!-- NUEVO: Alerta indicando qué mesa buscar -->
             <div class="alerta-mesa" *ngIf="mesaAsignadaNumero">
                 <h3>Tu mesa es la N° {{ mesaAsignadaNumero }}</h3>
@@ -19,7 +21,7 @@
         @if (esNativo) {
             <ion-button expand="block" class="btn-escaneo" (click)="escanearMesa()" [disabled]="escaneando">
                 <ion-icon slot="start" name="camera-outline"></ion-icon>
-                Escanear QR de Mesa
+                Escanear QR
             </ion-button>
         }
 
@@ -28,6 +30,7 @@
             <div class="panel-pruebas">
                 <span class="label-pruebas">Botones de prueba (Simulador):</span>
                 <div class="grid-botones">
+                    <ion-button fill="outline" size="small" (click)="procesarQRLeido('QR_INGRESO_CEPA')">QR de ingreso</ion-button>
                     <ion-button fill="outline" size="small" (click)="simularEscaneoMesa(1)">Mesa 1</ion-button>
                     <ion-button fill="outline" size="small" (click)="simularEscaneoMesa(2)">Mesa 2</ion-button>
                     <ion-button fill="outline" size="small" (click)="simularEscaneoMesa(3)">Mesa 3</ion-button>

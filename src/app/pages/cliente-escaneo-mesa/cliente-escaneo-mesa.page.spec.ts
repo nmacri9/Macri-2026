@@ -14,13 +14,14 @@ vi.mock('@capacitor/core', async importOriginal => {
 describe('Escaneo de mesa', () => {
   const validarYVincularMesaQR = vi.fn();
   const navigateRoot = vi.fn();
+  const navigateForward = vi.fn();
   const present = vi.fn();
   const create = vi.fn();
   const crear = () => new ClienteEscaneoMesaPage(
     { validarYVincularMesaQR } as unknown as MesasService,
     { obtenerUsuarioActual: vi.fn().mockResolvedValue({ id: 'cliente' }) } as unknown as AuthService,
     { create } as unknown as ToastController,
-    { navigateRoot } as unknown as NavController
+    { navigateRoot, navigateForward } as unknown as NavController
   );
   beforeEach(() => {
     vi.resetAllMocks();
@@ -54,5 +55,15 @@ describe('Escaneo de mesa', () => {
     await crear().escanearMesa();
     expect(validarYVincularMesaQR).not.toHaveBeenCalled();
     expect(navigateRoot).not.toHaveBeenCalled();
+  });
+  it('el QR de ingreso abre los resultados sin modificar la mesa ni abrir un pedido', async () => {
+    scanner.scan.mockResolvedValue({ barcodes: [{ rawValue: 'QR_INGRESO_CEPA' }] });
+    const page = crear();
+    await page.escanearMesa();
+    expect(navigateForward).toHaveBeenCalledWith('/graficos-encuestas');
+    expect(validarYVincularMesaQR).not.toHaveBeenCalled();
+    expect(navigateRoot).not.toHaveBeenCalled();
+    expect(create).not.toHaveBeenCalled();
+    expect(page.escaneando).toBe(false);
   });
 });

@@ -25,15 +25,20 @@ export async function notificarCuenta(req: Request, cuentaId: string, enviar: (m
     try {
       const solicitud = aviso.evento === 'solicitud';
       const confirmacion = aviso.evento === 'confirmacion';
+      const confirmacionPersonal = confirmacion && ['duenos', 'supervisores'].includes(aviso.topic);
+      const importe = new Intl.NumberFormat('es-AR', {
+        style: 'currency', currency: 'ARS',
+      }).format(Number(cuenta.total));
       await enviar({
         topic: aviso.topic,
         notification: {
           title: solicitud ? 'Solicitud de cuenta' : confirmacion ? 'Pago confirmado por el mozo' : 'Pago simulado recibido',
           body: solicitud ? `La mesa ${cuenta.mesa_id} solicitó la cuenta.`
+            : confirmacionPersonal ? `El mozo confirmó el pago de ${importe} de la mesa ${cuenta.mesa_id}.`
             : confirmacion ? `La cuenta de la mesa ${cuenta.mesa_id} está cerrada. ¡Gracias por tu visita!`
             : `Mesa ${cuenta.mesa_id}: $${Number(cuenta.total).toFixed(2)}. Pendiente de confirmación del mozo.`,
         },
-        data: { cuenta_id: cuenta.id, ruta: confirmacion ? '/cuenta' : aviso.topic === 'mozos' ? '/confirmar-pedido' : '/home' },
+        data: { cuenta_id: cuenta.id, ruta: confirmacionPersonal ? '/home' : confirmacion ? '/cuenta' : aviso.topic === 'mozos' ? '/confirmar-pedido' : '/home' },
       });
       const { error: guardadoError } = await admin.from('cuenta_avisos').update({ enviado_en: new Date().toISOString() }).eq('id', aviso.id);
       if (guardadoError) throw guardadoError;

@@ -50,6 +50,11 @@ export class ClienteEscaneoMesaPage {
 
     async procesarQRLeido(qrData: string) {
         try {
+        if (qrData.trim() === 'QR_INGRESO_CEPA') {
+            await this.navController.navigateForward('/graficos-encuestas');
+            return;
+        }
+
         const usuario = await this.authService.obtenerUsuarioActual();
         if (!usuario) throw new Error('Sesión no encontrada');
 

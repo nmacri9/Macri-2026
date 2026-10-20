@@ -792,7 +792,7 @@ export class HomePage {
       this.estadoPedidoCliente = 'Disfrutá tu comida';
       
       const toast = await this.toastController.create({
-        message: '¡Gracias por confirmar! Se han desbloqueado los juegos y la encuesta.',
+        message: '¡Gracias por confirmar! Se ha desbloqueado la cuenta y la encuesta.',
         duration: 3500,
         color: 'success',
         position: 'top'

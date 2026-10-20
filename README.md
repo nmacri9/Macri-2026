@@ -124,18 +124,18 @@ Componente / Pantalla              | Enlace de visualización                   
 ## Índice de Imágenes QRs
 Componente / Pantalla              | Enlace de visualización                         |
  :--------------------------------- | :----------------------------------------------|
- QR MESA 2           | [Ver imagen](./capturas/mesa-dos.png) |
- QR MESA 3           | [Ver imagen](./capturas/mesa-tres.jpeg) |
- QR MESA 4            | [Ver imagen](./capturas/mesa-cuatro.jpeg) |
- QR MESA 6            | [Ver imagen](./capturas/mesa-seis.jpeg) |
- QR MESA 13            | [Ver imagen](./capturas/mesa-trece.jpeg) |
- QR MESA 11            | [Ver imagen](./capturas/mesa-once.jpeg) |
- QR MESA 14            | [Ver imagen](./capturas/mesa-catorce.jpeg) |
- QR MESA 12            | [Ver imagen](./capturas/mesa-doce.jpeg) |
- Propina 0%          | [Ver imagen](./capturas/propi-cero.jpeg) |
- Propina 5%          | [Ver imagen](./capturas/propi-cinco.jpeg) |
- Propina 10%         | [Ver imagen](./capturas/propi-diez.jpeg) |
- Propina 15%         | [Ver imagen](./capturas/propi-quince.jpeg) |
- Propina 20%         | [Ver imagen](./capturas/propi-veinte.jpeg) |
+ QR MESA 2           | [Ver imagen](./capturas/mesa-dos.jpg) |
+ QR MESA 3           | [Ver imagen](./capturas/mesa-tres.jpg) |
+ QR MESA 4            | [Ver imagen](./capturas/mesa-cuatro.jpg) |
+ QR MESA 6            | [Ver imagen](./capturas/mesa-seis.jpg) |
+ QR MESA 13            | [Ver imagen](./capturas/mesa-trece.jpg) |
+ QR MESA 11            | [Ver imagen](./capturas/mesa-once.jpg) |
+ QR MESA 14            | [Ver imagen](./capturas/mesa-catorce.jpg) |
+ QR MESA 12            | [Ver imagen](./capturas/mesa-doce.jpg) |
+ Propina 0%          | [Ver imagen](./capturas/propi-cero.jpg) |
+ Propina 5%          | [Ver imagen](./capturas/propi-cinco.jpg) |
+ Propina 10%         | [Ver imagen](./capturas/propi-diez.jpg) |
+ Propina 15%         | [Ver imagen](./capturas/propi-quince.jpg) |
+ Propina 20%         | [Ver imagen](./capturas/propi-veinte.jpg) |
 
  

@@ -99,10 +99,10 @@ Componente / Pantalla              | Enlace de visualización                   
  Splash Dinámico                    | [Ver imagen](./capturas/Splash-screen.jpeg)     |
  Spinner                            | [Ver imagen](./capturas/spinner.jpeg)           |
  Login: Pantalla principal          | [Ver imagen](./capturas/login.jpeg)             |
- Pantalla principal                 | [Ver imagen](./capturas/home.jpeg)              |
- Alta de Mesa: Vista                | [Ver imagen](./capturas/alta-mesa.jpeg)         |
- Alta de Plato: Vista               | [Ver imagen](./capturas/carga-plato.jpeg)       |
- Alta de Bebida: Vista              | [Ver imagen](./capturas/carga-barra.jpeg)       |
+ Pantalla principal                 | [Ver imagen](./capturas/home.jpg)              |
+ Alta de Mesa: Vista                | [Ver imagen](./capturas/alta-mesa.jpg)         |
+ Alta de Plato: Vista               | [Ver imagen](./capturas/carga-plato.jpg)       |
+ Alta de Bebida: Vista              | [Ver imagen](./capturas/carga-barra.jpg)       |
  Alta de Empleado: Vista            | [Ver imagen](./capturas/alta-empleado.jpeg)     |
  Registro de Empleado: Vista        | [Ver imagen](./capturas/Registro-empleado.jpeg) |
  Clientes pendientes: Vista         | [Ver imagen](./capturas/cliente-pendiente.jpeg) |
@@ -110,14 +110,14 @@ Componente / Pantalla              | Enlace de visualización                   
  Realizar pedido (Cliente): Vista   | [Ver imagen](./capturas/.jpeg)                  |
  Menú de pedidos (Cliente): Vista   | [Ver imagen](./capturas/menu.jpeg)              |
  Escanear mesa (Cliente): Vista     | [Ver imagen](./capturas/escanear-mesa.jpeg)     |
- Ingreso al local (Cliente): Vista  | [Ver imagen](./capturas/.jpeg)                  |
- Confirmar pedido (Mozo): Vista     | [Ver imagen](./capturas/confirmar-pedido.jpeg)  | 
- Comandas (Cocinero/Cantinero): Vista | [Ver imagen](./capturas/comandas-cocina.jpeg) |
- Vista de Encuestas                 | [Ver imagen](./capturas/encuestas.jpeg)         |
- Vista de Encuestas 2               | [Ver imagen](./capturas/encuestas-2.jpeg)       | 
- Gráfico torta                      | [Ver imagen](./capturas/grafico-torta.jpeg)     |
- Gráfico barra                      | [Ver imagen](./capturas/grafico-barra.jpeg)     |
- Gráfico lineal                     | [Ver imagen](./capturas/grafico-lineal.jpeg)    |
+ Ingreso al local (Cliente): Vista  | [Ver imagen](./capturas/.jpg)                  |
+ Confirmar pedido (Mozo): Vista     | [Ver imagen](./capturas/confirmar-pedido.jpg)  | 
+ Comandas (Cocinero/Cantinero): Vista | [Ver imagen](./capturas/comandas-cocina.jpg) |
+ Vista de Encuestas                 | [Ver imagen](./capturas/encuestas.jpg)         |
+ Vista de Encuestas 2               | [Ver imagen](./capturas/encuestas-2.jpg)       | 
+ Gráfico torta                      | [Ver imagen](./capturas/grafico-torta.jpg)     |
+ Gráfico barra                      | [Ver imagen](./capturas/grafico-barra.jpg)     |
+ Gráfico lineal                     | [Ver imagen](./capturas/grafico-lineal.jpg)    |
  Juegos                             | [Ver imagen](./capturas/juegos.jpeg)            |
  Pedir Propina / Cierre de Cuenta (Punto 21) | [Ver imagen](./capturas/.jpeg)         |
 

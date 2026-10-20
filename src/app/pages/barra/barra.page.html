@@ -22,6 +22,7 @@
     </ion-card-header>
 
     <ion-card-content>
+      <div class="scroll-controlado">
       <ion-list lines="full" class="lista-items">
         <!-- Mostramos solo los items de bebiaa -->
         <ion-item *ngFor="let item of pedido.items">
@@ -31,6 +32,7 @@
           <ion-badge slot="end" color="light">x{{ item.cantidad }}</ion-badge>
         </ion-item>
       </ion-list>
+      </div>
 
       <ion-button expand="block" color="success" class="btn-listo" (click)="abrirModalConfirmacion(pedido.id)">
         <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>

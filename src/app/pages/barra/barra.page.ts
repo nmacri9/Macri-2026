@@ -6,7 +6,7 @@ import {
   ModalController 
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { checkmarkCircleOutline } from 'ionicons/icons';
+import { checkmarkCircleOutline, restaurantOutline, timeOutline  } from 'ionicons/icons';
 import { SupabaseService } from '../../services/supabase.service';
 import { PedidosService } from '../../services/pedidos.service'; 
 
@@ -38,7 +38,7 @@ export class BarraPage implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private modalCtrl: ModalController 
   ) {
-    addIcons({ checkmarkCircleOutline });
+    addIcons({ checkmarkCircleOutline,  restaurantOutline, timeOutline });
   }
 
   ngOnInit() {

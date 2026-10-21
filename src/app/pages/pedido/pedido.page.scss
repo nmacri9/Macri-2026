@@ -195,10 +195,25 @@ ion-modal.modal-auto-altura {
 
 /* Lista de productos: crece según los items y solo scrollea si son muchos */
 .modal-body {
-  background: #18392B;
-  padding: 8px 16px 16px;
-  max-height: 50vh;
+  --item-alto: 72px;      /* alto fijo de cada producto del resumen */
+  --items-visibles: 5;    /* cuántos productos se ven antes de scrollear */
+
+  padding: 0 16px;
+  max-height: calc(var(--item-alto) * var(--items-visibles));
   overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+
+  /* Scroll controlado: frena siempre alineado a un producto entero */
+  scroll-snap-type: y mandatory;
+
+  /* Sombra arriba/abajo que aparece solo cuando hay más productos para ver */
+  background:
+    linear-gradient(#18392B 30%, rgba(24, 57, 43, 0)) top / 100% 36px no-repeat local,
+    linear-gradient(rgba(24, 57, 43, 0), #18392B 70%) bottom / 100% 36px no-repeat local,
+    radial-gradient(farthest-side at 50% 0, rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0)) top / 100% 14px no-repeat scroll,
+    radial-gradient(farthest-side at 50% 100%, rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0)) bottom / 100% 14px no-repeat scroll,
+    #18392B;
 }
 
 .modal-header ion-toolbar {
@@ -224,6 +239,11 @@ ion-modal.modal-auto-altura {
   --background: transparent;
   --padding-start: 4px;
   --inner-padding-end: 4px;
+  --padding-top: 8px;
+  --padding-bottom: 8px;
+  height: var(--item-alto, 72px);
+  box-sizing: border-box;
+  scroll-snap-align: start;
   box-shadow: none;
   border-radius: 0;
   border-bottom: 1px solid rgba(200, 178, 158, 0.15); 

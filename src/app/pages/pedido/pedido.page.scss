@@ -177,11 +177,28 @@ ion-footer {
 .modal-cepa {
   --background: #18392B;
   --border-radius: 24px 24px 0 0;
-  
-  ion-content {
-    --background: #18392B;
-    overflow-y: auto;
+}
+
+/* Modal que se ajusta a su contenido (sin espacio vacío, sin deslizar).
+   El .ion-page lo crea Ionic, por eso necesita ::ng-deep. */
+ion-modal.modal-auto-altura {
+  --height: auto;
+  --max-height: 90vh;
+  align-items: flex-end;
+
+  ::ng-deep .ion-page {
+    position: relative;
+    display: block;
+    contain: content;
   }
+}
+
+/* Lista de productos: crece según los items y solo scrollea si son muchos */
+.modal-body {
+  background: #18392B;
+  padding: 8px 16px 16px;
+  max-height: 50vh;
+  overflow-y: auto;
 }
 
 .modal-header ion-toolbar {
@@ -194,10 +211,6 @@ ion-footer {
   font-size: 22px;
   font-weight: 600;
   color: #dbcbb9;
-}
-
-.modal-content {
-  --background: #18392B;
 }
 
 .modal-footer {
@@ -557,44 +570,4 @@ ion-footer {
   color: #dbcbb9;
   min-width: 20px;
   text-align: center;
-}
-
-
-/* ============================================
-   MODAL AUTO-ALTURA (CORRECCIÓN VISUAL DE ITEMS)
-   ============================================ */
-ion-modal.modal-auto-altura {
-  --height: auto !important;
-  --max-height: 80vh !important;
-  --border-radius: 24px 24px 0 0;
-  align-items: flex-end;
-}
-
-ion-modal.modal-auto-altura .ion-page {
-  position: relative !important;
-  display: flex !important;
-  flex-direction: column !important;
-  height: auto !important;
-  max-height: 80vh !important;
-}
-
-/* Forzamos al ion-content a mostrar el contenido y activar scroll si excede */
-ion-modal.modal-auto-altura ion-content.modal-content {
-  --background: #18392B !important;
-  display: block !important;
-  position: relative !important;
-  flex: 1 1 auto !important;
-  height: auto !important;
-  max-height: 50vh !important;
-  overflow-y: auto !important;
-}
-
-ion-modal.modal-auto-altura ion-list {
-  background: transparent !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-ion-modal.modal-auto-altura ion-footer {
-  flex-shrink: 0 !important;
 }

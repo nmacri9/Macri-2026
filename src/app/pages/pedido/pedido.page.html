@@ -142,7 +142,7 @@
     </ion-header>
 
     <!-- Contenido del Modal (Resumen del carrito) -->
-    <ion-content class="modal-content ion-padding" style="--background: #18392B;">
+    <div class="modal-body">
       <div class="carrito-empty" *ngIf="items.length === 0">
         <ion-icon name="cart-outline"></ion-icon>
         <p>No hay productos en tu pedido.</p>
@@ -171,7 +171,7 @@
       <div class="form-error" *ngIf="errorPedido">
         <small>{{ errorPedido }}</small>
       </div>
-    </ion-content>
+    </div>
 
     <!-- Pie del Modal (Totales y Envío) -->
     <ion-footer class="ion-no-border modal-footer" style="background: #1B3B2D;">

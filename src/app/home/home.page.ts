@@ -120,6 +120,7 @@ export class HomePage {
   pedidoEntregadoPorMozo = false;
   pedidoIdCliente: string | null = null;
   puedeEditarPedidoCliente = false;
+  puedeVerPedidoCliente = false;
 
   constructor(
     private cdr: ChangeDetectorRef,
@@ -328,6 +329,7 @@ export class HomePage {
     this.pedidoEntregadoPorMozo = false;
     this.pedidoConfirmadoCliente = false;
     this.puedeEditarPedidoCliente = false;
+    this.puedeVerPedidoCliente = false;
     this.pedidoIdCliente = null;
     this.totalPedidoCliente = 0;
     this.tiempoEstimadoCliente = 0;
@@ -435,8 +437,6 @@ export class HomePage {
         this.notificacionesBadge = this.pedidosPorConfirmarCount;
         this.actividadesRecientes = [
           { icono: 'checkmark-circle-outline', texto: `Pedidos por confirmar: ${this.pedidosPorConfirmarCount}`, ruta: '/confirmar-pedido' },
-          { icono: 'chatbubbles-outline', texto: 'Abrir canal de consultas de mesas', ruta: '/chat-cliente' },
-          { icono: 'book-outline', texto: 'Ver carta de productos', ruta: '/menu-productos' }
         ];
       }
 
@@ -544,6 +544,7 @@ export class HomePage {
       this.pedidoEntregadoPorMozo = pedido?.estado === 'entregado';
       this.pedidoConfirmadoCliente = !!pedido && ['confirmado', 'en_preparacion', 'listo', 'listo_para_entregar', 'entregado', 'recibido'].includes(pedido.estado);
       this.puedeEditarPedidoCliente = this.clienteVinculadoAMesa && (!pedido || pedido.estado === 'rechazado_mozo');
+      this.puedeVerPedidoCliente = !!pedido && ['pendiente_confirmacion', 'confirmado'].includes(pedido.estado);
       const etiquetas: Record<string, string> = {
         pendiente_confirmacion: 'Esperando al mozo', rechazado_mozo: 'Revisar pedido',
         confirmado: 'En preparación', en_preparacion: 'En preparación',

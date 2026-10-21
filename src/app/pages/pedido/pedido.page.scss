@@ -179,6 +179,43 @@ ion-footer {
   --border-radius: 24px 24px 0 0;
 }
 
+/* Modal que se ajusta a su contenido (sin espacio vacío, sin deslizar).
+   El .ion-page lo crea Ionic, por eso necesita ::ng-deep. */
+ion-modal.modal-auto-altura {
+  --height: auto;
+  --max-height: 90vh;
+  align-items: flex-end;
+
+  ::ng-deep .ion-page {
+    position: relative;
+    display: block;
+    contain: content;
+  }
+}
+
+/* Lista de productos: crece según los items y solo scrollea si son muchos */
+.modal-body {
+  --item-alto: 72px;      /* alto fijo de cada producto del resumen */
+  --items-visibles: 5;    /* cuántos productos se ven antes de scrollear */
+
+  padding: 0 16px;
+  max-height: calc(var(--item-alto) * var(--items-visibles));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+
+  /* Scroll controlado: frena siempre alineado a un producto entero */
+  scroll-snap-type: y mandatory;
+
+  /* Sombra arriba/abajo que aparece solo cuando hay más productos para ver */
+  background:
+    linear-gradient(#18392B 30%, rgba(24, 57, 43, 0)) top / 100% 36px no-repeat local,
+    linear-gradient(rgba(24, 57, 43, 0), #18392B 70%) bottom / 100% 36px no-repeat local,
+    radial-gradient(farthest-side at 50% 0, rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0)) top / 100% 14px no-repeat scroll,
+    radial-gradient(farthest-side at 50% 100%, rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0)) bottom / 100% 14px no-repeat scroll,
+    #18392B;
+}
+
 .modal-header ion-toolbar {
   --background: #18392B;
   --border-width: 0;
@@ -189,10 +226,6 @@ ion-footer {
   font-size: 22px;
   font-weight: 600;
   color: #dbcbb9;
-}
-
-.modal-content {
-  --background: #18392B;
 }
 
 .modal-footer {
@@ -206,6 +239,11 @@ ion-footer {
   --background: transparent;
   --padding-start: 4px;
   --inner-padding-end: 4px;
+  --padding-top: 8px;
+  --padding-bottom: 8px;
+  height: var(--item-alto, 72px);
+  box-sizing: border-box;
+  scroll-snap-align: start;
   box-shadow: none;
   border-radius: 0;
   border-bottom: 1px solid rgba(200, 178, 158, 0.15); 

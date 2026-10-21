@@ -103,14 +103,14 @@ Componente / Pantalla              | Enlace de visualización                   
  Alta de Mesa: Vista                | [Ver imagen](./capturas/alta-mesa.jpg)         |
  Alta de Plato: Vista               | [Ver imagen](./capturas/carga-plato.jpg)       |
  Alta de Bebida: Vista              | [Ver imagen](./capturas/carga-barra.jpg)       |
- Alta de Empleado: Vista            | [Ver imagen](./capturas/alta-empleado.jpeg)     |
- Registro de Empleado: Vista        | [Ver imagen](./capturas/Registro-empleado.jpeg) |
- Clientes pendientes: Vista         | [Ver imagen](./capturas/cliente-pendiente.jpeg) |
- Asignación de mesa (Metre): Vista  | [Ver imagen](./capturas/Asignar-mesa.jpeg)      |
- Realizar pedido (Cliente): Vista   | [Ver imagen](./capturas/.jpeg)                  |
- Menú de pedidos (Cliente): Vista   | [Ver imagen](./capturas/menu.jpeg)              |
- Escanear mesa (Cliente): Vista     | [Ver imagen](./capturas/escanear-mesa.jpeg)     |
- Ingreso al local (Cliente): Vista  | [Ver imagen](./capturas/.jpg)                  |
+ Alta de Empleado: Vista            | [Ver imagen](./capturas/alta-empleado.jpeg)    |
+ Registro de Empleado: Vista        | [Ver imagen](./capturas/Registro-empleado.jpeg)|
+ Clientes pendientes: Vista         | [Ver imagen](./capturas/cliente-pendiente.jpeg)|
+ Asignación de mesa (Metre): Vista  | [Ver imagen](./capturas/Asignar-mesa.jpeg)     |
+ Realizar pedido (Cliente): Vista   | [Ver imagen](./capturas/.jpeg)                 |
+ Menú de pedidos (Cliente): Vista   | [Ver imagen](./capturas/menu.jpeg)             |
+ Escanear mesa (Cliente): Vista     | [Ver imagen](./capturas/escanear-mesa.jpeg)    |
+ Ingreso al local (Cliente): Vista  | [Ver imagen](./capturas/ingreso-local.jpg)     |
  Confirmar pedido (Mozo): Vista     | [Ver imagen](./capturas/confirmar-pedido.jpg)  | 
  Comandas (Cocinero/Cantinero): Vista | [Ver imagen](./capturas/comandas-cocina.jpg) |
  Vista de Encuestas                 | [Ver imagen](./capturas/encuestas.jpg)         |
@@ -119,23 +119,26 @@ Componente / Pantalla              | Enlace de visualización                   
  Gráfico barra                      | [Ver imagen](./capturas/grafico-barra.jpg)     |
  Gráfico lineal                     | [Ver imagen](./capturas/grafico-lineal.jpg)    |
  Juegos                             | [Ver imagen](./capturas/juegos.jpg)            |
- Pedir Propina / Cierre de Cuenta (Punto 21) | [Ver imagen](./capturas/.jpeg)         |
+ Pedir Propina                      | [Ver imagen](./capturas/propina.jpg)           |
+ Cierre de Cuenta (Punto 21)        | [Ver imagen](./capturas/cuenta.jpg)            |
 
 ## Índice de Imágenes QRs
 Componente / Pantalla              | Enlace de visualización                         |
  :--------------------------------- | :----------------------------------------------|
  QR MESA 2           | [Ver imagen](./capturas/mesa-dos.jpg) |
  QR MESA 3           | [Ver imagen](./capturas/mesa-tres.jpg) |
- QR MESA 4            | [Ver imagen](./capturas/mesa-cuatro.jpg) |
- QR MESA 6            | [Ver imagen](./capturas/mesa-seis.jpg) |
- QR MESA 13            | [Ver imagen](./capturas/mesa-trece.jpg) |
- QR MESA 11            | [Ver imagen](./capturas/mesa-once.jpg) |
- QR MESA 14            | [Ver imagen](./capturas/mesa-catorce.jpg) |
- QR MESA 12            | [Ver imagen](./capturas/mesa-doce.jpg) |
+ QR MESA 4           | [Ver imagen](./capturas/mesa-cuatro.jpg) |
+ QR MESA 6           | [Ver imagen](./capturas/mesa-seis.jpg) |
+ QR MESA 13          | [Ver imagen](./capturas/mesa-trece.jpg) |
+ QR MESA 11          | [Ver imagen](./capturas/mesa-once.jpg) |
+ QR MESA 14          | [Ver imagen](./capturas/mesa-catorce.jpg) |
+ QR MESA 12          | [Ver imagen](./capturas/mesa-doce.jpg) |
  Propina 0%          | [Ver imagen](./capturas/propi-cero.jpg) |
  Propina 5%          | [Ver imagen](./capturas/propi-cinco.jpg) |
  Propina 10%         | [Ver imagen](./capturas/propi-diez.jpg) |
  Propina 15%         | [Ver imagen](./capturas/propi-quince.jpg) |
  Propina 20%         | [Ver imagen](./capturas/propi-veinte.jpg) |
+ QR Ingreso          | [Ver imagen](./capturas/qr-ingreso.jpg) |
+
 
  

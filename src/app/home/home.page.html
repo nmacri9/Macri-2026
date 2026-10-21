@@ -358,7 +358,7 @@
             </a>
           } @else {
             <!-- Tarjeta Principal del Cliente -->
-            <a class="ahora-card" [routerLink]="puedeEditarPedidoCliente ? '/pedido' : null" (click)="!clienteVinculadoAMesa && accionBotonQR()">
+            <a class="ahora-card" [routerLink]="(puedeEditarPedidoCliente || puedeVerPedidoCliente) ? '/pedido' : null" (click)="!clienteVinculadoAMesa && accionBotonQR()">
               <div class="ahora-top">
                 <span class="ahora-pill-tag">MI PEDIDO</span>
                 @if (tiempoEstimadoCliente > 0) {
@@ -372,7 +372,7 @@
                 } @else if (puedeEditarPedidoCliente) {
                   <p>{{ pedidoIdCliente ? 'Tocá para corregir tu pedido' : 'Tocá para hacer tu pedido' }}</p>
                 } @else if (pedidoIdCliente) {
-                  <p>Tu pedido ya fue enviado</p>
+                  <p>Tocá para ver tu pedido</p>
                 } @else {
                   <p>Escaneá el QR para habilitar tu mesa</p>
                 }

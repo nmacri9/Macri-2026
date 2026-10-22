@@ -136,11 +136,37 @@
               </div>
             </section>
 
-            <!-- CONTROL 5: Toggle + Textarea -->
+            <!-- CONTROL 5 (nuevo): Radio Group - Ambiente / Limpieza -->
+            <section class="control-card flex-grow">
+              <div class="card-header">
+                <ion-icon name="leaf-outline"></ion-icon>
+                <h3>5. Ambiente y limpieza del local</h3>
+              </div>
+              <ion-radio-group [value]="ambienteLimpieza" [allowEmptySelection]="true" class="radio-grid">
+                <div class="radio-opcion" [class.activa]="ambienteLimpieza === 'Excelente'" (click)="toggleAmbiente('Excelente')">
+                  <ion-radio value="Excelente" style="pointer-events: none;"></ion-radio>
+                  <span>Excelente</span>
+                </div>
+                <div class="radio-opcion" [class.activa]="ambienteLimpieza === 'Buena'" (click)="toggleAmbiente('Buena')">
+                  <ion-radio value="Buena" style="pointer-events: none;"></ion-radio>
+                  <span>Buena</span>
+                </div>
+                <div class="radio-opcion" [class.activa]="ambienteLimpieza === 'Regular'" (click)="toggleAmbiente('Regular')">
+                  <ion-radio value="Regular" style="pointer-events: none;"></ion-radio>
+                  <span>Regular</span>
+                </div>
+                <div class="radio-opcion" [class.activa]="ambienteLimpieza === 'Mala'" (click)="toggleAmbiente('Mala')">
+                  <ion-radio value="Mala" style="pointer-events: none;"></ion-radio>
+                  <span>Mala</span>
+                </div>
+              </ion-radio-group>
+            </section>
+
+            <!-- CONTROL 6: Toggle + Textarea -->
             <section class="control-card flex-grow">
               <div class="toggle-row">
                 <div>
-                  <h3>5. ¿Nos recomendarías?</h3>
+                  <h3>6. ¿Nos recomendarías?</h3>
                   <small>{{ recomendaria ? 'Sí, lo recomiendo' : 'No por el momento' }}</small>
                 </div>
                 <ion-toggle [(ngModel)]="recomendaria" name="recomendaria"></ion-toggle>

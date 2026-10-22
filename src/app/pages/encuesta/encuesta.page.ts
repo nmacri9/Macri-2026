@@ -11,8 +11,9 @@ import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { addIcons } from 'ionicons';
 import {
   starOutline, happyOutline, timeOutline, sparklesOutline,
-  chatboxEllipsesOutline, checkmarkCircleOutline, barChartOutline, 
-  lockClosedOutline, arrowForwardOutline, arrowBackOutline // <-- Nuevos iconos
+  chatboxEllipsesOutline, checkmarkCircleOutline, barChartOutline,
+  lockClosedOutline, arrowForwardOutline, arrowBackOutline,
+  leafOutline // <-- Icono para ambiente/limpieza
 } from 'ionicons/icons';
 
 import { SupabaseService } from '../../services/supabase.service';
@@ -51,15 +52,17 @@ export class EncuestaPage implements OnInit {
   atencionMozo: string = '';
   // 3. Select
   tiempoEspera: string = '';
-  
-  // 4. Checkboxes múltiples
+  // 4. Radio Group - Ambiente/Limpieza (nuevo en página 2)
+  ambienteLimpieza: string = '';
+
+  // 5. Checkboxes múltiples
   aspectos = [
     { nombre: 'Sabor', seleccionado: false },
     { nombre: 'Limpieza', seleccionado: false },
     { nombre: 'Ambiente', seleccionado: false },
     { nombre: 'Precios', seleccionado: false }
   ];
-  // 5. Toggle + Textarea
+  // 6. Toggle + Textarea
   recomendaria: boolean = true;
   comentario: string = '';
 
@@ -77,8 +80,9 @@ export class EncuestaPage implements OnInit {
   ) {
     addIcons({
       starOutline, happyOutline, timeOutline, sparklesOutline,
-      chatboxEllipsesOutline, checkmarkCircleOutline, barChartOutline, 
-      lockClosedOutline, arrowForwardOutline, arrowBackOutline
+      chatboxEllipsesOutline, checkmarkCircleOutline, barChartOutline,
+      lockClosedOutline, arrowForwardOutline, arrowBackOutline,
+      leafOutline
     });
   }
 
@@ -133,9 +137,17 @@ export class EncuestaPage implements OnInit {
 
   toggleAtencion(valor: string) {
     if (this.atencionMozo === valor) {
-      this.atencionMozo = ''; 
+      this.atencionMozo = '';
     } else {
       this.atencionMozo = valor;
+    }
+  }
+
+  toggleAmbiente(valor: string) {
+    if (this.ambienteLimpieza === valor) {
+      this.ambienteLimpieza = '';
+    } else {
+      this.ambienteLimpieza = valor;
     }
   }
 
@@ -164,6 +176,9 @@ export class EncuestaPage implements OnInit {
     // Validamos solo la segunda página
     if (aspectosElegidos.length === 0) {
       return this.mostrarError('Marcá al menos un aspecto destacado del local.');
+    }
+    if (!this.ambienteLimpieza) {
+      return this.mostrarError('Seleccioná qué te pareció el ambiente y limpieza.');
     }
     if (!this.comentario || this.comentario.trim().length < 5) {
       return this.mostrarError('Escribí un breve comentario (mínimo 5 caracteres).');
@@ -199,6 +214,7 @@ export class EncuestaPage implements OnInit {
           calidad_comida: this.calidadComida,
           atencion_mozo: this.atencionMozo,
           tiempo_espera: this.tiempoEspera,
+          ambiente_limpieza: this.ambienteLimpieza,
           aspectos_destacados: aspectosElegidos,
           recomendaria: this.recomendaria,
           comentario: this.comentario.trim()

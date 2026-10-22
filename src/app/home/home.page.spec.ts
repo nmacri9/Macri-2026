@@ -1,12 +1,17 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { HomePage } from './home.page';
 
+const push = vi.hoisted(() => ({ subscribeTo: vi.fn() }));
+vi.mock('@capacitor-community/fcm', () => ({ FCM: push }));
+
 describe('Home: conservar la visita al volver de la carta', () => {
   const usuario = { id: 'cliente-1', email: 'cliente@example.com', user_metadata: {} };
   const visita = { mesaId: 4, fechaAsignacion: '2026-10-16T10:00:00Z', vinculada: true };
   const pedido = { id: 'pedido-1', estado: 'recibido', total: 35000, tiempo_estimado: 90 };
   const obtenerUsuarioActual = vi.fn();
   const obtenerPerfil = vi.fn();
+  const native = vi.fn();
+  const getUser = vi.fn();
   const obtenerAsignacionActiva = vi.fn();
   const maybeSingle = vi.fn();
   const consulta = {
@@ -18,16 +23,40 @@ describe('Home: conservar la visita al volver de la carta', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    localStorage.clear();
+    native.mockReturnValue(false);
+    getUser.mockResolvedValue({ data: { user: usuario }, error: null });
+    push.subscribeTo.mockResolvedValue({});
     obtenerUsuarioActual.mockResolvedValue(usuario);
     obtenerPerfil.mockResolvedValue({ id: usuario.id, nombres: 'Cliente', rol: 'CLIENTE_REGISTRADO', estado: 'APROBADO' });
     obtenerAsignacionActiva.mockResolvedValue(visita);
     maybeSingle.mockResolvedValue({ data: pedido, error: null });
     home = new HomePage(...[
       { markForCheck: vi.fn(), detectChanges: vi.fn() },
-      { obtenerUsuarioActual, obtenerPerfil }, {}, {}, { is: () => false }, {}, {},
-      { getClient: () => ({ from: () => consulta }) },
+      { obtenerUsuarioActual, obtenerPerfil }, {}, {}, { is: native }, {}, {},
+      { getClient: () => ({ from: () => consulta, auth: { getUser } }) },
       { actualizar: vi.fn() }, { obtenerAsignacionActiva }, {},
     ] as unknown as ConstructorParameters<typeof HomePage>);
+  });
+
+  it('suscribe directamente al cliente aunque actualizar push no haga nada', async () => {
+    native.mockReturnValue(true);
+    await home.ionViewWillEnter();
+    expect(push.subscribeTo).toHaveBeenCalledWith({ topic: 'cliente_cliente-1' });
+    expect(JSON.parse(localStorage.getItem('cepa.chat.push.topics')!)).toContain('cliente_cliente-1');
+  });
+
+  it('no suscribe desde el navegador', async () => {
+    await home.ionViewWillEnter();
+    expect(push.subscribeTo).not.toHaveBeenCalled();
+  });
+
+  it('un fallo de FCM no impide cargar la mesa del cliente', async () => {
+    native.mockReturnValue(true);
+    push.subscribeTo.mockRejectedValueOnce(new Error('Sin conexión a Firebase'));
+    await home.ionViewWillEnter();
+    expect(home.clienteConMesaAsignada).toBe(true);
+    expect(home.errorPerfil).toBe('');
   });
 
   it('volver al Home conserva el pedido recibido, cuenta, encuesta y chat', async () => {

@@ -16,6 +16,7 @@ import {
 } from '@ionic/angular';
 import { SupabaseService } from '../services/supabase.service';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { FCM } from '@capacitor-community/fcm';
 import { BarcodeScanner, BarcodeFormat } from '@capacitor-mlkit/barcode-scanning';
 import { addIcons } from 'ionicons';
 import {
@@ -278,6 +279,26 @@ export class HomePage {
       this.esClienteRegistrado = rol === 'CLIENTE_REGISTRADO' && perfil.estado === 'APROBADO';
       this.clienteHabilitado = this.esCliente
         && (rol === 'CLIENTE_ANONIMO' ? perfil.estado === 'ACTIVO' : perfil.estado === 'APROBADO');
+
+      // Recuperar la suscripción directa del Home sin depender del evento registration.
+      if (this.platform.is('capacitor') && this.clienteHabilitado) {
+        try {
+          const { data, error } = await this.supabase.getClient().auth.getUser();
+          if (error) throw error;
+          if (revision !== this.revisionPerfil) return;
+          if (data.user?.id !== usuario.id) throw new Error('La sesión cambió al suscribir las notificaciones.');
+          const topic = `cliente_${data.user.id}`;
+          // Registrar también esta suscripción para que el servicio pueda limpiarla.
+          const storageKey = 'cepa.chat.push.topics';
+          const topics: string[] = JSON.parse(localStorage.getItem(storageKey) || '[]');
+          localStorage.setItem(storageKey, JSON.stringify([...new Set([...topics, topic])]));
+          await FCM.subscribeTo({ topic });
+          console.info('[Push Home] Suscripción directa confirmada:', topic);
+        } catch (error) {
+          console.error('[Push Home] Falló la suscripción directa del cliente:', error);
+        }
+        if (revision !== this.revisionPerfil) return;
+      }
 
       if (!this.esCliente) {
         this.puedeUsarChat = this.esMozo;

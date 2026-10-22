@@ -77,7 +77,6 @@ src/environments/environment.ts
 supabase/.env.local
 
 *.migrations
-/supabase/migrations/
 
 # QR imprimibles
 /src/assets/qr-propinas/

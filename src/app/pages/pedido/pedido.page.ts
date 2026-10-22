@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { IonContent, IonItem, IonIcon, IonButton,IonList, IonSpinner, IonFooter, IonToolbar, IonTitle, IonHeader, IonButtons } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { addOutline, removeOutline, cartOutline, timeOutline, alertCircleOutline, closeOutline } from 'ionicons/icons';
@@ -24,7 +25,7 @@ type EstadoPedido = 'carrito' | 'pendiente_confirmacion' | 'rechazado_mozo' | 'c
   templateUrl: './pedido.page.html',
   styleUrls: ['./pedido.page.scss'],
   standalone: true,
-  imports: [IonContent, IonItem,IonList, IonFooter, IonToolbar, IonTitle,IonHeader, IonButtons, IonModal , IonIcon, IonButton, IonSpinner, CommonModule, CepaHeaderComponent, CepaSpinnerComponent]
+  imports: [RouterLink, IonContent, IonItem,IonList, IonFooter, IonToolbar, IonTitle,IonHeader, IonButtons, IonModal , IonIcon, IonButton, IonSpinner, CommonModule, CepaHeaderComponent, CepaSpinnerComponent]
 })
 export class PedidoPage implements OnInit, OnDestroy {
   @ViewChild('modalCarrito') modalCarrito!: IonModal;

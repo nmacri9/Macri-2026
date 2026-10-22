@@ -30,6 +30,26 @@ small { display: block; color: #C8B29E; margin-top: 5px; }
 a:focus-visible { outline: 3px solid #C8B29E; outline-offset: 4px; }
 @media (max-width: 360px) { main { padding-inline: 12px; } .ticket { padding: 18px 14px; } }
 
+/* Logo semi-transparente DEBAJO de la tarjeta "¿Pedimos la cuenta?" */
+.logo-debajo {
+  display: block;
+  margin: 16px auto 0;   /* espacio arriba, centrado horizontal */
+  width: 300px;
+  height: 300px;
+  opacity: 0.15;          /* sutil pero visible */
+  pointer-events: none;
+  user-select: none;
+  filter: grayscale(1) brightness(1.2);
+}
+
+@media (max-width: 360px) {
+  .logo-debajo {
+    width: 130px;
+    height: 130px;
+    margin-top: 12px;
+  }
+}
+
 .mensaje, .resumen {
   background: #1B3B2D;
   border: 1px solid rgba(200, 178, 158, .35);

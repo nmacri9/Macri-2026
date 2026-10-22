@@ -16,6 +16,8 @@
           <p>Le avisamos al mozo. Después, escaneá el QR de la propina para ver el detalle y pagar.</p>
           <ion-button expand="block" [disabled]="procesando" (click)="solicitar()">{{ procesando ? 'Solicitando…' : 'Solicitar cuenta' }}</ion-button>
         </section>
+        <!-- Logo semi-transparente debajo de la tarjeta -->
+        <img src="assets/icono.png" alt="Logo Cepa" class="logo-debajo" aria-hidden="true" />
       }
       @if (cuenta; as ticket) {
         @if (ticket.estado === 'solicitada') {

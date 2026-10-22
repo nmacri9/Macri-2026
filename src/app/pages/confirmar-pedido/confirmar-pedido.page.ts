@@ -48,6 +48,10 @@ export class ConfirmarPedidoPage implements OnInit, OnDestroy {
   // Pedido desplegado (uno solo a la vez); null = todos contraídos
   pedidoAbiertoId: string | null = null;
 
+  // Logo del estado vacío (si la imagen no carga, se muestra el ícono de cubiertos)
+  logoUrl = 'assets/logo-cepa.png';
+  logoDisponible = true;
+
   private canal: any;
   private actualizacionCuentas?: ReturnType<typeof setInterval>;
 

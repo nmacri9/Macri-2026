@@ -61,13 +61,13 @@ export class ClienteEscaneoMesaPage {
         await this.mesasService.validarYVincularMesaQR(usuario.id, qrData);
 
         const toast = await this.toastController.create({
-            message: '¡Mesa vinculada con éxito! Redirigiendo al menú...',
+            message: '¡Mesa vinculada con éxito! Redirigiendo al home...',
             duration: 2500,
             color: 'success'
         });
         await toast.present();
 
-        this.navController.navigateRoot('/menu-productos');
+        this.navController.navigateRoot('/home');
 
         } catch (error: any) {
         const toast = await this.toastController.create({

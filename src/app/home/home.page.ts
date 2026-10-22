@@ -456,9 +456,25 @@ export class HomePage {
 
         this.pedidosPorConfirmarCount = count || 0;
         this.notificacionesBadge = this.pedidosPorConfirmarCount;
-        this.actividadesRecientes = [
-          { icono: 'checkmark-circle-outline', texto: `Pedidos por confirmar: ${this.pedidosPorConfirmarCount}`, ruta: '/confirmar-pedido' },
-        ];
+
+        // Historial de últimos pedidos confirmados (para "Actividades recientes")
+        const { data: ultimosConfirmados } = await db
+          .from('pedidos')
+          .select('id, mesa_id, total, estado, created_at')
+          .in('estado', ['confirmado', 'en_preparacion', 'listo', 'listo_para_entregar', 'entregado', 'recibido'])
+          .order('created_at', { ascending: false })
+          .limit(3);
+
+        this.actividadesRecientes = (ultimosConfirmados || []).map(p => {
+          const fecha = new Date(p.created_at);
+          const haceMin = Math.max(1, Math.round((Date.now() - fecha.getTime()) / 60000));
+          const haceStr = haceMin < 60 ? `${haceMin} min` : `${Math.round(haceMin / 60)} h`;
+          return {
+            icono: 'checkmark-circle-outline',
+            texto: `Mesa ${p.mesa_id} · $${Number(p.total).toLocaleString('es-AR')} · ${p.estado} · hace ${haceStr}`,
+            ruta: '/confirmar-pedido'
+          };
+        });
       }
 
       // 5. Datos específicos para COCINERO / CANTINERO

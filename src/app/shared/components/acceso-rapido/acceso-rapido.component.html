@@ -26,8 +26,7 @@
           <ion-avatar slot="start">
           <img 
           [src]="perfil.foto" 
-          (error)="onImageError($event, perfil)" 
-          [attr.data-tried-fallback]="perfil._triedFallback" 
+          (error)="onImageError($event)" 
           />
           </ion-avatar>
           <ion-label>

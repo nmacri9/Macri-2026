@@ -463,7 +463,7 @@ export class HomePage {
           .select('id, mesa_id, total, estado, created_at')
           .in('estado', ['confirmado', 'en_preparacion', 'listo', 'listo_para_entregar', 'entregado', 'recibido'])
           .order('created_at', { ascending: false })
-          .limit(3);
+          .limit(1);
 
         this.actividadesRecientes = (ultimosConfirmados || []).map(p => {
           const fecha = new Date(p.created_at);

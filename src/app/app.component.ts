@@ -43,6 +43,13 @@ export class AppComponent {
         return;
       }
 
+      if (this.platform.is('android')) {
+        // Crear antes del listener: Capacitor puede entregar un registro pendiente
+        // al instalarlo y activar las suscripciones inmediatamente.
+        // Sin sound se usa el sonido del sistema; "default" sería res/raw/default.
+        await PushNotifications.createChannel({ id: 'default', name: 'Avisos de Cepa', importance: 4, vibration: true });
+      }
+
       await PushNotifications.addListener('registration', () => {
         console.info('[Push] Registro Firebase confirmado');
         this.chatPush.activar();
@@ -62,9 +69,6 @@ export class AppComponent {
           void this.router.navigate([notification.data.ruta]);
         }
       });
-      if (this.platform.is('android')) {
-        await PushNotifications.createChannel({ id: 'default', name: 'Avisos de Cepa', importance: 5, sound: 'default' });
-      }
       // Registrar después de instalar listeners para no perder el token inicial.
       console.info('[Push] Solicitando registro del dispositivo');
       await PushNotifications.register();

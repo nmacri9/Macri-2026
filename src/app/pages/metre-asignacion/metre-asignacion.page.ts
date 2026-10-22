@@ -132,12 +132,15 @@ export class MetreAsignacionPage {
         if (!metre) throw new Error('La sesión venció. Volvé a iniciar sesión para asignar una mesa.');
 
         // Actualizamos la asignación pendiente.
-        await this.mesasService.asignarMesaACliente(cliente.id, mesa.id);
+        const resultado = await this.mesasService.asignarMesaACliente(cliente.id, mesa.id);
+        const falloAviso = resultado?.notificacionEnviada === false;
 
         const toast = await this.toastController.create({
-            message: `Mesa ${mesa.id} asignada con éxito a ${cliente.nombre}`,
-            duration: 3000,
-            color: 'success'
+            message: falloAviso
+                ? `Mesa ${mesa.id} asignada a ${cliente.nombre}, pero no se pudo enviar la notificación. Avisale personalmente.`
+                : `Mesa ${mesa.id} asignada con éxito a ${cliente.nombre}`,
+            duration: falloAviso ? 6000 : 3000,
+            color: falloAviso ? 'warning' : 'success'
         });
         await toast.present();
         

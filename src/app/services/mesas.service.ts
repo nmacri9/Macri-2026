@@ -45,7 +45,7 @@ export class MesasService {
 
   async asignarMesaACliente(asignacionId: number, mesaId: number) {
     const { data: pendiente, error: errorPendiente } = await this.db.from('asignaciones')
-      .select('cantidad_personas').eq('id', asignacionId).eq('estado', 'esperando')
+      .select('cantidad_personas, cliente_id').eq('id', asignacionId).eq('estado', 'esperando')
       .is('mesa_id', null).is('fecha_finalizacion', null).maybeSingle();
     if (errorPendiente) throw errorPendiente;
     if (!pendiente) throw new Error('El cliente ya no está en la lista de espera.');
@@ -75,6 +75,29 @@ export class MesasService {
       .eq('id', mesaId).eq('disponibilidad', 'VACIA');
     if (errorEstado) throw errorEstado;
     if (mesasActualizadas !== 1) throw new Error('Se asignó la mesa al cliente, pero no se pudo marcar como RESERVADA. Revisá la mesa.');
+
+    // El topic usa el UUID de Auth, no el id numérico de la tabla clientes.
+    // Un fallo del aviso no revierte una asignación que ya se guardó.
+    try {
+      const { data: cliente, error: errorCliente } = await this.db.from('clientes')
+        .select('cliente_id').eq('id', pendiente.cliente_id).single();
+      if (errorCliente) throw errorCliente;
+      if (!cliente?.cliente_id) throw new Error('El cliente no tiene un usuario asociado.');
+      const { data, error: errorPush } = await this.db.functions.invoke('enviar-notificacion', {
+        body: {
+          topic: `cliente_${cliente.cliente_id}`,
+          titulo: '¡Ya tenés mesa asignada!',
+          cuerpo: `Te han asignado la mesa ${mesaId}. Acercate y escaneá el QR de tu mesa.`,
+          data: { ruta: '/home', mesa_id: String(mesaId) },
+        },
+      });
+      if (errorPush) throw errorPush;
+      if (data?.error) throw new Error(data.error);
+      return { notificacionEnviada: true };
+    } catch (error) {
+      console.error('[Push] Mesa asignada, pero no se pudo enviar el aviso al cliente:', error);
+      return { notificacionEnviada: false };
+    }
   }
 
   async validarYVincularMesaQR(authId: string, qrTokenLeido: string) {

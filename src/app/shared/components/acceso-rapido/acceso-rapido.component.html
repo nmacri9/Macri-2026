@@ -24,7 +24,10 @@
       <ion-list lines="full">
         <ion-item button *ngFor="let perfil of perfiles" (click)="seleccionar(perfil)" class="perfil-item">
           <ion-avatar slot="start">
-            <img [src]="perfil.foto" onerror="this.src='https://ionicframework.com/docs/img/demos/avatar.svg'" />
+          <img 
+          [src]="perfil.foto" 
+          (error)="onImageError($event)" 
+          />
           </ion-avatar>
           <ion-label>
             <h2 class="rol-title">{{ perfil.rol }}</h2>

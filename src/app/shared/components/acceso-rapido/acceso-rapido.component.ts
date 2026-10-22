@@ -45,4 +45,15 @@ export class AccesoRapidoComponent {
     this.perfilSeleccionado.emit(perfil);
     this.setOpen(false);
   }
+
+onImageError(event: Event) {
+  const img = event.target as HTMLImageElement;
+  
+  // Solo hace fallback una vez (evita bucle si el default también falla)
+  if (img.src.includes('avatar-default.svg')) return;
+  
+  img.src = 'assets/avatar-default.svg';
+}
+
+
 }

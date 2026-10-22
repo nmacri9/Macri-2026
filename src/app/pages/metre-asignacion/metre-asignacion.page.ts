@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
     IonContent, IonItem, IonLabel, IonSelect,
-    IonSelectOption, IonButton, ToastController
+    IonSelectOption, IonButton, IonIcon, IonSpinner, ToastController
 } from '@ionic/angular';
 import { CepaHeaderComponent } from '../../shared/components/cepa-header/cepa-header.component';
 import { MesasService } from '../../services/mesas.service';
@@ -27,8 +27,8 @@ interface ClienteEspera {
     styleUrls: ['./metre-asignacion.page.scss'],
     standalone: true,
     imports: [
-        CommonModule, FormsModule, IonContent, IonItem, 
-        IonLabel, IonSelect, IonSelectOption, IonButton, CepaHeaderComponent
+        CommonModule, FormsModule, IonContent, IonItem,
+        IonLabel, IonSelect, IonSelectOption, IonButton, IonIcon, IonSpinner, CepaHeaderComponent
     ]
 
 })

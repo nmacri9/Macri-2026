@@ -1,59 +1,105 @@
 <app-cepa-header titulo="Asignar Mesas" defaultHref="/home"></app-cepa-header>
 
 <ion-content class="ion-padding content-bg">
-  <ion-button 
-  expand="block"
-  fill="outline" 
-  class="btn-actualizar"
-  (click)="actualizar()" 
-  [disabled]="cargandoMesas || cargandoLista || asignando">
-  Actualizar mesas y clientes
-</ion-button>
+  <!-- Botón actualizar siempre arriba -->
+  <ion-button
+    expand="block"
+    fill="outline"
+    class="btn-actualizar"
+    (click)="actualizar()"
+    [disabled]="cargandoMesas || cargandoLista || asignando">
+    Actualizar mesas y clientes
+  </ion-button>
 
+  <!-- Estados de carga/error -->
   <div class="estado-carga" *ngIf="cargandoMesas || cargandoLista" role="status">
-    Cargando mesas y clientes…
+    <ion-spinner name="crescent"></ion-spinner>
+    <span>Cargando mesas y clientes…</span>
   </div>
-  <div class="estado-carga" *ngIf="errorMesas" role="alert">
+  <div class="estado-carga error" *ngIf="errorMesas" role="alert">
     <p>{{ errorMesas }}</p>
     <ion-button fill="outline" (click)="cargarMesas()" [disabled]="cargandoMesas || asignando">Reintentar mesas</ion-button>
   </div>
-  <div class="estado-carga" *ngIf="errorLista" role="alert">
+  <div class="estado-carga error" *ngIf="errorLista" role="alert">
     <p>{{ errorLista }}</p>
     <ion-button fill="outline" (click)="cargarListaEspera()" [disabled]="cargandoLista || asignando">Reintentar clientes</ion-button>
   </div>
-  <div class="estado-carga" *ngIf="!cargandoMesas && !errorMesas" role="status">
-    <p *ngIf="mesasDisponibles.length === 0">No hay mesas disponibles para asignar. Si hay mesas libres en el salón, pedile al administrador que revise su disponibilidad y los permisos de tu usuario.</p>
-    <p *ngIf="mesasDisponibles.length > 0">Mesas disponibles: {{ mesasDisponibles.length }}</p>
-  </div>
-  <div *ngIf="!cargandoLista && !errorLista && listaEspera.length === 0" class="estado-carga">
-    <p>No hay clientes pendientes en la lista de espera.</p>
+
+  <!-- Contenido principal -->
+  <div class="main-content" *ngIf="!cargandoMesas && !errorMesas">
+
+    <!-- Estado: Hay mesas disponibles pero no hay clientes en espera -->
+    <div class="empty-state" *ngIf="mesasDisponibles.length > 0 && listaEspera.length === 0">
+      <div class="empty-state-icon" aria-hidden="true">
+        <img src="assets/icono.png" alt="" />
+      </div>
+      <h2 class="empty-state-title">Mesas disponibles: {{ mesasDisponibles.length }}</h2>
+      <p class="empty-state-subtitle">Esperando clientes en la lista de espera…</p>
+      <div class="empty-state-decor" aria-hidden="true">
+        <span class="decor-dot"></span>
+        <span class="decor-dot"></span>
+        <span class="decor-dot"></span>
+      </div>
     </div>
 
-    <div class="card-container" *ngFor="let cliente of listaEspera">
+    <!-- Estado: No hay mesas disponibles -->
+    <div class="empty-state no-tables" *ngIf="mesasDisponibles.length === 0 && listaEspera.length === 0">
+      <div class="empty-state-icon" aria-hidden="true">
+        <img src="assets/icono.png" alt="" />
+      </div>
+      <h2 class="empty-state-title">Sin mesas disponibles</h2>
+      <p class="empty-state-subtitle">No hay mesas libres para asignar en este momento</p>
+      <p class="empty-state-hint">Si hay mesas libres en el salón, pedile al administrador que revise su disponibilidad y los permisos de tu usuario.</p>
+      <div class="empty-state-decor" aria-hidden="true">
+        <span class="decor-dot"></span>
+        <span class="decor-dot"></span>
+        <span class="decor-dot"></span>
+      </div>
+    </div>
+
+    <!-- Estado: Hay clientes en espera (mostrar tarjetas) -->
+    <div class="clientes-section" *ngIf="listaEspera.length > 0">
+      <div class="section-header">
+        <h2 class="section-title">Clientes en espera</h2>
+        <span class="section-count">{{ listaEspera.length }}</span>
+      </div>
+
+      <div class="mesas-disponibles-badge" *ngIf="mesasDisponibles.length > 0">
+        <ion-icon name="table-sharp"></ion-icon>
+        <span>Mesas disponibles: {{ mesasDisponibles.length }}</span>
+      </div>
+      <div class="mesas-disponibles-badge sin-mesas" *ngIf="mesasDisponibles.length === 0">
+        <ion-icon name="close-circle-outline"></ion-icon>
+        <span>No hay mesas disponibles</span>
+      </div>
+
+      <div class="card-container" *ngFor="let cliente of listaEspera">
         <div class="cliente-info">
-        <h3>{{ cliente.nombre }}</h3>
-        <p>Estado: {{ cliente.estado }}</p>
-        <p>Personas: {{ cliente.cantidad_personas }}</p>
+          <h3>{{ cliente.nombre }}</h3>
+          <p>Estado: {{ cliente.estado }}</p>
+          <p>Personas: {{ cliente.cantidad_personas }}</p>
         </div>
 
-        <ion-item class="select-item">
-        <ion-label>Mesa disponible:</ion-label>
-        <ion-select [(ngModel)]="cliente.mesaSeleccionadaId" placeholder="Elegir mesa"
-          [interfaceOptions]="opcionesSelector" cancelText="Cancelar" okText="Elegir"
-          [attr.aria-label]="'Mesa para ' + cliente.nombre"
-          [disabled]="cargandoMesas || asignando || !!errorMesas || mesasDisponibles.length === 0">
+        <ion-item class="select-item" [class.disabled]="mesasDisponibles.length === 0">
+          <ion-label>Mesa disponible:</ion-label>
+          <ion-select [(ngModel)]="cliente.mesaSeleccionadaId" placeholder="Elegir mesa"
+            [interfaceOptions]="opcionesSelector" cancelText="Cancelar" okText="Elegir"
+            [attr.aria-label]="'Mesa para ' + cliente.nombre"
+            [disabled]="cargandoMesas || asignando || !!errorMesas || mesasDisponibles.length === 0">
             <ion-select-option *ngFor="let mesa of mesasDisponibles" [value]="mesa.id" [disabled]="mesa.capacidad < cliente.cantidad_personas">
-            Mesa {{ mesa.id }} (Capacidad: {{ mesa.capacidad }})
+              Mesa {{ mesa.id }} (Capacidad: {{ mesa.capacidad }})
             </ion-select-option>
-        </ion-select>
+          </ion-select>
         </ion-item>
 
-        <ion-button 
-        expand="block" 
-        class="btn-confirmar"
-        [disabled]="cliente.mesaSeleccionadaId === null || cargandoMesas || asignando || !!errorMesas || mesasDisponibles.length === 0"
-        (click)="asignarMesa(cliente)">
-        Asignar Mesa
+        <ion-button
+          expand="block"
+          class="btn-confirmar"
+          [disabled]="cliente.mesaSeleccionadaId === null || cargandoMesas || asignando || !!errorMesas || mesasDisponibles.length === 0"
+          (click)="asignarMesa(cliente)">
+          Asignar Mesa
         </ion-button>
+      </div>
     </div>
+  </div>
 </ion-content>

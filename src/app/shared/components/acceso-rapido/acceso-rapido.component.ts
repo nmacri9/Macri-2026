@@ -45,4 +45,15 @@ export class AccesoRapidoComponent {
     this.perfilSeleccionado.emit(perfil);
     this.setOpen(false);
   }
+
+onImageError(event: Event, perfil: any) {
+  const img = event.target as HTMLImageElement;
+  
+  // Evitar bucle: si ya intentamos el fallback, no reintentar
+  if (perfil._triedFallback) return;
+  
+  perfil._triedFallback = true;
+  img.src = 'https://ionicframework.com/docs/img/demos/avatar.svg';
+}
+
 }

@@ -6,7 +6,7 @@ import {
   ModalController 
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { checkmarkCircleOutline, restaurantOutline, timeOutline  } from 'ionicons/icons';
+import { checkmarkCircleOutline, restaurantOutline, timeOutline, chevronDownOutline } from 'ionicons/icons';
 import { SupabaseService } from '../../services/supabase.service';
 import { PedidosService } from '../../services/pedidos.service'; 
 
@@ -32,13 +32,28 @@ export class BarraPage implements OnInit, OnDestroy {
   private canalBarra: any;
   cargando = false; 
 
+  // Pedido desplegado (uno solo a la vez); null = todos contraídos
+  pedidoAbiertoId: string | null = null;
+
+  alternarPedido(id: string) {
+    this.pedidoAbiertoId = this.pedidoAbiertoId === id ? null : id;
+  }
+
+  trackByPedido(_: number, pedido: any) {
+    return pedido.id;
+  }
+
+  cantidadItems(pedido: any): number {
+    return (pedido.items ?? []).reduce((acc: number, item: any) => acc + (item.cantidad ?? 1), 0);
+  }
+
   constructor(
     private supabase: SupabaseService,
     private pedidosService: PedidosService, 
     private cdr: ChangeDetectorRef,
     private modalCtrl: ModalController 
   ) {
-    addIcons({ checkmarkCircleOutline,  restaurantOutline, timeOutline });
+    addIcons({ checkmarkCircleOutline,  restaurantOutline, timeOutline, chevronDownOutline });
   }
 
   ngOnInit() {

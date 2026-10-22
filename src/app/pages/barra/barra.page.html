@@ -10,18 +10,25 @@
   </div>
 
   <!-- Iteramos sobre el array ya procesado -->
-  <ion-card *ngFor="let pedido of pedidosBarra" class="comanda-card">
+  <ion-card *ngFor="let pedido of pedidosBarra; trackBy: trackByPedido" class="comanda-card" [class.abierto]="pedidoAbiertoId === pedido.id">
     <ion-card-header>
-      <div class="header-comanda">
+      <div class="header-comanda cabecera-toggle" role="button" tabindex="0"
+           [attr.aria-expanded]="pedidoAbiertoId === pedido.id"
+           (click)="alternarPedido(pedido.id)" (keydown.enter)="alternarPedido(pedido.id)">
         <ion-card-title>Mesa {{ pedido.mesa_id }}</ion-card-title>
-        <ion-badge color="warning">
-          <ion-icon name="time-outline"></ion-icon>
-          {{ pedido.created_at | date: 'dd/MM - HH:mm' }}
-        </ion-badge>
+        <div class="cabecera-derecha">
+          <ion-badge color="warning">
+            <ion-icon name="time-outline"></ion-icon>
+            {{ pedido.created_at | date: 'dd/MM - HH:mm' }}
+          </ion-badge>
+          <ion-icon name="chevron-down-outline" class="chevron-toggle"></ion-icon>
+        </div>
       </div>
+      <p class="resumen-linea">{{ cantidadItems(pedido) }} ítems</p>
     </ion-card-header>
 
-    <ion-card-content>
+    <!-- DETALLE: solo con el pedido abierto -->
+    <ion-card-content *ngIf="pedidoAbiertoId === pedido.id">
       <div class="scroll-controlado">
       <ion-list lines="full" class="lista-items">
         <!-- Mostramos solo los items de bebiaa -->

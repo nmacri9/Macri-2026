@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonContent, IonItem, IonIcon, IonButton, ModalController, ToastController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { restaurantOutline, checkmarkCircleOutline, timeOutline, closeCircleOutline } from 'ionicons/icons';
+import { restaurantOutline, checkmarkCircleOutline, timeOutline, closeCircleOutline, chevronDownOutline } from 'ionicons/icons';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { SupabaseService } from '../../services/supabase.service';
 import { PedidosService } from '../../services/pedidos.service';
@@ -45,6 +45,9 @@ export class ConfirmarPedidoPage implements OnInit, OnDestroy {
   confirmandoId: string | null = null;
   errorMsg: string | undefined;
 
+  // Pedido desplegado (uno solo a la vez); null = todos contraídos
+  pedidoAbiertoId: string | null = null;
+
   private canal: any;
   private actualizacionCuentas?: ReturnType<typeof setInterval>;
 
@@ -57,7 +60,25 @@ export class ConfirmarPedidoPage implements OnInit, OnDestroy {
     private toastCtrl: ToastController,
     private cdr: ChangeDetectorRef
   ) {
-    addIcons({ restaurantOutline, checkmarkCircleOutline, timeOutline, closeCircleOutline });
+    addIcons({ restaurantOutline, checkmarkCircleOutline, timeOutline, closeCircleOutline, chevronDownOutline });
+  }
+
+  alternarPedido(id: string) {
+    this.pedidoAbiertoId = this.pedidoAbiertoId === id ? null : id;
+  }
+
+  trackByPedido(_: number, pedido: PedidoPendiente) {
+    return pedido.id;
+  }
+
+  cantidadItems(pedido: PedidoPendiente): number {
+    return (pedido.items ?? []).reduce((acc, item) => acc + (item.cantidad ?? 1), 0);
+  }
+
+  etiquetaEstado(pedido: PedidoPendiente): string {
+    if (pedido.estado === 'pendiente_confirmacion') return 'Por confirmar';
+    if (pedido.estado === 'listo_para_entregar') return 'Listo para servir';
+    return 'En preparación';
   }
 
   ngOnInit() {

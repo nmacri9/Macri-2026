@@ -100,6 +100,45 @@ ion-content {
   }
 }
 
+/* ============================================
+  Pedido colapsable (se abre al tocar la cabecera)
+   ============================================ */
+.cabecera-toggle {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cabecera-derecha {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chevron-toggle {
+  font-size: 22px;
+  color: #C8B29E; // beige oscuro - acento
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.pedido-card.abierto .chevron-toggle {
+  transform: rotate(180deg);
+}
+
+.resumen-linea {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: #C8B29E; // beige oscuro - acento
+  cursor: pointer;
+}
+
+/* Cerrado: cabecera compacta, sin línea divisoria */
+.pedido-card:not(.abierto) .pedido-card-header {
+  border-bottom: none;
+  margin-bottom: 4px;
+  padding-bottom: 0;
+}
+
 .pedido-items {
   list-style: none;
   padding: 0;

@@ -6,7 +6,7 @@ import {
   ModalController 
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { checkmarkCircleOutline, restaurantOutline, timeOutline } from 'ionicons/icons';
+import { checkmarkCircleOutline, restaurantOutline, timeOutline, chevronDownOutline } from 'ionicons/icons';
 import { FCM } from '@capacitor-community/fcm'; // <-- AGREGADO
 import { SupabaseService } from '../../services/supabase.service';
 
@@ -33,13 +33,28 @@ export class CocinaPage implements OnInit, OnDestroy {
   private canalCocina: any;
   cargando = false; 
 
+  // Pedido desplegado (uno solo a la vez); null = todos contraídos
+  pedidoAbiertoId: string | null = null;
+
+  alternarPedido(id: string) {
+    this.pedidoAbiertoId = this.pedidoAbiertoId === id ? null : id;
+  }
+
+  trackByPedido(_: number, pedido: any) {
+    return pedido.id;
+  }
+
+  cantidadItems(pedido: any): number {
+    return (pedido.items ?? []).reduce((acc: number, item: any) => acc + (item.cantidad ?? 1), 0);
+  }
+
   constructor(
     private supabase: SupabaseService,
     private cdr: ChangeDetectorRef,
     private modalCtrl: ModalController,
     private pedidosService: PedidosService
   ) {
-    addIcons({restaurantOutline,timeOutline,checkmarkCircleOutline});
+    addIcons({restaurantOutline,timeOutline,checkmarkCircleOutline,chevronDownOutline});
   }
 
   ngOnInit() {

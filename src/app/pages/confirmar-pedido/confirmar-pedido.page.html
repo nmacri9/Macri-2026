@@ -30,16 +30,30 @@
       <small>{{ errorMsg }}</small>
     </div>
 
-    <ion-item class="pedido-card" lines="none" *ngFor="let pedido of pedidos">
+    <ion-item class="pedido-card" lines="none" *ngFor="let pedido of pedidos; trackBy: trackByPedido" [class.abierto]="pedidoAbiertoId === pedido.id">
       <div class="pedido-card-content">
 
-        <div class="pedido-card-header">
+        <!-- CABECERA: se toca para abrir/cerrar el pedido -->
+        <div class="pedido-card-header cabecera-toggle" role="button" tabindex="0"
+             [attr.aria-expanded]="pedidoAbiertoId === pedido.id"
+             (click)="alternarPedido(pedido.id)" (keydown.enter)="alternarPedido(pedido.id)">
           <span class="pedido-mesa">Mesa {{ pedido.mesa_id }}</span>
-          <span class="pedido-tiempo">
-            <ion-icon name="time-outline"></ion-icon>
-            {{ pedido.tiempo_estimado }} min
-          </span>
+          <div class="cabecera-derecha">
+            <span class="pedido-tiempo">
+              <ion-icon name="time-outline"></ion-icon>
+              {{ pedido.tiempo_estimado }} min
+            </span>
+            <ion-icon name="chevron-down-outline" class="chevron-toggle"></ion-icon>
+          </div>
         </div>
+
+        <!-- RESUMEN (solo con el pedido cerrado) -->
+        <div class="resumen-linea" *ngIf="pedidoAbiertoId !== pedido.id" (click)="alternarPedido(pedido.id)">
+          {{ cantidadItems(pedido) }} ítems · ${{ pedido.total }} · {{ etiquetaEstado(pedido) }}
+        </div>
+
+        <!-- DETALLE (solo con el pedido abierto) -->
+        <ng-container *ngIf="pedidoAbiertoId === pedido.id">
 
         <ul class="pedido-items">
           <li *ngFor="let item of pedido.items">
@@ -102,6 +116,8 @@
             </ion-button>
           </div>
         </div>
+
+        </ng-container>
 
       </div>
     </ion-item>

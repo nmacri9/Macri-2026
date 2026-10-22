@@ -241,6 +241,12 @@
                 <span>Consulta<br>al mozo</span>
               </a>
             }
+            @if (pedidoEntregadoPorMozo) {
+              <a class="action-pill" (click)="confirmarRecepcion()">
+                <ion-icon name="checkmark-circle-outline"></ion-icon>
+                <span>Confirmar<br>recepción</span>
+              </a>
+            }
           }
 
         </div>
@@ -378,18 +384,6 @@
                 }
               </div>
             </a>
-
-            <!-- BOTÓN DE CONFIRMACIÓN DE RECEPCIÓN (Punto 19) -->
-            @if (pedidoEntregadoPorMozo) {
-              <ion-button 
-                  expand="block" 
-                  color="success" 
-                  style="grid-column: 1 / -1; margin-bottom: 10px;"
-                  (click)="confirmarRecepcion()">
-                  <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
-                  ¡Confirmar que recibí mi pedido!
-              </ion-button>
-            }
 
             <!-- ACCESO A JUEGOS: disponible desde la asignación de mesa -->
             @if (esClienteRegistrado && clienteConMesaAsignada) {

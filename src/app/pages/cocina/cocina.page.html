@@ -10,19 +10,25 @@
   </div>
 
   <!-- Iteramos sobre el array ya procesado -->
-  <ion-card *ngFor="let pedido of pedidosCocina" class="comanda-card">
+  <ion-card *ngFor="let pedido of pedidosCocina; trackBy: trackByPedido" class="comanda-card" [class.abierto]="pedidoAbiertoId === pedido.id">
     <ion-card-header>
-      <div class="header-comanda">
+      <div class="header-comanda cabecera-toggle" role="button" tabindex="0"
+           [attr.aria-expanded]="pedidoAbiertoId === pedido.id"
+           (click)="alternarPedido(pedido.id)" (keydown.enter)="alternarPedido(pedido.id)">
         <ion-card-title>Mesa {{ pedido.mesa_id }}</ion-card-title>
-        <!-- AGREGADA LA FECHA AL FORMATO -->
-        <ion-badge color="warning">
-          <ion-icon name="time-outline"></ion-icon>
-          {{ pedido.created_at | date:'dd/MM - HH:mm' }}
-        </ion-badge>
+        <div class="cabecera-derecha">
+          <ion-badge color="warning">
+            <ion-icon name="time-outline"></ion-icon>
+            {{ pedido.created_at | date:'dd/MM - HH:mm' }}
+          </ion-badge>
+          <ion-icon name="chevron-down-outline" class="chevron-toggle"></ion-icon>
+        </div>
       </div>
+      <p class="resumen-linea">{{ cantidadItems(pedido) }} ítems</p>
     </ion-card-header>
 
-    <ion-card-content>
+    <!-- DETALLE: solo con el pedido abierto -->
+    <ion-card-content *ngIf="pedidoAbiertoId === pedido.id">
       <!-- CONTENEDOR CON SCROLL CONTROLADO -->
       <div class="scroll-controlado">
         <ion-list lines="full" class="lista-items">

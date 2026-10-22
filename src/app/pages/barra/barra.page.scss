@@ -37,6 +37,44 @@
   }
 
   /* ==============================================
+    PEDIDO COLAPSABLE (se abre al tocar la cabecera)
+  ============================================== */
+  .cabecera-toggle {
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .cabecera-derecha {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .chevron-toggle {
+    font-size: 1.7rem;
+    color: #C8B29E;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+  }
+
+  &.abierto .chevron-toggle {
+    transform: rotate(180deg);
+  }
+
+  .resumen-linea {
+    margin: 8px 0 0;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    color: #C8B29E;
+  }
+
+  /* Cerrado: cabecera compacta, sin línea divisoria */
+  &:not(.abierto) .header-comanda {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  /* ==============================================
     SCROLL CONTROLADO 
   ============================================== */
   .scroll-controlado {
@@ -139,6 +177,7 @@
     padding: 8px 4px;
 
     ion-card-title { font-size: 1.35rem; }
+    .chevron-toggle { font-size: 1.4rem; }
     
     .header-comanda ion-badge { 
       font-size: 0.9rem; 

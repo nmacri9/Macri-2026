@@ -41,33 +41,62 @@ export class ChatPushService {
     const client = this.supabase.getClient();
     const { data: { session }, error } = await client.auth.getSession();
     if (error) throw error;
+    
     let deseados: string[] = [];
     if (session) {
       const persona = await this.auth.obtenerPerfil();
       if (!persona || persona.id !== session.user.id) throw new Error('Perfil pendiente de cargar');
+      
       const rol = persona.rol.trim().toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-      const habilitado = rol === 'CLIENTE_REGISTRADO' ? persona.estado === 'APROBADO'
+      
+      // Aseguramos que CLIENTE_REGISTRADO (y GENERICO por las dudas) pasen la validación
+      const habilitado = ['CLIENTE_REGISTRADO', 'CLIENTE_GENERICO'].includes(rol) 
+        ? persona.estado === 'APROBADO'
         : (rol in TOPICS_PERSONAL || rol === 'CLIENTE_ANONIMO') && persona.estado === 'ACTIVO';
+        
       if (habilitado) deseados = TOPICS_PERSONAL[rol] ?? [`cliente_${persona.id}`, `chat_cliente_${persona.id}`];
     }
+
     const anteriores: string[] = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-    // Recuperar también las suscripciones de personal creadas por las pantallas antiguas.
     const conocidos = new Set([...anteriores, ...(this.limpiarLegacy ? Object.values(TOPICS_PERSONAL).flat() : [])]);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify([...conocidos]));
+    
+    // Función para limpiar cualquier espacio o carácter inválido del topic
+    const limpiarTopic = (t: string) => t ? t.trim().replace(/[^a-zA-Z0-9-_.~%]/g, '_') : '';
+
+    // 1. DESUSCRIBIR (ahora protegido)
     for (const topic of conocidos) {
       if (deseados.includes(topic)) continue;
-      await FCM.unsubscribeFrom({ topic });
+      
+      const topicSeguro = limpiarTopic(topic);
+      if (topicSeguro) {
+        try {
+          await FCM.unsubscribeFrom({ topic: topicSeguro });
+        } catch (err) {
+          console.warn(`[Push] Fallo al desuscribir del topic viejo (ignorado):`, err);
+        }
+      }
+      
+      // Ahora sí, pase lo que pase, borramos el topic corrupto del almacenamiento
       conocidos.delete(topic);
       localStorage.setItem(STORAGE_KEY, JSON.stringify([...conocidos]));
-      console.info('[Push] Suscripción eliminada:', topic);
+      console.info('[Push] Suscripción local eliminada:', topic);
     }
+    
     this.limpiarLegacy = false;
+    
+    // 2. SUSCRIBIR (ahora protegido y saneado)
     for (const topic of deseados) {
-      // Reafirmar la suscripción después de reinicios o renovación del token.
-      await FCM.subscribeTo({ topic });
-      conocidos.add(topic);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify([...conocidos]));
-      console.info('[Push] Suscripción confirmada:', topic);
+      const topicSeguro = limpiarTopic(topic);
+      if (topicSeguro) {
+        try {
+          await FCM.subscribeTo({ topic: topicSeguro });
+          conocidos.add(topicSeguro);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify([...conocidos]));
+          console.info('[Push] Suscripción confirmada:', topicSeguro);
+        } catch (err) {
+          console.error(`[Push] Fallo al suscribir a ${topicSeguro}:`, err);
+        }
+      }
     }
     console.info('[Push] Sincronización completa:', deseados);
   }

@@ -187,7 +187,11 @@ export class HomePage {
     this.cerrandoSesion = true;
     try {
       await this.authService.logout();
-      await this.chatPush.actualizar();
+      
+      // ¡CLAVE! Le quitamos el 'await' para que no espere a Firebase. 
+      // Usamos .catch() por si da error, pero dejamos que Angular siga de largo.
+      this.chatPush.actualizar().catch(e => console.warn('Fallo Push al salir', e));
+      
       await menu.dismiss();
       await this.navController.navigateRoot('/login', { replaceUrl: true });
     } catch (error) {
@@ -287,15 +291,21 @@ export class HomePage {
           if (error) throw error;
           if (revision !== this.revisionPerfil) return;
           if (data.user?.id !== usuario.id) throw new Error('La sesión cambió al suscribir las notificaciones.');
-          const topic = `cliente_${data.user.id}`;
-          // Registrar también esta suscripción para que el servicio pueda limpiarla.
+          
+          // 1. Limpiamos el topic por seguridad
+          const topic = `cliente_${data.user.id}`.replace(/[^a-zA-Z0-9-_.~%]/g, '_');
+          
           const storageKey = 'cepa.chat.push.topics';
           const topics: string[] = JSON.parse(localStorage.getItem(storageKey) || '[]');
           localStorage.setItem(storageKey, JSON.stringify([...new Set([...topics, topic])]));
-          await FCM.subscribeTo({ topic });
-          console.info('[Push Home] Suscripción directa confirmada:', topic);
+          
+          // 2. ¡LE QUITAMOS EL AWAIT A FIREBASE! Fuego y olvido.
+          FCM.subscribeTo({ topic })
+            .then(() => console.info('[Push Home] Suscripción directa confirmada:', topic))
+            .catch(err => console.error('[Push Home] Falló la suscripción directa:', err));
+            
         } catch (error) {
-          console.error('[Push Home] Falló la suscripción directa del cliente:', error);
+          console.error('[Push Home] Falló la preparación de la suscripción:', error);
         }
         if (revision !== this.revisionPerfil) return;
       }

@@ -10,10 +10,10 @@ Trabajo Final Integrador (TFI) — App móvil para la gestión de un salón gast
 
 | Apellido y Nombre     | Rama Principal (Branch)     | Período                   |
 | :-------------------- | :-------------------------- | :------------------------ |
-| **Garcia, Mateo**     | Backend y Base de Datos     | 27/08/2026 — 15/10/2026   |
-| **Macri, Nicolas**    | UI/UX y Vistas Frontend     | 27/08/2026 — 15/10/2026   |
-| **Goncalves, Matias** | Formularios y Autenticación | 27/08/2026 — 15/10/2026   |
-| **Breyaui, Jaled**    | Arquitectura y Ruteo        | 27/08/2026 — 04/09/2026   |
+| **Garcia, Mateo**     | Backend y Base de Datos     | 27/08/2026 — 22/10/2026   |
+| **Macri, Nicolas**    | UI/UX y Vistas Frontend     | 27/08/2026 — 22/10/2026   |
+| **Goncalves, Matias** | Formularios y Autenticación | 27/08/2026 — 19/10/2026   |
+| **Breyaui, Jaled**    | Arquitectura y Ruteo        | 27/08/2026 — 23/09/2026   |
 
 ---
 

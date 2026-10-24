@@ -30,6 +30,7 @@ export class CuentaPage implements OnDestroy {
   readonly esNativo = Capacitor.isNativePlatform();
   readonly satisfaccion = SATISFACCION;
   private detenerEscucha?: () => void;
+  mostrarDetalle = false;
 
   constructor(private cuentas: CuentaService, private cdr: ChangeDetectorRef) {
     addIcons({ qrCodeOutline, checkmarkCircle, receiptOutline, arrowBackOutline });
@@ -48,6 +49,7 @@ export class CuentaPage implements OnDestroy {
   }
 
   async cargar() {
+    this.mostrarDetalle = false;
     this.cargando = true;
     this.disponible = false;
     this.error = '';

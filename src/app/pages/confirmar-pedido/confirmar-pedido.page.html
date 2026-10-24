@@ -7,7 +7,6 @@
       <p *ngIf="!cargandoCuentas && !errorCuentas && cuentas.length === 0" role="status">No hay cuentas pendientes visibles para este usuario.</p>
       <aside *ngIf="avisoCuentaPendiente" role="status">
         <p>Pago confirmado y mesa liberada. Quedan avisos pendientes para el cliente o el personal.</p>
-        <ion-button fill="clear" (click)="reintentarAvisoCuenta()">Reintentar aviso</ion-button>
       </aside>
       <ion-item class="pedido-card" lines="none" *ngFor="let cuenta of cuentas">
         <div class="pedido-card-content">

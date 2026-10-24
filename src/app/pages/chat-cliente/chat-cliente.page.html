@@ -95,7 +95,6 @@
     @if (avisosPendientes().length) {
       <div class="notice error" role="alert">
         <p>Tu mensaje está en el chat, pero no pudimos enviar el aviso al dispositivo.</p>
-        <button type="button" (click)="reintentarAvisos()" [disabled]="reintentandoAvisos()">Reintentar aviso</button>
       </div>
     }
     @if (respuesta(); as mensaje) {

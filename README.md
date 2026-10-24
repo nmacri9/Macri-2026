@@ -120,7 +120,7 @@ Componente / Pantalla              | Enlace de visualización                   
  Gráfico lineal                     | [Ver imagen](./capturas/grafico-lineal.jpg)    |
  Juegos                             | [Ver imagen](./capturas/juegos.jpg)            |
  Pedir Propina                      | [Ver imagen](./capturas/propina.jpg)           |
- Cierre de Cuenta (Punto 21)        | [Ver imagen](./capturas/cuenta.jpg)            |
+ Cierre de Cuenta (Punto 21)        | [Ver imagen](./capturas/cuentaa.jpg)           |
 
 ## Índice de Imágenes QRs
 Componente / Pantalla              | Enlace de visualización                         |

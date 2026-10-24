@@ -95,10 +95,10 @@ Disponible para clientes registrados aprobados con una mesa asignada. La primera
 
 Componente / Pantalla              | Enlace de visualización                         |
  :--------------------------------- | :---------------------------------------------- |
- Ícono de la aplicación             | [Ver imagen](./resources/icon.png)              |
- Splash Dinámico                    | [Ver imagen](./capturas/Splash-screen.jpeg)     |
- Spinner                            | [Ver imagen](./capturas/spinner.jpeg)           |
- Login: Pantalla principal          | [Ver imagen](./capturas/login.jpeg)             |
+ Ícono de la aplicación             | [Ver imagen](./resources/icon.png)             |
+ Splash Dinámico                    | [Ver imagen](./capturas/Splash-screen.jpeg)    |
+ Spinner                            | [Ver imagen](./capturas/spinner.jpeg)          |
+ Login: Pantalla principal          | [Ver imagen](./capturas/login.jpeg)            |
  Pantalla principal                 | [Ver imagen](./capturas/home.jpg)              |
  Alta de Mesa: Vista                | [Ver imagen](./capturas/alta-mesa.jpg)         |
  Alta de Plato: Vista               | [Ver imagen](./capturas/carga-plato.jpg)       |
@@ -107,7 +107,7 @@ Componente / Pantalla              | Enlace de visualización                   
  Registro de Empleado: Vista        | [Ver imagen](./capturas/Registro-empleado.jpeg)|
  Clientes pendientes: Vista         | [Ver imagen](./capturas/cliente-pendiente.jpeg)|
  Asignación de mesa (Metre): Vista  | [Ver imagen](./capturas/Asignar-mesa.jpeg)     |
- Realizar pedido (Cliente): Vista   | [Ver imagen](./capturas/.jpeg)                 |
+ Realizar pedido (Cliente): Vista   | [Ver imagen](./capturas/pedido.jpg)            |
  Menú de pedidos (Cliente): Vista   | [Ver imagen](./capturas/menu.jpeg)             |
  Escanear mesa (Cliente): Vista     | [Ver imagen](./capturas/escanear-mesa.jpeg)    |
  Ingreso al local (Cliente): Vista  | [Ver imagen](./capturas/ingreso-local.jpg)     |

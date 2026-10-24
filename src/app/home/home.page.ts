@@ -487,14 +487,29 @@ export class HomePage {
 
         this.comandasActivasCount = count || 0;
         this.notificacionesBadge = this.comandasActivasCount;
+
+        // Obtener el último producto agregado (plato o bebida según el rol)
+        const tipoProducto = this.puedeCargarPlatos ? 'PLATO' : 'BEBIDA';
+        const { data: ultimoProducto } = await db
+          .from('productos')
+          .select('nombre')
+          .eq('tipo', tipoProducto)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        const nombreUltimoProducto = ultimoProducto?.nombre
+          ? `Último: “${ultimoProducto.nombre}”`
+          : (this.puedeCargarPlatos ? 'Agregar nuevo plato a la carta' : 'Agregar nueva bebida a la carta');
+
         this.actividadesRecientes = [
           { icono: 'list-outline', texto: `Comandas en preparación: ${this.comandasActivasCount}`, ruta: '/cocina' },
           {
             icono: this.puedeCargarPlatos ? 'restaurant-outline' : 'wine-outline',
-            texto: this.puedeCargarPlatos ? 'Agregar nuevo plato a la carta' : 'Agregar nueva bebida a la carta',
+            texto: nombreUltimoProducto,
             ruta: this.puedeCargarPlatos ? '/alta-plato' : '/alta-bebida'
-          },
-          { icono: 'book-outline', texto: 'Ver menú completo', ruta: '/menu-productos' }
+          }
+          // Se elimina "Ver menú completo" porque el cocinero/cantinero no tiene acceso a esa vista
         ];
       }
 

@@ -107,7 +107,7 @@ Componente / Pantalla              | Enlace de visualización                   
  Registro de Empleado: Vista        | [Ver imagen](./capturas/Registro-empleado.jpeg)|
  Clientes pendientes: Vista         | [Ver imagen](./capturas/cliente-pendiente.jpeg)|
  Asignación de mesa (Metre): Vista  | [Ver imagen](./capturas/Asignar-mesa.jpeg)     |
- Realizar pedido (Cliente): Vista   | [Ver imagen](./capturas/pedido.jpg)            |
+ Realizar pedido (Cliente): Vista   | [Ver imagen](./capturas/pedido.jpeg)            |
  Menú de pedidos (Cliente): Vista   | [Ver imagen](./capturas/menu.jpeg)             |
  Escanear mesa (Cliente): Vista     | [Ver imagen](./capturas/escanear-mesa.jpeg)    |
  Ingreso al local (Cliente): Vista  | [Ver imagen](./capturas/ingreso-local.jpg)     |

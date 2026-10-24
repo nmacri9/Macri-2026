@@ -53,7 +53,7 @@ ion-content {
   min-height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 48px 0 calc(16px + var(--ion-safe-area-bottom, 0px));
+  padding: 12px 0 calc(8px + var(--ion-safe-area-bottom, 0px));
 }
 
 form {
@@ -72,21 +72,21 @@ a:focus-visible, .avatar-ring:focus-visible { outline: 2px solid var(--register-
   h1 {
     font-family: 'EB Garamond', serif;
     font-weight: 500;
-    font-size: clamp(34px, 9vw, 42px);
+    font-size: clamp(30px, 8vw, 36px);
     line-height: 1.1;
-    margin: 0 0 10px;
+    margin: 0 0 4px;
   }
   p { margin: 0; font-size: 14px; line-height: 1.5; color: var(--register-accent); }
 }
 
 /* ============================================
-   NUEVO AVATAR HERO (Botones horizontales)
+   AVATAR HERO (Botones horizontales)
    ============================================ */
 .avatar-hero {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 30px 0 15px;
+  padding: 16px 0 8px;
 }
 
 .actions-row {
@@ -115,8 +115,8 @@ a:focus-visible, .avatar-ring:focus-visible { outline: 2px solid var(--register-
 }
 
 .avatar-ring, .scan-bubble {
-  width: 80px;
-  height: 80px;
+  width: 68px;
+  height: 68px;
   border-radius: 50%;
   background: var(--register-surface);
   border: 2px solid var(--register-accent);
@@ -136,7 +136,7 @@ a:focus-visible, .avatar-ring:focus-visible { outline: 2px solid var(--register-
 .scan-bubble {
   transition: transform 0.2s ease;
   ion-icon {
-    font-size: 34px;
+    font-size: 30px;
     color: var(--register-accent);
   }
   &:active {
@@ -147,7 +147,7 @@ a:focus-visible, .avatar-ring:focus-visible { outline: 2px solid var(--register-
 }
 
 .avatar-placeholder {
-  font-size: 34px;
+  font-size: 30px;
   color: var(--register-accent);
 }
 
@@ -182,19 +182,19 @@ a:focus-visible, .avatar-ring:focus-visible { outline: 2px solid var(--register-
 .photo-input { display: none; }
 
 /* ============================================
-   RESTO DEL FORMULARIO INTACTO
+   RESTO DEL FORMULARIO
    ============================================ */
 
 .form-fields {
   display: grid;
-  gap: 10px;
+  gap: 8px;
 }
 .field {
   --background: var(--register-surface);
   --color: var(--register-text);
   --border-radius: 12px;
   --padding-start: 14px;
-  --min-height: 56px;
+  --min-height: 52px;
   --inner-padding-end: 14px;
   border: 1px solid rgba(200, 178, 158, 0.4);
   border-radius: 12px;
@@ -221,7 +221,7 @@ a:focus-visible, .avatar-ring:focus-visible { outline: 2px solid var(--register-
 }
 .avatar-error { margin-bottom: 8px; text-align: center; }
 .form-error { margin-top: 12px; text-align: center; }
-.submit-bar { display: flex; justify-content: center; margin-top: 28px; }
+.submit-bar { display: flex; justify-content: center; margin-top: 16px; }
 .btn-submit {
   --background: var(--register-accent);
   --background-hover: #B49F8C;
@@ -240,7 +240,7 @@ a:focus-visible, .avatar-ring:focus-visible { outline: 2px solid var(--register-
   text-transform: none;
   &[disabled] { opacity: 0.6; }
 }
-.register-login { margin: 0; text-align: center; font-size: 13px; padding-top: 12px; a { display: inline-block; padding: 12px 0; } }
+.register-login { margin: 0; text-align: center; font-size: 13px; padding-top: 4px; a { display: inline-block; padding: 8px 0; } }
 .registration-success { text-align: center; padding-top: 40px; p { font-size: 14px; line-height: 1.6; margin: 16px 0 24px; } .btn-submit { margin-inline: auto; } }
 .page-title { font-family: 'EB Garamond', serif; font-size: 32px; font-weight: 500; margin: 0; }
 
